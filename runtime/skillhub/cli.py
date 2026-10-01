@@ -27,6 +27,22 @@ _SECRET_PATTERNS = [
 ]
 
 
+def is_destructive_name(action_name: str) -> bool:
+    """Heuristic: does the action NAME declare an irreversible side effect?
+
+    The v2.2.0-agreed verb list. Deliberately conservative: bare-substring
+    verbs like ``kill`` are excluded (``s``+``kill`` = "skill" would false-
+    positive on every skill-related action). The check is a backstop, not a
+    proof — the manifest risk is the canonical classifier; this catches a
+    destructive action that was (accidentally or maliciously) left at the
+    bare-confirm ``write`` tier.
+    """
+    lname = action_name.lower()
+    hit = any(v in lname for v in (
+        "delete", "destroy", "revoke", "terminate", "purge", "wipe"))
+    return hit or lname.startswith("remove_") or lname.endswith("_delete")
+
+
 def _load_manifest(name: str) -> dict | None:
     # minimal YAML reader for our generated manifests (flat + one list level)
     path = SKILLS_DIR / name / "manifest.yaml"
@@ -111,12 +127,7 @@ def validate() -> int:
             # irreversible side effect must not be classifiable with a bare
             # confirm=true (risk 'write'). Destructive verbs require a risk
             # level that forces a real approval_id.
-            _lname = aname.lower()
-            _destructive = any(v in _lname for v in (
-                "delete", "destroy", "revoke", "terminate", "purge", "wipe"))
-            _destructive = _destructive or _lname.startswith("remove_") \
-                or _lname.endswith("_delete")
-            if _destructive and risk == "write":
+            if is_destructive_name(aname) and risk == "write":
                 failures.append(
                     f"{tag} action '{aname}': destructive name but risk "
                     f"'write' (bare confirm=true suffices) — bump to "
