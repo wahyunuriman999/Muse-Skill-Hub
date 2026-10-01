@@ -3,7 +3,7 @@
 <!-- METRICS:START -->
 _Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
 
-**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **211 passing tests**
+**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **217 passing tests**
 <!-- METRICS:END -->
 
 This is the **executable layer** of Muse Skill Hub. It turns the skill catalog
@@ -175,29 +175,34 @@ Each driver module documents its own setup steps in `SETUP_HELP`.
 
 ## Calling a tool
 
-Every tool takes `{ action, params, confirm }`:
+Every executable action is its own MCP tool named `<skill>_<action>` with
+flat, inlined parameters — there is no opaque `{ action, params }` envelope.
+Control arguments (`confirm`, `approval_id`, `idempotency_key`) are popped
+by the server; everything else is validated against the action's schema.
+
+Read action:
 
 ```json
-{ "action": "search_repositories",
-  "params": { "query": "mcp server language:python", "per_page": 3 } }
+{ "tool": "github_search_repositories",
+  "arguments": { "query": "mcp server language:python", "per_page": 3 } }
 ```
 
-Write action (needs confirmation):
-
-```json
-Send a message (communication risk → needs an approval, not just confirm):
+Write action (`communication` risk → needs a real approval, not just confirm):
 
 ```json
 { "tool": "permission_model_request_approval",
-  "params": { "skill": "slack", "action": "send_message",
-              "params": { "channel_id": "C012AB345CD", "text": "Hello!" } } }
+  "arguments": { "skill": "slack", "action": "send_message",
+                 "params": { "channel_id": "C012AB345CD", "text": "Hello!" } } }
 // → { "approval_id": "apr_..." }
 // human approves, then:
 { "tool": "slack_send_message",
-  "params": { "channel_id": "C012AB345CD", "text": "Hello!" },
+  "arguments": { "channel_id": "C012AB345CD", "text": "Hello!" },
   "approval_id": "apr_..." }
 ```
-```
+
+Tool names are unambiguous: `split_tool_name` resolves `<skill>_<action>`
+with longest-skill-prefix-wins, and the validator fails the build on any
+tool-name collision.
 
 Without an approval, strict-risk actions raise `approval_required` — carrying the pending `approval_id` and a non-secret params preview.
 
