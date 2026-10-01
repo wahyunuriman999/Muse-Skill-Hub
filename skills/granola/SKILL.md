@@ -1,15 +1,28 @@
 ---
 name: "granola"
 title: "Granola"
-description: "Search and read Granola meeting notes and transcripts through Granola's OAuth-backed MCP server."
-version: "1.0.0"
+description: "Search and read Granola meeting notes and transcripts through Granola's official public API (public-api.granola.ai). Requires a Granola API key (GRANOLA_API_KEY)."
+version: "1.1.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"
 ---
 
 # Granola
 
-Search and read Granola meeting notes and transcripts through Granola's OAuth-backed MCP server.
+Search and read Granola meeting notes and transcripts through Granola's official public API.
+
+## Executable Driver
+
+This skill ships a real driver (`granola.py`) against `https://public-api.granola.ai/v1`:
+
+- `list_notes` — list meeting notes with date/folder filters and cursor pagination
+- `get_note` — read one note with AI summary and full transcript
+- `search_notes` — title-substring search (client-side filter; the API has no search endpoint)
+
+## Prerequisites
+
+- A Granola API key (`grn_...`) — create one in Granola (API access requires a plan that includes it)
+- Set the `GRANOLA_API_KEY` environment variable
 
 ## When to Use This Skill
 

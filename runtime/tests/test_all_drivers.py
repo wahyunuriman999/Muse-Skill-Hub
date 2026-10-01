@@ -1,7 +1,8 @@
 """Full-coverage tests: every skill is either executable or a documented exception.
 
-- test_coverage: 97 skills total; all implemented except the 5 documented
-  no-public-API exceptions.
+- test_coverage: 97 skills total; all implemented except the 3 documented
+  no-public-API exceptions (lovable/replit have honest GitHub workarounds
+  documented in their SKILL.md; muse-early-access is a Meta-internal program).
 - test_driver_structure: every implemented driver has valid action schemas.
 - test_credential_errors: every driver with REQUIRED_ENV raises
   CredentialsMissing (never fake success) when env is cleared.
@@ -15,8 +16,10 @@ import pytest
 from skillhub.errors import CredentialsMissing, SkillError
 from skillhub.registry import dispatch, load_registry
 
-# Skills with no public API and no honest local implementation.
-DOCUMENTED_STUBS = {"granola", "lovable", "magic-moment", "muse-early-access", "replit"}
+# Skills with no public API and no honest executable implementation.
+# lovable/replit: documented GitHub-sync workarounds in their SKILL.md.
+# muse-early-access: Meta-internal program, no outside access exists.
+DOCUMENTED_STUBS = {"lovable", "muse-early-access", "replit"}
 
 
 def test_coverage():
@@ -24,7 +27,7 @@ def test_coverage():
     assert len(reg) == 97
     stubs = {n for n, e in reg.items() if not e.implemented}
     assert stubs == DOCUMENTED_STUBS, f"unexpected stub set: {stubs}"
-    assert len(reg) - len(stubs) == 92
+    assert len(reg) - len(stubs) == 94
 
 
 def test_threads_alias_executable():
@@ -218,7 +221,7 @@ def test_self_awareness_reflects_reality():
     res = _run(dispatch(reg["self-awareness"], "get_runtime_info", {},
                         confirm=False))
     assert res["total_skills"] == 97
-    assert res["executable_drivers"] == 92
+    assert res["executable_drivers"] == 94
     assert set(res["catalog_only"]) == DOCUMENTED_STUBS
 
 
@@ -227,7 +230,7 @@ def test_function_health():
     res = _run(dispatch(reg["function-health"], "runtime_health", {},
                         confirm=False))
     assert res["healthy"] is True
-    assert res["checks"]["registry"]["executable"] == 92
+    assert res["checks"]["registry"]["executable"] == 94
 
 
 def test_wallet_and_channels(local_dir):

@@ -1,15 +1,28 @@
 ---
 name: "lovable"
 title: "Lovable"
-description: Build web apps with Lovable: scaffold AI-generated projects, iterate on designs, and manage deployments.
-version: "1.0.0"
+description: Lovable AI app builder. No public API exists, so this skill is catalog-only: the honest workaround is Lovable's GitHub sync, then operate on the code with the github skill.
+version: "1.1.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"
 ---
 
 # Lovable
 
-Build web apps with Lovable: scaffold AI-generated projects, iterate on designs, and manage deployments.
+Lovable AI app builder. **No public API exists** (verified October 2026), so this skill
+is catalog-only in the runtime — it documents the pattern but has no executable driver.
+
+## Honest Workaround: GitHub Sync
+
+Lovable projects can sync to GitHub (Project settings → GitHub → Connect).
+Once synced, do all programmatic work through the `github` skill instead:
+
+1. User connects their Lovable project to a GitHub repository (one-time, in the Lovable UI).
+2. Read/edit code, open PRs, and manage files via the `github` skill's actions.
+3. Pushes back to the repo flow into Lovable automatically.
+
+Do NOT invent Lovable API endpoints — any code claiming to call a Lovable REST API
+is fabricated. The GitHub-sync path above is the only supported programmatic route.
 
 ## When to Use This Skill
 

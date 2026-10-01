@@ -1,15 +1,34 @@
 ---
 name: "magic-moment"
 title: "Magic Moment"
-description: Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports.
-version: "1.0.0"
+description: Turn talking-head video footage into shareable short clips. The hosted AI-highlight feature has no public API, so this skill ships an honest local ffmpeg implementation: cut clips, burn in SRT captions, reframe to vertical 9:16.
+version: "1.1.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"
 ---
 
 # Magic Moment
 
-Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports.
+Turn talking-head video footage into shareable short clips.
+
+## Executable Driver (local ffmpeg)
+
+The hosted AI-highlight feature has no public API, so this skill ships an honest
+**local reference implementation** (`magic_moment.py`) built on ffmpeg — not the
+provider's hosted pipeline. Actions:
+
+- `probe` — inspect a video (duration, resolution, fps, codec)
+- `cut_clip` — cut a clip; optional SRT caption burn-in and vertical 9:16 reframe
+  for Shorts/Reels/TikTok (write action, needs confirmation)
+- `extract_thumbnail` — grab a still frame (write action, needs confirmation)
+
+Highlight selection is manual (you pick start/end) — there is no AI highlight
+detection in this local implementation.
+
+## Prerequisites
+
+- ffmpeg and ffprobe installed and on PATH (https://ffmpeg.org/download.html)
+- No API key or network access needed
 
 ## When to Use This Skill
 

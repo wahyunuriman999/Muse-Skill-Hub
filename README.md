@@ -6,21 +6,21 @@
 
 > A catalog of Muse's capabilities — built so other AIs & LLMs can understand Muse's capability patterns. Created by Wahyu.
 
-## ⚡ Executable Runtime (v1.4.0)
+## ⚡ Executable Runtime (v1.5.0)
 
 This repo is no longer just a blueprint — it ships a **real MCP server** that
-exposes all **97 skills as MCP tools**: **92 backed by real, executable drivers**,
-5 as honest catalog-only stubs (they return a structured
+exposes all **97 skills as MCP tools**: **94 backed by real, executable drivers**,
+3 as honest catalog-only stubs (they return a structured
 `driver_not_implemented` response — never fake data):
 
 ```bash
 cd runtime && pip install -r requirements.txt && python -m skillhub.server
 ```
 
-- **92 real drivers** across three kinds:
+- **94 real drivers** across three kinds:
   - *Third-party APIs* (60): `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`, `gmail`, `google-calendar`, `google-sheets`, `google-drive`, `spotify`, `instagram`, `meta-threads`, `threads`, `facebook`, `dropbox`, `ticketmaster`, `image-search`, `flightaware`, `box`, `calendly`, `canva`, `duffel`, `figma`, `ghl`, `klaviyo`, `meta-ads`, `plaid` (sandbox), `printify`, `quickbooks`, `tts`, `voice-design`, `voice-selector`, `voice-calls`, `zapier`, `outlook-calendar`, `outlook-mail`, `outlook-contacts`, `google-contacts`, `google-docs`, `google-forms`, `google-slides`, `google-tasks`, `messenger`, `instagram-messages`, `threads-messages`, `withings`, `tailscale`, `tessie`, `peloton`, `philips-hue`, `podcast`, `shopping`, `wide-research`, `social-content-performance`, `evernote`, `healthex` (MCP passthrough)
   - *Local reference implementations* (30): `secure-vault` (encrypted), `permission-model`, `personal-feed`, `idea-management`, `goals`, `share-ideas`, `agent-library`, `connector-management`, `paired-devices`, `data-control`, `messaging-channels`, `wallet`, `apple-healthkit` + `google-health-connect` (local export readers), `device-data`, `media-library`, `forget`, `self-awareness`, `skill-creator`, `function-health`, `travel-planning`, `muse_db` (SQLite), `muse-feedback`, `subscription-status`, `wearable-device-skills`, `wearables-comms`, `generate_podcast`, `booking` (router), `opentable` (deep links), `facebook-cli` (passthrough)
-  - *Catalog-only stubs* (5): `granola`, `lovable`, `magic-moment`, `muse-early-access`, `replit` — no public API exists (or it is an internal-only pipeline); documented honestly instead of faked
+  - *Catalog-only stubs* (3): `lovable`, `muse-early-access`, `replit` — no public API exists (or it is an internal-only program); documented honestly instead of faked, with workarounds where one exists
 - **97 MCP tools** registered (Claude Desktop compatible, stdio transport)
 - **Read/write isolation enforced in code** — write actions need `confirm=true`
 - **Honest errors** — missing credentials return setup instructions, never fake data
@@ -95,7 +95,7 @@ tool = Tool(name="github", description="...", func=your_impl)
 | `google-sheets` | google-sheets | Read, write, and manage the user's Google Sheets. |
 | `google-slides` | google-slides | Read, create, and edit the user's Google Slides presentations. |
 | `google-tasks` | google-tasks | Manage the user's Google Tasks: lists, task details, creation, updates, and completion. |
-| `granola` | granola | Search and read Granola meeting notes and transcripts through Granola's OAuth-backed MCP server. |
+| `granola` | granola | Search and read Granola meeting notes and transcripts through Granola's official public API (public-api.granola.ai). Requires a Granola API key (GRANOLA_API_KEY). |
 | `healthex` | HealthEx | Use to connect HealthEx and ask questions about your medications, lab results, and other health records. |
 | `idea-management` | Idea Management | Manage the Ideas tab: idea cards the agent can run, dismissing ideas, and explaining why an idea appeared or disappeared. |
 | `image-search` | image-search | Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not identify a supplied image or person. |
@@ -103,8 +103,8 @@ tool = Tool(name="github", description="...", func=your_impl)
 | `instagram-messages` | instagram-messages | Use this to interact with the user's Instagram messages. Read inboxes, threads, top recipients, filtered inbox views, DM search results, and send messages through `instagram-messages-cli`. |
 | `klaviyo` | klaviyo | Run Klaviyo email/SMS marketing: manage lists and segments, build campaigns and flows, and edit templates. |
 | `linear` | linear | Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status. |
-| `lovable` | lovable | Build web apps with Lovable: scaffold AI-generated projects, iterate on designs, and manage deployments. |
-| `magic-moment` | magic-moment | Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports. |
+| `lovable` | lovable | Lovable AI app builder. No public API exists, so this skill is catalog-only: the honest workaround is Lovable's GitHub sync, then operate on the code with the github skill. |
+| `magic-moment` | magic-moment | Turn talking-head video footage into shareable short clips. The hosted AI-highlight feature has no public API, so this skill ships an honest local ffmpeg implementation: cut clips, burn in SRT captions, reframe to vertical 9:16. |
 | `media-library` | media-library | Search and inspect the user's photo library, including connected device galleries. Use for photo requests and whenever a photo could ground or personalize a response; lookups of uploaded photos are ch |
 | `messaging-channels` | Messaging Channels | Work across connected messaging providers (e.g. WhatsApp): check connection status, read side chats, send messages with approval. |
 | `messenger` | Messenger | Work with the user's Messenger account: read call history; read and search contacts; read, search, and summarize conversations; send, react to, unsend, or edit messages; and message Marketplace listin |
@@ -128,7 +128,7 @@ tool = Tool(name="github", description="...", func=your_impl)
 | `podcast` | podcast | Compose and deliver audio content: a podcast episode, briefing, or narrated summary, with one or more voices, as an MP3. For reading supplied text aloud verbatim, use tts. |
 | `printify` | printify | Use Printify to browse catalog data, manage shops and products, and review or create orders. |
 | `quickbooks` | quickbooks | Read and manage the user's QuickBooks business through Intuit's official MCP server, including reports, invoices, customers, products, payment links, sales settings, and industry benchmarks. |
-| `replit` | replit | Read, create, update, and publish apps through Replit's official MCP server. |
+| `replit` | replit | Replit cloud IDE. Replit's public REST API is deprecated and its replacement is unreleased, so this skill is catalog-only: the honest workaround is pushing the Repl to GitHub, then operating on the code with the github skill. |
 | `secure-vault` | Secure Vault | Handle credentials securely: collect passwords, API keys, and tokens only through secure entry UI, never in chat. |
 | `self-awareness` | self-awareness | Ground self-referential answers in the agent's actual filesystem. Use when the user asks who the agent is, what it can do, what it knows, what it remembers, what it has built, what services are connec |
 | `share-ideas` | Share ideas | Publish a portable Idea card from the Ideas tab — only after the user explicitly asks to publish it. |

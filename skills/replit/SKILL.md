@@ -1,15 +1,30 @@
 ---
 name: "replit"
 title: "Replit"
-description: "Read, create, update, and publish apps through Replit's official MCP server."
-version: "1.0.0"
+description: "Replit cloud IDE. Replit's public REST API is deprecated and its replacement is unreleased, so this skill is catalog-only: the honest workaround is pushing the Repl to GitHub, then operating on the code with the github skill."
+version: "1.1.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"
 ---
 
 # Replit
 
-Read, create, update, and publish apps through Replit's official MCP server.
+Replit cloud IDE. **Replit's public REST API is deprecated** (verified October 2026;
+Replit says a replacement is in the works but it is unreleased), so this skill
+is catalog-only in the runtime — it documents the pattern but has no executable driver.
+
+## Honest Workaround: Push to GitHub
+
+Every Repl can push to GitHub (Repl → Version control → Connect to GitHub).
+Once pushed, do all programmatic work through the `github` skill instead:
+
+1. User connects their Repl to a GitHub repository (one-time, in the Replit UI).
+2. Read/edit code, open PRs, and manage files via the `github` skill's actions.
+3. Alternatively, download the Repl as a zip and work on the files locally.
+
+Do NOT invent Replit API endpoints — any code claiming to call a Replit REST API
+targets a deprecated surface. The GitHub-push path above is the only supported
+programmatic route until Replit ships its new API.
 
 ## When to Use This Skill
 

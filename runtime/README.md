@@ -10,8 +10,8 @@ LLM client (Claude Desktop, etc.) can use plug-and-play.
 skills/*/SKILL.md  ──catalog──▶  skillhub/registry.py  ──▶  MCP server (stdio)
                                            │
                         ┌──────────────────┴──────────────────┐
-                        │  92 real drivers (executable)          │
-                        │  5 catalog-only (honest stub)          │
+                        │  94 real drivers (executable)          │
+                        │  3 catalog-only (honest stub)          │
                         └─────────────────────────────────────┘
 ```
 
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 # run the MCP server (stdio transport)
 python -m skillhub.server
-# → "muse-skill-hub: 97 skills registered, 92 with executable drivers."
+# → "muse-skill-hub: 97 skills registered, 94 with executable drivers."
 ```
 
 ### Claude Desktop
@@ -152,7 +152,7 @@ Add to `claude_desktop_config.json`:
 | `zapier` | trigger_zap | `ZAPIER_WEBHOOK_URL` |
 | `zoom` | list_meetings, create_meeting | `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ZOOM_ACCOUNT_ID` |
 
-**92 implemented drivers.** Catalog-only stubs (5): `granola`, `lovable`, `magic-moment`, `muse-early-access`, `replit` — no public API exists, so they return an honest `driver_not_implemented` error instead of fake data.
+**94 implemented drivers.** Catalog-only stubs (3): `lovable`, `muse-early-access`, `replit` — no public API exists, so they return an honest `driver_not_implemented` error instead of fake data. `lovable`/`replit` document a GitHub-sync workaround in their SKILL.md.
 
 Each driver module documents its own setup steps in `SETUP_HELP`.
 
