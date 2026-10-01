@@ -6,6 +6,24 @@
 
 > A catalog of Muse's capabilities — built so other AIs & LLMs can understand Muse's capability patterns. Created by Wahyu.
 
+## ⚡ Executable Runtime (new in v1.1.0)
+
+This repo is no longer just a blueprint — it ships a **real MCP server** that
+exposes all **87 skills as executable tools**:
+
+```bash
+cd runtime && pip install -r requirements.txt && python -m skillhub.server
+```
+
+- **11 real API drivers**: `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`
+- **87 MCP tools** registered (Claude Desktop compatible, stdio transport)
+- **Read/write isolation enforced in code** — write actions need `confirm=true`
+- **Honest errors** — missing credentials return setup instructions, never fake data
+- **7 passing tests**, including a live `api.github.com` call and an end-to-end MCP stdio session
+
+See [`runtime/README.md`](runtime/README.md) for setup, driver docs, and how to add your own driver.
+
+---
 ## About this repo
 
 This repo contains a **catalog** of all of Muse's skills/capabilities (Muse is Meta's personal AI agent).
