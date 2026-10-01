@@ -1,0 +1,32 @@
+# Magic Moment (`magic-moment`)
+
+> Capability for magic-moment
+
+## What is this?
+
+The `magic-moment` skill is one of Muse's capabilities.
+
+Official description: Capability for magic-moment
+
+## When to use?
+
+When the user's request matches: Capability for magic-moment
+
+## General pattern
+
+- **Read first, write with approval**: read operations first for verification, write operations always need confirmation.
+- **Verify before claiming**: check connection status and access before saying you can.
+- **Don't guess**: if live info is needed, check live sources, not memory.
+
+## Example adaptation pattern for other LLMs
+
+```
+Skill: magic-moment
+Purpose: Capability for magic-moment
+Input: clear user need + structured parameters
+Output: verified result + its source
+Rules: separate read vs write, require approval for writes
+```
+
+---
+*Sanitized from Muse's internal docs — only public patterns shared.*
