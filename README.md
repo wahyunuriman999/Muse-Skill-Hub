@@ -11,6 +11,26 @@ The goal is an open reference: what Muse can do, what the patterns are, and insp
 
 Total documented skills: **87**
 
+## Universal Skills (Usable by Any LLM) 🌐
+
+Each skill now has **two files**:
+- `skills/<name>/README.md` — Human-readable documentation (what it does, when to use)
+- `skills/<name>/SKILL.md` — **Universal skill definition** in open format (frontmatter + instructions) that any LLM can load
+
+See **[USAGE.md](USAGE.md)** for how to use these with GPT, Claude, Gemini, Llama, LangChain, etc.
+
+**Quick start for any LLM:**
+```python
+# Option 1: Paste into system prompt
+with open('skills/github/SKILL.md') as f:
+    skill = f.read()
+# Add to your LLM's context
+
+# Option 2: LangChain
+from langchain.tools import Tool
+tool = Tool(name="github", description="...", func=your_impl)
+```
+
 ## Skill List
 
 | Skill | Title | Description |
