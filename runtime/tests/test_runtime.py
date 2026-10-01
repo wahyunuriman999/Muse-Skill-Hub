@@ -115,7 +115,7 @@ async def test_mcp_server_end_to_end_over_stdio():
             assert payload["status"] == "ok"
             assert payload["total_count"] > 0
 
-            res2 = await session.call_tool("spotify", {"action": "info", "params": {}})
+            res2 = await session.call_tool("tts", {"action": "info", "params": {}})
             payload2 = json.loads(res2.content[0].text)
             assert payload2["code"] == "driver_not_implemented"
     print("\n  MCP server served 97 tools over stdio; live call succeeded")

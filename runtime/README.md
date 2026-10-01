@@ -10,7 +10,7 @@ LLM client (Claude Desktop, etc.) can use plug-and-play.
 skills/*/SKILL.md  ──catalog──▶  skillhub/registry.py  ──▶  MCP server (stdio)
                                            │
                         ┌──────────────────┴──────────────────┐
-                        │  11 real API drivers (executable)    │
+                        │  23 real API drivers (executable)    │
                         │  76 catalog-only (honest stub)       │
                         └─────────────────────────────────────┘
 ```
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 # run the MCP server (stdio transport)
 python -m skillhub.server
-# → "muse-skill-hub: 87 skills registered, 11 with executable drivers."
+# → "muse-skill-hub: 97 skills registered, 23 with executable drivers."
 ```
 
 ### Claude Desktop
@@ -70,6 +70,18 @@ Add to `claude_desktop_config.json`:
 | `todoist` | list_tasks, create_task | `TODOIST_API_TOKEN` |
 | `places-search` | search_places | `GOOGLE_MAPS_API_KEY` |
 | `zoom` | list_meetings, create_meeting | `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ZOOM_ACCOUNT_ID` |
+| `gmail` | list_messages, get_message, send_message | `GOOGLE_OAUTH_TOKEN` |
+| `google-calendar` | list_events, create_event | `GOOGLE_OAUTH_TOKEN` |
+| `google-sheets` | read_range, append_row | `GOOGLE_OAUTH_TOKEN` |
+| `google-drive` | list_files, search_files | `GOOGLE_OAUTH_TOKEN` |
+| `spotify` | search, get_playlists, play, pause | `SPOTIFY_ACCESS_TOKEN` |
+| `instagram` | get_profile, get_media | `INSTAGRAM_ACCESS_TOKEN` |
+| `meta-threads` | get_profile, post_text | `THREADS_ACCESS_TOKEN` |
+| `facebook` | get_profile, get_posts, post_to_feed | `FACEBOOK_ACCESS_TOKEN` |
+| `dropbox` | list_folder, get_metadata | `DROPBOX_ACCESS_TOKEN` |
+| `ticketmaster` | search_events | `TICKETMASTER_API_KEY` |
+| `image-search` | search_images | `SERPER_API_KEY` |
+| `flightaware` | flight_status | `FLIGHTAWARE_API_KEY` |
 
 Each driver module documents its own setup steps in `SETUP_HELP`.
 
