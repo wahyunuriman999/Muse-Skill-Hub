@@ -509,7 +509,8 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
             else:
                 pending = approval.request_approval(
                     entry.name, action, params, risk=risk, actor=actor,
-                    preview={k: params.get(k) for k in action_def.required})
+                    preview={k: params.get(k) for k in action_def.required},
+                    extra_secret_keys=tuple(action_def.sensitive_params))
                 raise ApprovalRequired(entry.name, action,
                                        preview=pending["preview"],
                                        approval_id=pending["approval_id"])

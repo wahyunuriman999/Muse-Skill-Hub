@@ -52,15 +52,20 @@ def _save(data: dict) -> None:
 
 def request_approval(skill: str, action: str, params: dict,
                      risk: str = "write", ttl_s: int = DEFAULT_TTL_S,
-                     actor: str = "local-user", preview: dict | None = None) -> dict:
+                     actor: str = "local-user", preview: dict | None = None,
+                     extra_secret_keys: tuple = ()) -> dict:
     with localstore.locked_json(_STORE, {"approvals": {}}) as data:
         approvals = data.setdefault("approvals", {})
         approval_id = "apr_" + uuid.uuid4().hex[:12]
         now = int(time.time())
-        # The store NEVER keeps raw params: only the binding hash plus a
-        # redacted preview (secrets → "[redacted]"). Execution re-supplies
-        # the real params and consume() verifies them against params_hash.
-        params_preview, _ = redact_params(params or {})
+        # The store NEVER keeps raw params and NEVER keeps a raw explicit
+        # preview: both go through redact_params (secret key names, per-action
+        # sensitive_params, known credential shapes in values, recursion into
+        # nested structures). Execution re-supplies the real params and
+        # consume() verifies them against params_hash.
+        secrets = tuple(extra_secret_keys or ())
+        params_preview, _ = redact_params(params or {}, secrets)
+        explicit_preview, _ = redact_params(preview or {}, secrets)
         item = {
             "approval_id": approval_id,
             "skill": skill,
@@ -70,7 +75,7 @@ def request_approval(skill: str, action: str, params: dict,
             "risk": risk,
             "status": "pending",
             "actor": actor,
-            "preview": preview or {},
+            "preview": explicit_preview,
             "created_at": now,
             "expires_at": now + ttl_s,
             "consumed_at": None,

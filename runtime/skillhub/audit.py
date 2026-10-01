@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 import uuid
 from typing import Any
@@ -43,10 +44,49 @@ _SECRET_HINTS = ("password", "passwd", "secret", "token", "api_key", "apikey",
                  "private_key", "card", "cvv", "ssn", "bearer", "credential",
                  "auth", "session")
 
+# A secret smuggled under an innocent key name must still not leak: values
+# matching well-known credential shapes are redacted regardless of key.
+_SECRET_VALUE_PATTERNS = (
+    re.compile(r"sk_live_[A-Za-z0-9]+"),
+    re.compile(r"sk_test_[A-Za-z0-9]+"),
+    re.compile(r"rk_live_[A-Za-z0-9]+"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"xox[bap]-"),
+    re.compile(r"ghp_[A-Za-z0-9]{20,}"),
+    re.compile(r"gho_[A-Za-z0-9]{20,}"),
+    re.compile(r"github_pat_[A-Za-z0-9_]+"),
+    re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
+)
+
+_REDACTED = "[redacted]"
+_TRUNC_SUFFIX = "…[truncated]"
+_PREVIEW_MAX = 120
+
 
 def _is_secret_key(key: str) -> bool:
     k = key.lower()
     return any(h in k for h in _SECRET_HINTS)
+
+
+def _looks_like_secret_value(value: str) -> bool:
+    return any(p.search(value) for p in _SECRET_VALUE_PATTERNS)
+
+
+def _redact_value(key: str, value: Any, extra_secret_keys: tuple) -> Any:
+    if _is_secret_key(key) or key in extra_secret_keys:
+        return _REDACTED
+    if isinstance(value, str):
+        if _looks_like_secret_value(value):
+            return _REDACTED
+        if len(value) > _PREVIEW_MAX:
+            return value[:_PREVIEW_MAX] + _TRUNC_SUFFIX
+        return value
+    if isinstance(value, dict):
+        return {k: _redact_value(str(k), v, extra_secret_keys)
+                for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_redact_value(key, v, extra_secret_keys) for v in value]
+    return value
 
 
 def _hash(value: Any) -> str:
@@ -55,15 +95,19 @@ def _hash(value: Any) -> str:
 
 
 def redact_params(params: dict, extra_secret_keys: tuple = ()) -> tuple[dict, str]:
-    """Return (preview, params_hash). Secrets are redacted from the preview."""
-    preview: dict = {}
-    for key, value in (params or {}).items():
-        if _is_secret_key(key) or key in extra_secret_keys:
-            preview[key] = "[redacted]"
-        elif isinstance(value, str) and len(value) > 120:
-            preview[key] = value[:120] + "…[truncated]"
-        else:
-            preview[key] = value
+    """Return (preview, params_hash).
+
+    Secrets are redacted from the preview by three independent rules:
+      1. the key name looks secret (password/token/api_key/...) or is listed
+         in ``extra_secret_keys`` (per-action ``sensitive_params``);
+      2. the string value matches a known credential shape (sk_live_,
+         ghp_, AKIA..., ...) even under an innocent key name;
+      3. redaction recurses into nested dicts/lists.
+    Long non-secret strings are truncated. The hash always covers the full
+    original params.
+    """
+    preview = {key: _redact_value(str(key), value, tuple(extra_secret_keys))
+               for key, value in (params or {}).items()}
     params_hash = "sha256:" + hashlib.sha256(
         json.dumps(params or {}, sort_keys=True, default=str).encode()).hexdigest()[:16]
     return preview, params_hash

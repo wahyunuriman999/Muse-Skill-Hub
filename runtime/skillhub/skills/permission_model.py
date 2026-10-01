@@ -27,6 +27,7 @@ async def request_approval(params: dict) -> dict:
     # action) is ignored here AND would fail closed at consume() time.
     declared = params.get("risk", "write")
     canonical = declared
+    sensitive: tuple = ()
     try:
         from .. import registry as _registry
         from ..policy import risk_for as _risk_for
@@ -34,6 +35,7 @@ async def request_approval(params: dict) -> dict:
         entry = reg.get(skill)
         if entry is not None and action in entry.actions:
             canonical = _risk_for(skill, action, entry.actions[action].risk)
+            sensitive = tuple(entry.actions[action].sensitive_params or ())
     except Exception:
         canonical = declared
     item = approval_engine.request_approval(
@@ -42,6 +44,7 @@ async def request_approval(params: dict) -> dict:
         params=params.get("params", {}) or {},
         risk=canonical,
         ttl_s=int(params.get("ttl_s", 600)),
+        extra_secret_keys=sensitive,
     )
     return {"status": "ok", "approval": item,
             "usage": "Approve with permission-model approve, then call the "
