@@ -2,29 +2,29 @@
 
 > Create or update a workspace skill: its description, structure, instructions, and supporting files.
 
-## Apa ini?
+## What is this?
 
-Skill `skill-creator` adalah salah satu kemampuan Muse. Deskripsi resmi: Create or update a workspace skill: its description, structure, instructions, and supporting files.
+The `skill-creator` skill is one of Muse's capabilities. Official description: Create or update a workspace skill: its description, structure, instructions, and supporting files.
 
-## Kapan dipakai?
+## When to use?
 
-Ketika ingin membuat skill baru yang reusable dari workflow yang berhasil.
+When you want to create a new reusable skill from a successful workflow.
 
-## Pola umum
+## General pattern
 
-- **Read dulu, write dengan persetujuan**: operasi baca didahulukan untuk verifikasi, operasi tulis selalu minta konfirmasi.
-- **Verifikasi sebelum klaim**: cek status koneksi dan akses sebelum bilang bisa.
-- **Jangan asal nebak**: kalau butuh info live (harga, jadwal, ketersediaan), cek sumber live, bukan dari ingatan.
+- **Read first, write with approval**: read operations first for verification, write operations always need confirmation.
+- **Verify before claiming**: check connection status and access before saying you can.
+- **Don't guess**: if live info is needed (prices, schedules, availability), check live sources, not memory.
 
-## Contoh pola adaptasi untuk LLM lain
+## Example adaptation pattern for other LLMs
 
 ```
 Skill: skill-creator
-Tujuan: Create or update a workspace skill: its description, structure, instructions, and supporting files.
-Input: kebutuhan user yang jelas + parameter terstruktur
-Output: hasil terverifikasi + sumbernya
-Aturan: pisahkan read vs write, minta approval untuk write
+Purpose: Create or update a workspace skill: its description, structure, instructions, and supporting files.
+Input: clear user need + structured parameters
+Output: verified result + its source
+Rules: separate read vs write, require approval for writes
 ```
 
 ---
-*Disanitasi dari dokumentasi internal Muse — hanya pola publik yang dibagikan.*
+*Sanitized from Muse's internal docs — only public patterns shared.*

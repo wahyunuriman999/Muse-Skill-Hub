@@ -2,29 +2,29 @@
 
 > Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created with Save to Spotify.
 
-## Apa ini?
+## What is this?
 
-Skill `spotify` adalah salah satu kemampuan Muse. Deskripsi resmi: Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created with Save to Spotify.
+The `spotify` skill is one of Muse's capabilities. Official description: Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created with Save to Spotify.
 
-## Kapan dipakai?
+## When to use?
 
-Ketika user minta cari musik, bikin playlist, atau kelola Spotify.
+When the user asks to search music, create playlists, or manage Spotify.
 
-## Pola umum
+## General pattern
 
-- **Read dulu, write dengan persetujuan**: operasi baca didahulukan untuk verifikasi, operasi tulis selalu minta konfirmasi.
-- **Verifikasi sebelum klaim**: cek status koneksi dan akses sebelum bilang bisa.
-- **Jangan asal nebak**: kalau butuh info live (harga, jadwal, ketersediaan), cek sumber live, bukan dari ingatan.
+- **Read first, write with approval**: read operations first for verification, write operations always need confirmation.
+- **Verify before claiming**: check connection status and access before saying you can.
+- **Don't guess**: if live info is needed (prices, schedules, availability), check live sources, not memory.
 
-## Contoh pola adaptasi untuk LLM lain
+## Example adaptation pattern for other LLMs
 
 ```
 Skill: spotify
-Tujuan: Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created wi
-Input: kebutuhan user yang jelas + parameter terstruktur
-Output: hasil terverifikasi + sumbernya
-Aturan: pisahkan read vs write, minta approval untuk write
+Purpose: Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created wi
+Input: clear user need + structured parameters
+Output: verified result + its source
+Rules: separate read vs write, require approval for writes
 ```
 
 ---
-*Disanitasi dari dokumentasi internal Muse — hanya pola publik yang dibagikan.*
+*Sanitized from Muse's internal docs — only public patterns shared.*

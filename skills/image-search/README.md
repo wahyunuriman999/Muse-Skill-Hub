@@ -2,29 +2,29 @@
 
 > Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not identify a supplied image or person.
 
-## Apa ini?
+## What is this?
 
-Skill `image-search` adalah salah satu kemampuan Muse. Deskripsi resmi: Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not identify a supplied image or person.
+The `image-search` skill is one of Muse's capabilities. Official description: Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not identify a supplied image or person.
 
-## Kapan dipakai?
+## When to use?
 
-Ketika butuh referensi visual dari web untuk ditampilkan.
+When visual references from the web are needed.
 
-## Pola umum
+## General pattern
 
-- **Read dulu, write dengan persetujuan**: operasi baca didahulukan untuk verifikasi, operasi tulis selalu minta konfirmasi.
-- **Verifikasi sebelum klaim**: cek status koneksi dan akses sebelum bilang bisa.
-- **Jangan asal nebak**: kalau butuh info live (harga, jadwal, ketersediaan), cek sumber live, bukan dari ingatan.
+- **Read first, write with approval**: read operations first for verification, write operations always need confirmation.
+- **Verify before claiming**: check connection status and access before saying you can.
+- **Don't guess**: if live info is needed (prices, schedules, availability), check live sources, not memory.
 
-## Contoh pola adaptasi untuk LLM lain
+## Example adaptation pattern for other LLMs
 
 ```
 Skill: image-search
-Tujuan: Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not ident
-Input: kebutuhan user yang jelas + parameter terstruktur
-Output: hasil terverifikasi + sumbernya
-Aturan: pisahkan read vs write, minta approval untuk write
+Purpose: Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not ident
+Input: clear user need + structured parameters
+Output: verified result + its source
+Rules: separate read vs write, require approval for writes
 ```
 
 ---
-*Disanitasi dari dokumentasi internal Muse — hanya pola publik yang dibagikan.*
+*Sanitized from Muse's internal docs — only public patterns shared.*

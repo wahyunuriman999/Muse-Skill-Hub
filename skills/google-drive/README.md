@@ -2,29 +2,29 @@
 
 > Work with the user's Google Drive: files, folders, uploads, downloads, and sharing.
 
-## Apa ini?
+## What is this?
 
-Skill `google-drive` adalah salah satu kemampuan Muse. Deskripsi resmi: Work with the user's Google Drive: files, folders, uploads, downloads, and sharing.
+The `google-drive` skill is one of Muse's capabilities. Official description: Work with the user's Google Drive: files, folders, uploads, downloads, and sharing.
 
-## Kapan dipakai?
+## When to use?
 
-Ketika user minta cari, baca, atau kelola file di Google Drive.
+When the user asks to find, read, or manage files in Google Drive.
 
-## Pola umum
+## General pattern
 
-- **Read dulu, write dengan persetujuan**: operasi baca didahulukan untuk verifikasi, operasi tulis selalu minta konfirmasi.
-- **Verifikasi sebelum klaim**: cek status koneksi dan akses sebelum bilang bisa.
-- **Jangan asal nebak**: kalau butuh info live (harga, jadwal, ketersediaan), cek sumber live, bukan dari ingatan.
+- **Read first, write with approval**: read operations first for verification, write operations always need confirmation.
+- **Verify before claiming**: check connection status and access before saying you can.
+- **Don't guess**: if live info is needed (prices, schedules, availability), check live sources, not memory.
 
-## Contoh pola adaptasi untuk LLM lain
+## Example adaptation pattern for other LLMs
 
 ```
 Skill: google-drive
-Tujuan: Work with the user's Google Drive: files, folders, uploads, downloads, and sharing.
-Input: kebutuhan user yang jelas + parameter terstruktur
-Output: hasil terverifikasi + sumbernya
-Aturan: pisahkan read vs write, minta approval untuk write
+Purpose: Work with the user's Google Drive: files, folders, uploads, downloads, and sharing.
+Input: clear user need + structured parameters
+Output: verified result + its source
+Rules: separate read vs write, require approval for writes
 ```
 
 ---
-*Disanitasi dari dokumentasi internal Muse — hanya pola publik yang dibagikan.*
+*Sanitized from Muse's internal docs — only public patterns shared.*
