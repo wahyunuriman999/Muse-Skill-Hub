@@ -63,3 +63,11 @@ retry.
 The field is `supports_idempotency_key` (renamed from `idempotent` in
 v2.1): it means "the runtime may deduplicate with a key", not "the
 underlying operation is mathematically idempotent".
+
+## Storage privacy (v2.2)
+
+The approval store keeps `params_hash` (sha256, the binding) plus a
+redacted `params_preview` — never the raw params. Secret-looking keys
+(password/token/secret/…) are stored as `[redacted]`, other values are
+truncated, following the same policy as the audit log. Execution
+re-supplies the real params; `consume()` verifies them against the hash.

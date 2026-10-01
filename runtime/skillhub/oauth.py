@@ -39,20 +39,19 @@ def save_oauth(name: str, access_token: str, refresh_token: str,
                scopes: list[str] | None = None) -> None:
     """Store an OAuth credential with refresh metadata (encrypted at rest)."""
     from . import credentials
-    data = credentials._read_store()
-    data[name] = {
-        "value": access_token,
-        "scopes": list(scopes) if scopes else None,
-        "oauth": {
-            "refresh_token": refresh_token,
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "token_url": token_url,
-            "expires_at": expires_at,
-        },
-        "updated_at": int(time.time()),
-    }
-    credentials._write_store(data)
+    with credentials._locked_store() as data:
+        data[name] = {
+            "value": access_token,
+            "scopes": list(scopes) if scopes else None,
+            "oauth": {
+                "refresh_token": refresh_token,
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "token_url": token_url,
+                "expires_at": expires_at,
+            },
+            "updated_at": int(time.time()),
+        }
 
 
 def _is_expiring(rec: dict) -> bool:
@@ -67,20 +66,32 @@ def _is_expiring(rec: dict) -> bool:
 
 
 def get_valid_token(name: str, rec: dict, skill: str = "unknown") -> str:
-    """Return a valid access token, refreshing first when needed."""
+    """Return a valid access token, refreshing first when needed.
+
+    Single-flight: the whole check → refresh → persist cycle runs under
+    the credential store's exclusive lock, and expiry is re-checked after
+    acquiring it. Two workers racing on an expired token produce exactly
+    ONE refresh request; the loser reuses the winner's rotated token.
+    (The network call happens under the lock — deliberate: with
+    refresh-token rotation, two concurrent refreshes could invalidate
+    each other. For a local single-user runtime this serialization is
+    the correct tradeoff.)
+    """
     if not _is_expiring(rec):
         return rec.get("value")
-    oauth = rec.get("oauth") or {}
-    refresh_token = oauth.get("refresh_token")
-    if not refresh_token:
-        raise AuthExpired(skill,
-                          f"OAuth token '{name}' expired and no refresh_token "
-                          f"is stored.")
-    new_token = _refresh(oauth, skill)
-    # persist the rotated credentials atomically
     from . import credentials
-    with _locked_store() as data:
+    with credentials._locked_store() as data:
         cur = data.get(name) or {}
+        # double-checked: another worker may have refreshed while we waited
+        if not _is_expiring(cur):
+            return cur.get("value")
+        oauth = cur.get("oauth") or {}
+        refresh_token = oauth.get("refresh_token")
+        if not refresh_token:
+            raise AuthExpired(skill,
+                              f"OAuth token '{name}' expired and no refresh_token "
+                              f"is stored.")
+        new_token = _refresh(oauth, skill)
         cur["value"] = new_token["access_token"]
         cur_oauth = cur.get("oauth") or {}
         cur_oauth["expires_at"] = new_token.get("expires_at")
@@ -89,20 +100,7 @@ def get_valid_token(name: str, rec: dict, skill: str = "unknown") -> str:
         cur["oauth"] = cur_oauth
         cur["updated_at"] = int(time.time())
         data[name] = cur
-    return new_token["access_token"]
-
-
-def _locked_store():
-    from . import credentials, localstore
-    # read-modify-write under the same lock discipline as the store itself
-    import contextlib
-
-    @contextlib.contextmanager
-    def _ctx():
-        data = credentials._read_store()
-        yield data
-        credentials._write_store(data)
-    return _ctx()
+        return new_token["access_token"]
 
 
 def _refresh(oauth: dict, skill: str) -> dict:

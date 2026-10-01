@@ -19,7 +19,7 @@ actions:
     output_schema: {}
   - name: delete_event
     type: write
-    risk: write
+    risk: destructive
     approval: required
     supports_idempotency_key: true
     required_scopes: ["Calendars.ReadWrite"]

@@ -57,8 +57,8 @@ ACTIONS = {
         {}, [], explain_collection),
     "export_data": ActionDef("Export all local data as a zip archive.",
         {}, [], export_data),
-    "delete_data": ActionDef("Delete local data (scope=all or a store name; needs confirm=true).",
+    "delete_data": ActionDef("Delete local data (scope=all or a store name; needs approval: irreversible).",
         {"scope": {"type": "string", "default": "all",
                    "description": "all, or e.g. feed, ideas, goals, vault.enc"}},
-        [], delete_data, write=True),
+        [], delete_data, risk="destructive"),
 }

@@ -111,6 +111,24 @@ class AuthExpired(SkillError):
     retryable = False
 
 
+class CredentialStoreCorruptError(SkillError):
+    """The encrypted credential store exists but cannot be decrypted/parsed.
+
+    Fail-closed: this is raised instead of silently treating the store as
+    empty (which would look like "no credentials" and mislead the caller).
+    A ``.corrupt.<timestamp>.enc`` backup is kept next to the store.
+    """
+    code = "internal_error"
+    retryable = False
+
+    def __init__(self, backup: str):
+        super().__init__(
+            "Local credential store is corrupt or undecryptable "
+            f"(wrong key or damaged file). A backup was saved to {backup}; "
+            "refusing to silently fall back to 'no credentials'.",
+            internal=f"corrupt credential store -> backup {backup}")
+
+
 # --- approval / policy ------------------------------------------------------
 
 class ConfirmationRequired(SkillError):

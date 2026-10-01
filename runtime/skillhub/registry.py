@@ -92,7 +92,7 @@ def _manifest_risks(name: str) -> dict[str, str]:
     return risks
 
 
-def load_registry() -> dict[str, SkillEntry]:
+def load_registry(apply_manifest_risks: bool = True) -> dict[str, SkillEntry]:
     reg: dict[str, SkillEntry] = {}
     if not SKILLS_DIR.exists():
         return reg
@@ -116,11 +116,14 @@ def load_registry() -> dict[str, SkillEntry]:
             entry.required_env = getattr(mod, "REQUIRED_ENV", [])
             entry.setup_help = getattr(mod, "SETUP_HELP", "")
             # manifest is the canonical source of truth for per-action risk
-            manifest_risks = _manifest_risks(name)
-            for aname, ad in entry.actions.items():
-                manifest_risk = manifest_risks.get(aname)
-                if manifest_risk:
-                    ad.risk = manifest_risk
+            # at RUNTIME. The manifest generator bypasses this (it regenerates
+            # manifests FROM the drivers), so driver edits propagate.
+            if apply_manifest_risks:
+                manifest_risks = _manifest_risks(name)
+                for aname, ad in entry.actions.items():
+                    manifest_risk = manifest_risks.get(aname)
+                    if manifest_risk:
+                        ad.risk = manifest_risk
         reg[name] = entry
     return reg
 

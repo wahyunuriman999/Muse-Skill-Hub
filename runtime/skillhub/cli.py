@@ -86,9 +86,38 @@ def validate() -> int:
                 if req not in (ad.parameters or {}):
                     failures.append(f"{tag} action '{aname}': required '{req}' "
                                     "not declared in parameters")
+            # JSON-Schema validity (Draft 2020-12): malformed schemas are a
+            # conformance failure here, never a surprise at dispatch time
+            try:
+                from jsonschema import Draft202012Validator
+                Draft202012Validator.check_schema({
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "properties": ad.parameters or {},
+                    "required": ad.required or [],
+                })
+                if ad.output_schema:
+                    Draft202012Validator.check_schema(ad.output_schema)
+            except Exception as exc:
+                failures.append(f"{tag} action '{aname}': invalid JSON Schema: "
+                                f"{exc}".split("\n")[0])
             risk = risk_for(name, aname, ad.risk)
             if risk not in RISK_LEVELS:
                 failures.append(f"{tag} action '{aname}': unknown risk '{risk}'")
+            # security conformance: an action whose name declares an
+            # irreversible side effect must not be classifiable with a bare
+            # confirm=true (risk 'write'). Destructive verbs require a risk
+            # level that forces a real approval_id.
+            _lname = aname.lower()
+            _destructive = any(v in _lname for v in (
+                "delete", "destroy", "revoke", "terminate", "purge", "wipe"))
+            _destructive = _destructive or _lname.startswith("remove_") \
+                or _lname.endswith("_delete")
+            if _destructive and risk == "write":
+                failures.append(
+                    f"{tag} action '{aname}': destructive name but risk "
+                    f"'write' (bare confirm=true suffices) — bump to "
+                    f"'destructive' (or another approval-gated risk)")
             # doc drift: driver action should be mentioned in SKILL.md
             if aname not in text and aname.replace("_", " ") not in text.lower():
                 warnings.append(f"{tag} action '{aname}' not mentioned in SKILL.md")

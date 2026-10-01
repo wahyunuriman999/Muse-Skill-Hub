@@ -59,6 +59,6 @@ ACTIONS = {
         {"provider": {"type": "string"}, "auth_type": {"type": "string"},
          "status": {"type": "string"}, "scopes": {"type": "array", "items": {"type": "string"}}},
         ["provider"], set_connector, write=True),
-    "remove_connector": ActionDef("Remove a connector configuration (needs confirm=true).",
+    "remove_connector": ActionDef("Remove a connector configuration (needs approval).",
         {"provider": {"type": "string"}}, ["provider"], remove_connector, write=True),
 }

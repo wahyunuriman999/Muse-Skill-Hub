@@ -46,7 +46,13 @@ class ActionDef:
     # deprecated alias for `supports_idempotency_key` (v2.0 name)
     idempotent: bool | None = None
 
+    # True when the driver explicitly passed risk=... (vs. the
+    # write/read default). The manifest generator preserves hand-tuned
+    # manifest risks for actions whose driver did not declare one.
+    risk_explicit: bool = False
+
     def __post_init__(self):
+        self.risk_explicit = bool(self.risk)
         if not self.risk:
             self.risk = "write" if self.write else "read"
         if self.risk not in RISK_LEVELS:

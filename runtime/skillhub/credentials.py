@@ -37,12 +37,15 @@ from __future__ import annotations
 import json
 import os
 import time
+from contextlib import contextmanager
 
 from . import localstore
-from .errors import CredentialsMissing, ScopeMismatch
+from .errors import (CredentialStoreCorruptError, CredentialsMissing,
+                     ScopeMismatch)
 
 VAULT_REF_PREFIX = "ref:vault:"
 _ENC_STORE = "credentials.enc"
+_LOCK_NAME = "credentials"  # localstore lock: <datadir>/credentials.lock
 
 
 def _fernet():
@@ -54,9 +57,15 @@ def _enc_path():
     return localstore.data_dir() / _ENC_STORE
 
 
-def _read_store() -> dict:
-    """Read the encrypted credential store (migrating plaintext if needed)."""
-    _migrate_plaintext()
+def _lock():
+    """The credentials lock (separate lock file; never the store itself)."""
+    from . import filelock
+    return filelock.locked(localstore.data_dir() / f"{_LOCK_NAME}.lock")
+
+
+def _read_store_nolock() -> dict:
+    """Raw read + plaintext migration. Caller MUST hold the credentials lock."""
+    _migrate_plaintext_nolock()
     path = _enc_path()
     if not path.exists():
         return {}
@@ -64,23 +73,62 @@ def _read_store() -> dict:
         raw = _fernet().decrypt(path.read_bytes())
         data = json.loads(raw.decode("utf-8"))
         return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+    except Exception as exc:
+        backup = path.with_name(
+            f"credentials.corrupt.{int(time.time())}.enc")
+        try:
+            os.replace(path, backup)
+        except OSError:
+            backup = path
+        raise CredentialStoreCorruptError(str(backup)) from exc
+
+
+def _read_store() -> dict:
+    """Read the encrypted credential store (migrating plaintext if needed).
+
+    Missing file → {}. Present but undecryptable/corrupt →
+    CredentialStoreCorruptError (fail-closed: never silently "empty").
+    """
+    with _lock():
+        return _read_store_nolock()
 
 
 def _write_store(data: dict) -> None:
+    """Crash-atomic write: tmp + fsync + os.replace. Caller holds the lock."""
     path = _enc_path()
     payload = _fernet().encrypt(
         json.dumps(data, ensure_ascii=False).encode("utf-8"))
-    path.write_bytes(payload)
+    tmp = path.with_name(f"credentials.enc.tmp.{os.getpid()}")
+    with open(tmp, "wb") as fh:
+        fh.write(payload)
+        fh.flush()
+        os.fsync(fh.fileno())
     try:
-        os.chmod(path, 0o600)
+        os.chmod(tmp, 0o600)
     except OSError:
         pass
+    os.replace(tmp, path)
 
 
-def _migrate_plaintext() -> None:
-    """One-way migration: plaintext credentials.json → encrypted store."""
+@contextmanager
+def _locked_store():
+    """Exclusive cross-process read-modify-write on the credential store.
+
+    The lock lives on a separate ``credentials.lock`` file; the store
+    itself is written crash-atomically (tmp + fsync + replace), so this
+    is atomic against both concurrency AND crashes.
+    """
+    with _lock():
+        data = _read_store_nolock()
+        yield data
+        _write_store(data)
+
+
+def _migrate_plaintext_nolock() -> None:
+    """One-way migration: plaintext credentials.json → encrypted store.
+
+    Caller MUST hold the credentials lock.
+    """
     legacy = localstore.data_dir() / "credentials.json"
     if not legacy.exists():
         return
@@ -89,7 +137,18 @@ def _migrate_plaintext() -> None:
     except Exception:
         old = {}
     if isinstance(old, dict) and old:
-        data = _read_store_no_migrate()
+        path = _enc_path()
+        data: dict = {}
+        if path.exists():
+            try:
+                raw = _fernet().decrypt(path.read_bytes())
+                parsed = json.loads(raw.decode("utf-8"))
+                data = parsed if isinstance(parsed, dict) else {}
+            except Exception:
+                # corrupt existing store → leave it for _read_store_nolock's
+                # fail-closed handling on next read; still delete legacy
+                # plaintext so no secret lingers on disk
+                pass
         for name, value in old.items():
             if isinstance(value, str) and name not in data:
                 data[name] = {"value": value, "scopes": None,
@@ -101,36 +160,22 @@ def _migrate_plaintext() -> None:
         pass
 
 
-def _read_store_no_migrate() -> dict:
-    path = _enc_path()
-    if not path.exists():
-        return {}
-    try:
-        raw = _fernet().decrypt(path.read_bytes())
-        data = json.loads(raw.decode("utf-8"))
-        return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
-
-
 def save_local(name: str, value: str, scopes: list[str] | None = None) -> None:
     """Store a credential in the encrypted local store. Prefer the vault."""
-    data = _read_store()
-    data[name] = {"value": value, "scopes": list(scopes) if scopes else None,
-                  "updated_at": int(time.time())}
-    _write_store(data)
+    with _locked_store() as data:
+        data[name] = {"value": value, "scopes": list(scopes) if scopes else None,
+                      "updated_at": int(time.time())}
 
 
 def set_scopes(name: str, scopes: list[str]) -> None:
     """Attach OAuth scopes to a stored credential name."""
-    data = _read_store()
-    rec = data.get(name) or {}
-    if isinstance(rec, str):  # tolerate legacy plain-string records
-        rec = {"value": rec}
-    rec["scopes"] = list(scopes)
-    rec["updated_at"] = int(time.time())
-    data[name] = rec
-    _write_store(data)
+    with _locked_store() as data:
+        rec = data.get(name) or {}
+        if isinstance(rec, str):  # tolerate legacy plain-string records
+            rec = {"value": rec}
+        rec["scopes"] = list(scopes)
+        rec["updated_at"] = int(time.time())
+        data[name] = rec
 
 
 def credential_scopes(name: str) -> list[str] | None:

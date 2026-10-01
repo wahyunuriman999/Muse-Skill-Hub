@@ -29,6 +29,7 @@ import time
 import uuid
 
 from . import localstore
+from .audit import redact_params
 from .errors import ApprovalExpired, ApprovalRequired, ApprovalRevoked
 
 _STORE = "approvals"
@@ -56,12 +57,16 @@ def request_approval(skill: str, action: str, params: dict,
         approvals = data.setdefault("approvals", {})
         approval_id = "apr_" + uuid.uuid4().hex[:12]
         now = int(time.time())
+        # The store NEVER keeps raw params: only the binding hash plus a
+        # redacted preview (secrets → "[redacted]"). Execution re-supplies
+        # the real params and consume() verifies them against params_hash.
+        params_preview, _ = redact_params(params or {})
         item = {
             "approval_id": approval_id,
             "skill": skill,
             "action": action,
-            "params": params or {},
             "params_hash": _params_hash(params),
+            "params_preview": params_preview,
             "risk": risk,
             "status": "pending",
             "actor": actor,

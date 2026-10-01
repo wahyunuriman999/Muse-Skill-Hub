@@ -1,6 +1,12 @@
 # ⚡ Muse Skill Hub — Executable MCP Runtime
 
-This is the **executable layer** of Muse Skill Hub. It turns the 97-skill catalog
+<!-- METRICS:START -->
+_Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
+
+**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **109 passing tests**
+<!-- METRICS:END -->
+
+This is the **executable layer** of Muse Skill Hub. It turns the skill catalog
 (`skills/*/SKILL.md`) into **real, callable MCP tools** that any MCP-compatible
 LLM client (Claude Desktop, etc.) can use plug-and-play.
 
@@ -10,14 +16,15 @@ LLM client (Claude Desktop, etc.) can use plug-and-play.
 skills/*/SKILL.md  ──catalog──▶  skillhub/registry.py  ──▶  MCP server (stdio)
                                            │
                         ┌──────────────────┴──────────────────┐
-                        │  94 real drivers (executable)          │
-                        │  3 catalog-only (honest stub)          │
+                        │  real drivers (executable)             │
+                        │  catalog-only (honest stubs)           │
                         └─────────────────────────────────────┘
 ```
 
 - **Every action is its own MCP tool** (`github_search_repositories`, …) with
-  full JSON input schemas — 210 typed tools, plus `skillhub_search_capabilities`
-  for dynamic discovery by natural-language query.
+  full JSON input schemas — typed tools, plus `skillhub_search_capabilities`
+  for dynamic discovery by natural-language query (exact counts in the metrics
+  block above).
 - Skills with a driver in `skillhub/skills/` execute **real API calls**.
 - Skills without a driver return a structured `driver_not_implemented` response
   (never a fake success) with a pointer to the driver template.
@@ -41,7 +48,8 @@ pip install -r requirements.txt
 
 # run the MCP server (stdio transport)
 python -m skillhub.server
-# → "muse-skill-hub v2.1.0: 97 skills registered, 94 with executable drivers, 210 MCP tools."
+# → "muse-skill-hub v2.2.0: 97 skills registered, 94 with executable drivers, 210 MCP tools."
+#   (exact banner line depends on the release; see the metrics block above)
 ```
 
 ### Claude Desktop

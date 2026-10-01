@@ -1,6 +1,11 @@
 """Generate skills/<name>/manifest.yaml from the registry (canonical contract).
 
 Run:  python runtime/tools/generate_manifests.py
+
+Risk preservation: the manifest is the canonical risk source and may be
+hand-tuned. The generator only overwrites a manifest risk when the driver
+declares an explicit ActionDef(risk=...); otherwise the existing manifest
+risk is kept (new actions fall back to the driver default).
 """
 from __future__ import annotations
 
@@ -36,8 +41,13 @@ def _yaml_str(value) -> str:
 
 
 def manifest_for(name, entry) -> str:
-    from skillhub.registry import _frontmatter
+    from skillhub.registry import _frontmatter, _manifest_risks
     meta, _ = _frontmatter(SKILLS_DIR / name / "SKILL.md")
+    # The manifest is the canonical risk source and may be hand-tuned
+    # (e.g. gmail.send_message → communication). Never clobber a tuned
+    # risk with a driver's non-explicit default: only an explicit
+    # ActionDef(risk=...) overrides what's already in the manifest.
+    existing_risks = _manifest_risks(name)
     lines = [
         'schema_version: "1"',
         f"name: {name}",
@@ -49,7 +59,12 @@ def manifest_for(name, entry) -> str:
         "actions:",
     ]
     for aname, ad in sorted(entry.actions.items()):
-        risk = risk_for(name, aname, ad.risk)
+        if ad.risk_explicit:
+            risk = risk_for(name, aname, ad.risk)
+        else:
+            # preserve the hand-tuned manifest risk; fall back to the
+            # driver's default only for brand-new actions
+            risk = existing_risks.get(aname) or risk_for(name, aname, ad.risk)
         approval = "required" if risk != "read" else "not_required"
         lines += [
             f"  - name: {aname}",
@@ -73,7 +88,9 @@ def manifest_for(name, entry) -> str:
 
 
 def main() -> None:
-    reg = load_registry()
+    # Bypass the manifest-risk override: manifests are GENERATED from the
+    # drivers, so driver edits (e.g. a risk bump) must propagate.
+    reg = load_registry(apply_manifest_risks=False)
     n = 0
     for name, entry in reg.items():
         path = SKILLS_DIR / name / "manifest.yaml"

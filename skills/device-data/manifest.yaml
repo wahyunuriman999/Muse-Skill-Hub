@@ -8,7 +8,7 @@ lifecycle: stable
 actions:
   - name: delete_local_copy
     type: write
-    risk: write
+    risk: destructive
     approval: required
     supports_idempotency_key: true
     required_scopes: []

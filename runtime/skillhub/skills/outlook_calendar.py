@@ -71,6 +71,6 @@ ACTIONS = {
          "end": {"type": "string"}, "timezone": {"type": "string", "default": "UTC"},
          "body": {"type": "string"}},
         ["subject", "start", "end"], create_event, write=True, required_scopes=["Calendars.ReadWrite"]),
-    "delete_event": ActionDef("Delete an event (needs confirm=true).",
-        {"event_id": {"type": "string"}}, ["event_id"], delete_event, write=True, required_scopes=["Calendars.ReadWrite"]),
+    "delete_event": ActionDef("Delete an event (needs approval: irreversible).",
+        {"event_id": {"type": "string"}}, ["event_id"], delete_event, risk="destructive", required_scopes=["Calendars.ReadWrite"]),
 }

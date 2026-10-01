@@ -41,7 +41,7 @@ actions:
     output_schema: {}
   - name: remove_agent
     type: write
-    risk: write
+    risk: destructive
     approval: required
     supports_idempotency_key: true
     required_scopes: []

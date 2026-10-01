@@ -116,7 +116,7 @@ ACTIONS = {
         {"name": {"type": "string"}}, ["name"], get_secret),
     "reveal_secret": ActionDef("Reveal a secret value explicitly (needs confirm=true; audit-logged; prefer credential_ref).",
         {"name": {"type": "string"}}, ["name"], reveal_secret, write=True, risk="sensitive"),
-    "delete_secret": ActionDef("Delete a secret (needs confirm=true).",
-        {"name": {"type": "string"}}, ["name"], delete_secret, write=True),
+    "delete_secret": ActionDef("Delete a secret (needs approval: irreversible).",
+        {"name": {"type": "string"}}, ["name"], delete_secret, risk="destructive"),
     "list_secrets": ActionDef("List secret names (never values).", {}, [], list_secrets),
 }

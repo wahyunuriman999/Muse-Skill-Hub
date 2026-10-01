@@ -6,12 +6,18 @@
 
 > An open, LLM-agnostic capability runtime for AI agents. Define capabilities once. Discover them dynamically. Execute them through typed tools. Enforce permissions at runtime. Keep failures honest. Created by Wahyu.
 
-## ⚡ Executable Runtime (v2.1.0)
+## ⚡ Executable Runtime
 
-This repo is no longer just a catalog — it ships a **real MCP server** exposing
-**210 typed tools** (every action is its own tool, e.g. `github_search_repositories`,
-with full JSON schemas — no opaque `params` blob): **94 skills backed by real,
-executable drivers**, 3 as honest catalog-only stubs (structured
+<!-- METRICS:START -->
+_Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
+
+**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **109 passing tests**
+<!-- METRICS:END -->
+
+This repo is no longer just a catalog — it ships a **real MCP server**
+exposing every action as its own typed tool (e.g. `github_search_repositories`,
+with full JSON schemas — no opaque `params` blob). Skills are backed by real,
+executable drivers; a few remain honest catalog-only stubs (structured
 `driver_not_implemented` — never fake data):
 
 ```bash
@@ -22,7 +28,7 @@ cd runtime && pip install -r requirements.txt && python -m skillhub.server
   - *Third-party APIs* (62): `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`, `gmail`, `google-calendar`, `google-sheets`, `google-drive`, `spotify`, `instagram`, `meta-threads`, `threads`, `facebook`, `dropbox`, `ticketmaster`, `image-search`, `flightaware`, `box`, `calendly`, `canva`, `duffel`, `figma`, `ghl`, `klaviyo`, `meta-ads`, `plaid` (sandbox), `printify`, `quickbooks`, `tts`, `voice-design`, `voice-selector`, `voice-calls`, `zapier`, `outlook-calendar`, `outlook-mail`, `outlook-contacts`, `google-contacts`, `google-docs`, `google-forms`, `google-slides`, `google-tasks`, `messenger`, `instagram-messages`, `threads-messages`, `withings`, `tailscale`, `tessie`, `peloton`, `philips-hue`, `podcast`, `shopping`, `wide-research`, `social-content-performance`, `evernote`, `healthex` (MCP passthrough), `granola`, `generate_podcast` (needs ElevenLabs key for TTS)
   - *Local reference implementations* (32): `secure-vault` (encrypted), `permission-model`, `personal-feed`, `idea-management`, `goals`, `share-ideas`, `agent-library`, `connector-management`, `paired-devices`, `data-control`, `messaging-channels`, `wallet`, `apple-healthkit` + `google-health-connect` (local export readers), `device-data`, `media-library`, `forget`, `self-awareness`, `skill-creator`, `function-health`, `travel-planning`, `muse_db` (SQLite), `muse-feedback`, `subscription-status`, `wearable-device-skills`, `wearables-comms`, `booking` (router), `opentable` (deep links), `facebook-cli` (passthrough), `magic-moment` (local ffmpeg)
   - *Catalog-only stubs* (3): `lovable`, `muse-early-access`, `replit` — no public API exists (or it is an internal-only program); documented honestly instead of faked, with workarounds where one exists
-- **210 MCP tools** (per-action, fully typed) + `skillhub_search_capabilities` for dynamic capability discovery
+- **MCP tools** (per-action, fully typed) + `skillhub_search_capabilities` for dynamic capability discovery (counts in the metrics block above)
 - **Approval engine** — write actions need approval; `sensitive`/`destructive`/`communication`/`financial`/`account`/`device` risks require a real `approval_id` (bound to exact skill/action/params, single-use, 10-min TTL). Bare `confirm=true` only suffices for plain `write` risk
 - **Policy engine** — risk-based allow/approval_required/deny with per-action classification and custom policy files
 - **Audit log** — every execution recorded (request_id, actor, risk, params hash, approval_id, duration); secrets never logged raw; query via `function-health query_audit_log`
@@ -30,7 +36,19 @@ cd runtime && pip install -r requirements.txt && python -m skillhub.server
 - **Credential manager** — env → local file → encrypted vault; `ref:vault:<name>` references resolve server-side so secret values never reach the LLM
 - **Hardened HTTP layer** — persistent connection pooling, retry with exponential backoff + `Retry-After`, `X-Request-ID` correlation, structured 429/5xx mapping
 - **Skill manifests** — `skills/<name>/manifest.yaml` is the machine-readable contract; `skillhub validate` runs the conformance test (schemas, risk, auth, manifest/driver/SKILL.md drift, secret scan)
-- **67 passing tests**, including live `api.github.com` calls, an end-to-end MCP stdio session with per-action tools, approval-lifecycle/idempotency/audit/security tests, and credential-error coverage for every API driver
+- **Passing tests** (count in the metrics block above), including live `api.github.com` calls, an end-to-end MCP stdio session with per-action tools, approval-lifecycle/idempotency/audit/security tests, and credential-error coverage for every API driver
+
+### What's new in v2.2.0 (concurrency + crash hardening)
+
+- **Cross-platform file locking** — new `skillhub.filelock` module (`fcntl` on Unix, `msvcrt` on Windows); no more top-level `import fcntl`, so the runtime imports cleanly on Windows
+- **Crash-atomic stores** — every read-modify-write cycle (`locked_json`, credential store) now holds a *separate* `<name>.lock` file and writes back via tmp + fsync + `os.replace`: atomic against concurrency *and* crashes
+- **OAuth single-flight refresh** — the check → refresh → persist cycle runs under the store lock with double-checked expiry; 20 concurrent workers on an expired token produce exactly 1 refresh request
+- **Fail-closed credential store** — a corrupt/undecryptable `credentials.enc` raises `CredentialStoreCorruptError` (with a `.corrupt` backup) instead of silently looking like "no credentials"
+- **Approval privacy** — the approval store no longer persists raw params; only `params_hash` + a redacted preview. Execution re-supplies params and `consume()` verifies them against the hash
+- **Real JSON Schema** — validation now runs on the standard `jsonschema` library (Draft 2020-12, full vocabulary: `$ref`, `if`/`then`/`else`, `dependentRequired`, …) with format checking; `skillhub validate` lints every action schema
+- **Declared dependencies** — `cryptography` and `jsonschema` are now official dependencies (they were already required at runtime)
+- **Generated README metrics** — `runtime/tools/sync_readme.py` regenerates the metrics block from the registry + test suite; a test fails if the README drifts
+- **Multi-process race tests** — approval consumption and idempotency reservation are now proven with 20 *processes* (not just threads), matching the documented guarantee
 
 ### What's new in v2.1.0 (security hardening)
 
@@ -38,7 +56,7 @@ cd runtime && pip install -r requirements.txt && python -m skillhub.server
 - **Atomic idempotency** — `PENDING → SUCCEEDED | FAILED → CONFLICT` reservation happens *before* side effects; concurrent duplicates see `pending` and never re-execute; failed records allow exactly one reclaim
 - **Honest naming** — `idempotent` renamed to `supports_idempotency_key`: the runtime supports dedup keys, it does not claim mathematical idempotence of the underlying API
 - **Output contracts** — handler results are validated against each action's `output_schema` before success is committed; violations never get cached
-- **Full JSON-Schema validation** — recursive `type/enum/const/pattern/format/items/properties/oneOf/anyOf/allOf/not`, strict by default (unknown params rejected, like MCP's `additionalProperties: false`)
+- **Real JSON-Schema validation** (v2.2.0: standard `jsonschema` library, Draft 2020-12) — strict by default (unknown params rejected, like MCP's `additionalProperties: false`)
 - **Credential scopes** — actions declare `required_scopes` (Gmail/Outlook/Google Workspace drivers); mismatches are blocked, unknown scopes are allowed but marked `unverified` in audit
 - **Encrypted credential store** — local credentials now live in an encrypted `credentials.enc` (Fernet, secure-vault key); the old plaintext fallback is gone, legacy files are migrated and deleted
 - **OAuth refresh manager** — encrypted access/refresh tokens with auto-refresh before expiry and rotation persistence
@@ -47,7 +65,7 @@ cd runtime && pip install -r requirements.txt && python -m skillhub.server
 - **Provider mock harness** — `SKILLHUB_MOCK=1` routes `api_request` to canned responders; mock contract tests for GitHub and Stripe assert request shapes and auth flow without network
 - **SQL hardening** — `muse_db` strips comments/strings before keyword scanning, runs reads on a read-only SQLite connection, and enforces single statements
 - **Zero doc warnings** — all 178 missing action docs generated; `skillhub validate` passes clean
-- **91 passing tests** (was 67), including 20-thread concurrency races, scope mismatches, encrypted-store migration, OAuth refresh, audit tampering, and provider contracts
+- **Passing tests** (count in the metrics block above; was 67 in v1.5.0), including 20-thread concurrency races, scope mismatches, encrypted-store migration, OAuth refresh, audit tampering, and provider contracts
 
 **Security model (honest):** this is a trusted, local, single-user MCP runtime. Encryption protects against casual disk exposure, not against malware or same-user attackers. `actor` is a local session label, not authentication. Multi-user tenant isolation, distributed exactly-once, and workflow/saga engines remain out of scope (see `specs/`).
 

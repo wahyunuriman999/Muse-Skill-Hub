@@ -56,6 +56,6 @@ ACTIONS = {
         [], get_contacts),
     "get_calendar": ActionDef("Read cached calendar events.",
         {"limit": {"type": "integer", "default": 50}}, [], get_calendar),
-    "delete_local_copy": ActionDef("Delete the local copy (needs confirm=true).",
-        {}, [], delete_local_copy, write=True),
+    "delete_local_copy": ActionDef("Delete the local copy (needs approval: irreversible).",
+        {}, [], delete_local_copy, risk="destructive"),
 }

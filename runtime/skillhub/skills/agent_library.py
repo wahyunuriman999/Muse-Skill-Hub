@@ -60,6 +60,6 @@ ACTIONS = {
     "list_agents": ActionDef("List registered agents.", {}, [], list_agents),
     "get_agent": ActionDef("Describe one agent.",
         {"name": {"type": "string"}}, ["name"], get_agent),
-    "remove_agent": ActionDef("Remove an agent (needs confirm=true).",
-        {"name": {"type": "string"}}, ["name"], remove_agent, write=True),
+    "remove_agent": ActionDef("Remove an agent (needs approval: irreversible).",
+        {"name": {"type": "string"}}, ["name"], remove_agent, risk="destructive"),
 }
