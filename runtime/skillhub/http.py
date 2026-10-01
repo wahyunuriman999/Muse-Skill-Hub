@@ -2,7 +2,9 @@
 
 - One persistent ``httpx.AsyncClient`` (connection pooling, fewer TLS
   handshakes) instead of a new client per request.
-- Retry with exponential backoff + ``Retry-After`` on 429/5xx.
+- Retry: 429 for any method (honors ``Retry-After``); 5xx only for safe
+  methods (GET/HEAD/OPTIONS). Mutation 5xx is never retried — it raises
+  ``UpstreamUnavailable`` instead of risking a duplicate side effect.
 - ``X-Request-ID`` correlation header on every request.
 - Provider error mapping: 401/403 → AuthExpired, 404 → NotFound,
   429 → RateLimited (retryable, with retry_after), 5xx → UpstreamUnavailable.
@@ -68,10 +70,13 @@ def _retryable(method: str, status: int, attempt: int) -> bool:
     if attempt >= _MAX_RETRIES:
         return False
     if status == 429:
+        # 429 is safe to retry for any method: the server explicitly says
+        # "not now", and Retry-After tells us when.
         return True
+    # 5xx is retried ONLY for safe methods. Retrying a mutation (POST/PUT/
+    # PATCH/DELETE) that already failed server-side risks executing the
+    # side effect twice; a mutation 5xx surfaces as UpstreamUnavailable.
     if status >= 500 and method.upper() in ("GET", "HEAD", "OPTIONS"):
-        return True
-    if status in (502, 503, 504):  # gateway-ish: safe to retry once
         return True
     return False
 
@@ -90,13 +95,11 @@ def _raise_for_status(skill: str, resp: httpx.Response, url: str,
     code = resp.status_code
     if code in (401, 403):
         raise AuthExpired(
-            f"Authentication failed for '{skill}' (HTTP {code}). "
-            "Check that your API token is valid and has the required scopes.",
-            skill=skill, action=action,
-            internal=f"HTTP {code} {url} :: {resp.text[:300]}")
+            skill,
+            f"HTTP {code} {url} :: {resp.text[:300]}",
+            action=action)
     if code == 404:
-        raise NotFound(f"Resource not found in '{skill}' (HTTP 404).",
-                       skill=skill, action=action, internal=f"404 {url}")
+        raise NotFound(skill, f"404 {url}", action=action)
     if code == 429:
         retry_after = resp.headers.get("retry-after")
         try:
@@ -106,8 +109,8 @@ def _raise_for_status(skill: str, resp: httpx.Response, url: str,
         raise RateLimited(skill, retry_after=ra, action=action)
     if code >= 500:
         raise UpstreamUnavailable(
-            f"Upstream for '{skill}' is unavailable (HTTP {code}).",
-            skill=skill, action=action, internal=resp.text[:300])
+            skill, f"HTTP {code} {url} :: {resp.text[:300]}",
+            action=action)
     if code >= 400:
         detail = resp.text[:500]
         try:
