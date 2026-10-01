@@ -3,7 +3,7 @@
 Every skill directory with a SKILL.md becomes one MCP tool. Skills with a
 driver module in skillhub.skills get real executable actions; the rest are
 registered honestly as catalog-only (driver_not_implemented) so the tool
-surface is complete and LLM clients can discover all 87 skills.
+surface is complete and LLM clients can discover all 97 skills.
 """
 from __future__ import annotations
 
@@ -19,6 +19,9 @@ from .errors import ConfirmationRequired, DriverNotImplemented, SkillError
 # skill name -> python module name when they differ
 MODULE_OVERRIDES = {
     "places-search": "places_search",
+    # "threads" and "meta-threads" are the same Threads account skill;
+    # both names share the real driver.
+    "threads": "meta_threads",
 }
 
 CATALOG_DIR = Path(__file__).resolve().parent.parent.parent / "skills"

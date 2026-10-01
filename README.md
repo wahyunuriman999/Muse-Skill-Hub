@@ -6,22 +6,25 @@
 
 > A catalog of Muse's capabilities — built so other AIs & LLMs can understand Muse's capability patterns. Created by Wahyu.
 
-## ⚡ Executable Runtime (v1.3.0)
+## ⚡ Executable Runtime (v1.4.0)
 
 This repo is no longer just a blueprint — it ships a **real MCP server** that
-exposes all **97 skills as MCP tools**: 23 backed by real, executable API
-drivers, 74 as honest catalog-only stubs (they return a structured
+exposes all **97 skills as MCP tools**: **92 backed by real, executable drivers**,
+5 as honest catalog-only stubs (they return a structured
 `driver_not_implemented` response — never fake data):
 
 ```bash
 cd runtime && pip install -r requirements.txt && python -m skillhub.server
 ```
 
-- **23 real API drivers**: `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`, `gmail`, `google-calendar`, `google-sheets`, `google-drive`, `spotify`, `instagram`, `meta-threads`, `facebook`, `dropbox`, `ticketmaster`, `image-search`, `flightaware`
+- **92 real drivers** across three kinds:
+  - *Third-party APIs* (60): `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`, `gmail`, `google-calendar`, `google-sheets`, `google-drive`, `spotify`, `instagram`, `meta-threads`, `threads`, `facebook`, `dropbox`, `ticketmaster`, `image-search`, `flightaware`, `box`, `calendly`, `canva`, `duffel`, `figma`, `ghl`, `klaviyo`, `meta-ads`, `plaid` (sandbox), `printify`, `quickbooks`, `tts`, `voice-design`, `voice-selector`, `voice-calls`, `zapier`, `outlook-calendar`, `outlook-mail`, `outlook-contacts`, `google-contacts`, `google-docs`, `google-forms`, `google-slides`, `google-tasks`, `messenger`, `instagram-messages`, `threads-messages`, `withings`, `tailscale`, `tessie`, `peloton`, `philips-hue`, `podcast`, `shopping`, `wide-research`, `social-content-performance`, `evernote`, `healthex` (MCP passthrough)
+  - *Local reference implementations* (30): `secure-vault` (encrypted), `permission-model`, `personal-feed`, `idea-management`, `goals`, `share-ideas`, `agent-library`, `connector-management`, `paired-devices`, `data-control`, `messaging-channels`, `wallet`, `apple-healthkit` + `google-health-connect` (local export readers), `device-data`, `media-library`, `forget`, `self-awareness`, `skill-creator`, `function-health`, `travel-planning`, `muse_db` (SQLite), `muse-feedback`, `subscription-status`, `wearable-device-skills`, `wearables-comms`, `generate_podcast`, `booking` (router), `opentable` (deep links), `facebook-cli` (passthrough)
+  - *Catalog-only stubs* (5): `granola`, `lovable`, `magic-moment`, `muse-early-access`, `replit` — no public API exists (or it is an internal-only pipeline); documented honestly instead of faked
 - **97 MCP tools** registered (Claude Desktop compatible, stdio transport)
 - **Read/write isolation enforced in code** — write actions need `confirm=true`
 - **Honest errors** — missing credentials return setup instructions, never fake data
-- **21 passing tests**, including a live `api.github.com` call, an end-to-end MCP stdio session, and mocked request-construction tests for every new driver
+- **41 passing tests**, including a live `api.github.com` call, a live iTunes podcast search, an end-to-end MCP stdio session, credential-error coverage for every API driver, and local round-trip tests for every reference driver
 
 See [`runtime/README.md`](runtime/README.md) for setup, driver docs, and how to add your own driver.
 

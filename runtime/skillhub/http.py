@@ -73,3 +73,31 @@ async def api_request(
         return resp.json()
     except Exception:
         return {"raw": resp.text[:2000]}
+
+
+async def raw_request(
+    skill: str,
+    method: str,
+    url: str,
+    *,
+    headers: dict | None = None,
+    params: dict | None = None,
+    json: dict | None = None,
+    data: dict | None = None,
+    timeout: float = _DEFAULT_TIMEOUT,
+) -> bytes:
+    """Perform an HTTP request and return raw bytes (for audio/image payloads).
+
+    Raises UpstreamError on non-2xx responses, same as api_request.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=timeout, proxy=_proxy()) as client:
+            resp = await client.request(
+                method, url, headers=headers, params=params, json=json, data=data
+            )
+    except httpx.HTTPError as exc:
+        raise UpstreamError(skill, f"network failure: {exc}") from exc
+
+    if resp.status_code >= 400:
+        raise UpstreamError(skill, f"HTTP {resp.status_code}: {resp.text[:500]}")
+    return resp.content

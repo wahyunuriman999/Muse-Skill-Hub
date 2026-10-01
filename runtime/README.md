@@ -1,6 +1,6 @@
 # ⚡ Muse Skill Hub — Executable MCP Runtime
 
-This is the **executable layer** of Muse Skill Hub. It turns the 87-skill catalog
+This is the **executable layer** of Muse Skill Hub. It turns the 97-skill catalog
 (`skills/*/SKILL.md`) into **real, callable MCP tools** that any MCP-compatible
 LLM client (Claude Desktop, etc.) can use plug-and-play.
 
@@ -10,12 +10,12 @@ LLM client (Claude Desktop, etc.) can use plug-and-play.
 skills/*/SKILL.md  ──catalog──▶  skillhub/registry.py  ──▶  MCP server (stdio)
                                            │
                         ┌──────────────────┴──────────────────┐
-                        │  23 real API drivers (executable)    │
-                        │  76 catalog-only (honest stub)       │
+                        │  92 real drivers (executable)          │
+                        │  5 catalog-only (honest stub)          │
                         └─────────────────────────────────────┘
 ```
 
-- **Every one of the 87 skills is registered as an MCP tool** — full discovery.
+- **Every one of the 97 skills is registered as an MCP tool** — full discovery.
 - Skills with a driver in `skillhub/skills/` execute **real API calls**.
 - Skills without a driver return a structured `driver_not_implemented` response
   (never a fake success) with a pointer to the driver template.
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 # run the MCP server (stdio transport)
 python -m skillhub.server
-# → "muse-skill-hub: 97 skills registered, 23 with executable drivers."
+# → "muse-skill-hub: 97 skills registered, 92 with executable drivers."
 ```
 
 ### Claude Desktop
@@ -59,29 +59,100 @@ Add to `claude_desktop_config.json`:
 
 | Skill | Actions | Credentials |
 |---|---|---|
-| `github` | search_repositories, get_repository, list_issues, create_issue | `GITHUB_TOKEN` (optional for reads) |
-| `slack` | list_channels, read_channel, send_message | `SLACK_BOT_TOKEN` |
-| `stripe` | list_customers, list_invoices, create_payment_link | `STRIPE_SECRET_KEY` |
-| `shopify` | list_products, list_orders | `SHOPIFY_STORE`, `SHOPIFY_ADMIN_TOKEN` |
-| `linear` | list_issues, create_issue | `LINEAR_API_KEY` |
-| `vercel` | list_projects, list_deployments | `VERCEL_TOKEN` |
+| `agent-library` | register_agent, list_agents, get_agent, remove_agent | — |
+| `apple-healthkit` | get_daily_metrics, get_sleep, get_workouts | — |
 | `asana` | list_tasks, create_task | `ASANA_ACCESS_TOKEN` |
-| `notion` | search, query_database | `NOTION_TOKEN` |
-| `todoist` | list_tasks, create_task | `TODOIST_API_TOKEN` |
-| `places-search` | search_places | `GOOGLE_MAPS_API_KEY` |
-| `zoom` | list_meetings, create_meeting | `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ZOOM_ACCOUNT_ID` |
-| `gmail` | list_messages, get_message, send_message | `GOOGLE_OAUTH_TOKEN` |
-| `google-calendar` | list_events, create_event | `GOOGLE_OAUTH_TOKEN` |
-| `google-sheets` | read_range, append_row | `GOOGLE_OAUTH_TOKEN` |
-| `google-drive` | list_files, search_files | `GOOGLE_OAUTH_TOKEN` |
-| `spotify` | search, get_playlists, play, pause | `SPOTIFY_ACCESS_TOKEN` |
-| `instagram` | get_profile, get_media | `INSTAGRAM_ACCESS_TOKEN` |
-| `meta-threads` | get_profile, post_text | `THREADS_ACCESS_TOKEN` |
-| `facebook` | get_profile, get_posts, post_to_feed | `FACEBOOK_ACCESS_TOKEN` |
+| `booking` | search_flights, search_events, hotel_search_link, restaurant_search_link | — |
+| `box` | list_folder, search, get_file_info | `BOX_ACCESS_TOKEN` |
+| `calendly` | list_event_types, list_events | `CALENDLY_API_TOKEN` |
+| `canva` | list_designs, get_design | `CANVA_ACCESS_TOKEN` |
+| `connector-management` | list_connectors, get_connector, set_connector, remove_connector | — |
+| `data-control` | explain_collection, export_data, delete_data | — |
+| `device-data` | import_snapshot, get_contacts, get_calendar, delete_local_copy | — |
 | `dropbox` | list_folder, get_metadata | `DROPBOX_ACCESS_TOKEN` |
-| `ticketmaster` | search_events | `TICKETMASTER_API_KEY` |
-| `image-search` | search_images | `SERPER_API_KEY` |
+| `duffel` | search_offers, create_order | `DUFFEL_ACCESS_TOKEN` |
+| `evernote` | list_notebooks, list_notes | `EVERNOTE_DEV_TOKEN` |
+| `facebook` | get_profile, get_posts, post_to_feed | `FACEBOOK_ACCESS_TOKEN` |
+| `facebook-cli` | run_command | — |
+| `figma` | get_file, export_image | `FIGMA_ACCESS_TOKEN` |
 | `flightaware` | flight_status | `FLIGHTAWARE_API_KEY` |
+| `forget` | remember_fact, list_facts, forget_fact | — |
+| `function-health` | runtime_health | — |
+| `generate_podcast` | compose_episode | `ELEVENLABS_API_KEY` |
+| `ghl` | list_contacts, get_contact, create_contact | `GHL_API_KEY` |
+| `github` | search_repositories, get_repository, list_issues, create_issue | — |
+| `gmail` | list_messages, get_message, send_message | `GOOGLE_OAUTH_TOKEN` |
+| `goals` | create_goal, list_goals, log_progress, complete_goal | — |
+| `google-calendar` | list_events, create_event | `GOOGLE_OAUTH_TOKEN` |
+| `google-contacts` | list_contacts, create_contact | `GOOGLE_OAUTH_TOKEN` |
+| `google-docs` | get_document, create_document | `GOOGLE_OAUTH_TOKEN` |
+| `google-drive` | list_files, search_files | `GOOGLE_OAUTH_TOKEN` |
+| `google-forms` | create_form, get_responses | `GOOGLE_OAUTH_TOKEN` |
+| `google-health-connect` | get_daily_metrics, get_sleep, get_workouts | — |
+| `google-sheets` | read_range, append_row | `GOOGLE_OAUTH_TOKEN` |
+| `google-slides` | get_presentation, create_presentation | `GOOGLE_OAUTH_TOKEN` |
+| `google-tasks` | list_task_lists, list_tasks, create_task, complete_task | `GOOGLE_OAUTH_TOKEN` |
+| `healthex` | list_tools, call_tool | `HEALTHEX_AUTH_TOKEN` |
+| `idea-management` | add_idea, list_ideas, dismiss_idea | — |
+| `image-search` | search_images | `SERPER_API_KEY` |
+| `instagram` | get_profile, get_media | `INSTAGRAM_ACCESS_TOKEN` |
+| `instagram-messages` | list_conversations, send_message | `INSTAGRAM_PAGE_TOKEN` |
+| `klaviyo` | list_lists, list_campaigns | `KLAVIYO_API_KEY` |
+| `linear` | list_issues, create_issue | `LINEAR_API_KEY` |
+| `media-library` | list_photos, search_photos | — |
+| `messaging-channels` | register_channel, list_channels, send_message | — |
+| `messenger` | list_conversations, send_message | `MESSENGER_PAGE_TOKEN` |
+| `meta-ads` | list_ad_accounts, list_campaigns | `META_ADS_ACCESS_TOKEN` |
+| `meta-threads` | get_profile, post_text | `THREADS_ACCESS_TOKEN` |
+| `muse-feedback` | submit_feedback, list_feedback | — |
+| `muse_db` | list_tables, query, execute_write | — |
+| `notion` | search, query_database | `NOTION_TOKEN` |
+| `opentable` | search_restaurants, reservation_link | — |
+| `outlook-calendar` | list_events, create_event, delete_event | `MICROSOFT_ACCESS_TOKEN` |
+| `outlook-contacts` | list_contacts, create_contact | `MICROSOFT_ACCESS_TOKEN` |
+| `outlook-mail` | list_messages, send_mail | `MICROSOFT_ACCESS_TOKEN` |
+| `paired-devices` | register_device, list_devices, unpair_device | — |
+| `peloton` | list_workouts | `PELOTON_USERNAME`, `PELOTON_PASSWORD` |
+| `permission-model` | request_approval, list_pending, approve, deny | — |
+| `personal-feed` | publish_post, list_posts | — |
+| `philips-hue` | list_lights, set_light | `HUE_BRIDGE_IP`, `HUE_USERNAME` |
+| `places-search` | search_places | `GOOGLE_MAPS_API_KEY` |
+| `plaid` | sandbox_connect, get_balances | `PLAID_CLIENT_ID`, `PLAID_SECRET` |
+| `podcast` | search_podcasts, search_episodes | — |
+| `printify` | list_shops, list_products | `PRINTIFY_API_TOKEN` |
+| `quickbooks` | list_customers, run_query | `QUICKBOOKS_ACCESS_TOKEN`, `QUICKBOOKS_REALM_ID` |
+| `secure-vault` | store_secret, get_secret, delete_secret, list_secrets | — |
+| `self-awareness` | get_runtime_info, describe_skill | — |
+| `share-ideas` | publish_idea | — |
+| `shopify` | list_products, list_orders | `SHOPIFY_STORE`, `SHOPIFY_ADMIN_TOKEN` |
+| `shopping` | search_products | `SERPER_API_KEY` |
+| `skill-creator` | scaffold_skill | — |
+| `slack` | list_channels, read_channel, send_message | `SLACK_BOT_TOKEN` |
+| `social-content-performance` | account_insights, media_insights | `INSTAGRAM_ACCESS_TOKEN` |
+| `spotify` | search, get_playlists, play, pause | `SPOTIFY_ACCESS_TOKEN` |
+| `stripe` | list_customers, list_invoices, create_payment_link | `STRIPE_SECRET_KEY` |
+| `subscription-status` | get_status | — |
+| `tailscale` | list_devices | `TAILSCALE_API_KEY`, `TAILSCALE_TAILNET` |
+| `tessie` | list_vehicles, get_state | `TESSIE_API_TOKEN` |
+| `threads` | get_profile, post_text | `THREADS_ACCESS_TOKEN` |
+| `threads-messages` | list_replies, get_conversation | `THREADS_ACCESS_TOKEN` |
+| `ticketmaster` | search_events | `TICKETMASTER_API_KEY` |
+| `todoist` | list_tasks, create_task | `TODOIST_API_TOKEN` |
+| `travel-planning` | build_itinerary | — |
+| `tts` | synthesize, list_voices | `ELEVENLABS_API_KEY` |
+| `vercel` | list_projects, list_deployments | `VERCEL_TOKEN` |
+| `voice-calls` | list_calls, make_call | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` |
+| `voice-design` | design_voice | `ELEVENLABS_API_KEY` |
+| `voice-selector` | list_voices | `ELEVENLABS_API_KEY` |
+| `wallet` | get_state, connect, add_payment_method, list_payment_methods | — |
+| `wearable-device-skills` | discover | — |
+| `wearables-comms` | queue_notification, list_outbox | — |
+| `wide-research` | research | `SERPER_API_KEY` |
+| `withings` | get_body_measures | `WITHINGS_ACCESS_TOKEN` |
+| `zapier` | trigger_zap | `ZAPIER_WEBHOOK_URL` |
+| `zoom` | list_meetings, create_meeting | `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET`, `ZOOM_ACCOUNT_ID` |
+
+**92 implemented drivers.** Catalog-only stubs (5): `granola`, `lovable`, `magic-moment`, `muse-early-access`, `replit` — no public API exists, so they return an honest `driver_not_implemented` error instead of fake data.
 
 Each driver module documents its own setup steps in `SETUP_HELP`.
 
@@ -112,11 +183,11 @@ pytest tests/ -v
 ```
 
 What the suite proves:
-1. All **87 skills** load from the catalog with valid MCP tool schemas.
+1. All **97 skills** load from the catalog with valid MCP tool schemas.
 2. `github.search_repositories` performs a **live** `api.github.com` call.
 3. Missing credentials → structured `credentials_missing` (honest, never fake).
 4. Write without `confirm=true` → `confirmation_required` (isolation enforced).
-5. Full MCP server boots over **stdio**, serves 87 tools, executes a live call.
+5. Full MCP server boots over **stdio**, serves 97 tools, executes a live call.
 
 ## Adding a driver
 
