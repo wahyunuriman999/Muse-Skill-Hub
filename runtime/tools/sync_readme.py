@@ -77,14 +77,26 @@ def _replace_block(text: str, block: str) -> str:
     return pattern.sub(lambda _: block, text, count=1)
 
 
+def render(path: Path, meta: dict, n_tests: int) -> str | None:
+    """Return the synced file text, or None when already in sync.
+
+    Pure: never writes. ``--check`` mode uses this so a check run cannot
+    dirty the working tree as a side effect.
+    """
+    text = path.read_text(encoding="utf-8")
+    if "<!-- METRICS:START -->" not in text:
+        return None
+    new = _replace_block(text, metrics_block(meta, n_tests))
+    return new if new != text else None
+
+
 def sync(path: Path, meta: dict, n_tests: int) -> bool:
     """Rewrite the metrics block. Returns True when the file changed."""
-    text = path.read_text(encoding="utf-8")
-    new = _replace_block(text, metrics_block(meta, n_tests))
-    if new != text:
-        path.write_text(new, encoding="utf-8")
-        return True
-    return False
+    new = render(path, meta, n_tests)
+    if new is None:
+        return False
+    path.write_text(new, encoding="utf-8")
+    return True
 
 
 def main() -> int:
@@ -98,13 +110,17 @@ def main() -> int:
         if "<!-- METRICS:START -->" not in path.read_text(encoding="utf-8"):
             print(f"SKIP {path}: no METRICS block (add markers first)")
             continue
-        if sync(path, meta, n_tests):
-            changed.append(str(path))
+        new = render(path, meta, n_tests)
+        if new is None:
+            continue
+        changed.append(str(path))
+        if check:
+            continue  # report only: never write in check mode
+        path.write_text(new, encoding="utf-8")
+        print("updated", path)
     if check and changed:
         print("OUT OF SYNC:", ", ".join(changed))
         return 1
-    for c in changed:
-        print("updated", c)
     if not changed:
         print("already in sync")
     return 0
