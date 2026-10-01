@@ -502,7 +502,7 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
         if verdict == "approval_required":
             if approval_id:
                 approval.consume(approval_id, entry.name, action, params,
-                                 actor=actor)
+                                 risk, actor=actor)
                 approval_used = approval_id
             elif confirm and risk == "write":
                 pass  # legacy simple confirmation for plain writes

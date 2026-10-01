@@ -107,7 +107,7 @@ def _consume_worker(aid, q):
     from skillhub import approval as ap
     from skillhub.errors import ApprovalRevoked
     try:
-        ap.consume(aid, "s", "a", {"x": 1}, actor="local-user")
+        ap.consume(aid, "s", "a", {"x": 1}, "write", actor="local-user")
         q.put("win")
     except ApprovalRevoked:
         q.put("loss")
@@ -278,7 +278,7 @@ def test_approval_store_does_not_persist_raw_params(local_dir):
     consumed = approval.consume(item["approval_id"], "gmail", "send_message",
                                 {"to": "a@b.c", "subject": "hi",
                                  "body": "super secret body",
-                                 "password": "hunter2"})
+                                 "password": "hunter2"}, "communication")
     assert consumed["status"] == "consumed"
 
 

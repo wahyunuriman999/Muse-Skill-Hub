@@ -19,11 +19,28 @@ SETUP_HELP = LOCAL_NOTE
 
 
 async def request_approval(params: dict) -> dict:
+    skill = params.get("skill", "")
+    action = params["action"]
+    # The human approver must see the TRUE risk tier, not whatever label
+    # the caller supplied: resolve the registry-canonical risk for known
+    # skill/actions. A caller-supplied downgrade ("write" for a destructive
+    # action) is ignored here AND would fail closed at consume() time.
+    declared = params.get("risk", "write")
+    canonical = declared
+    try:
+        from .. import registry as _registry
+        from ..policy import risk_for as _risk_for
+        reg = _registry.load_registry()
+        entry = reg.get(skill)
+        if entry is not None and action in entry.actions:
+            canonical = _risk_for(skill, action, entry.actions[action].risk)
+    except Exception:
+        canonical = declared
     item = approval_engine.request_approval(
-        skill=params.get("skill", ""),
-        action=params["action"],
+        skill=skill,
+        action=action,
         params=params.get("params", {}) or {},
-        risk=params.get("risk", "write"),
+        risk=canonical,
         ttl_s=int(params.get("ttl_s", 600)),
     )
     return {"status": "ok", "approval": item,

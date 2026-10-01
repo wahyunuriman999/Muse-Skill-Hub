@@ -76,19 +76,19 @@ def test_approval_full_lifecycle(local_dir):
     assert aid.startswith("apr_")
     # cannot consume while pending
     with pytest.raises(ApprovalRequired):
-        approval.consume(aid, "demo", "act", {"a": 1})
+        approval.consume(aid, "demo", "act", {"a": 1}, "financial")
     approval.approve(aid)
-    approval.consume(aid, "demo", "act", {"a": 1})
+    approval.consume(aid, "demo", "act", {"a": 1}, "financial")
     # single-use: second consume fails
     with pytest.raises(ApprovalRevoked):
-        approval.consume(aid, "demo", "act", {"a": 1})
+        approval.consume(aid, "demo", "act", {"a": 1}, "financial")
 
 
 def test_approval_binds_params(local_dir):
     item = approval.request_approval("demo", "act", {"a": 1})
     approval.approve(item["approval_id"])
     with pytest.raises(ApprovalRevoked):  # tampered params
-        approval.consume(item["approval_id"], "demo", "act", {"a": 2})
+        approval.consume(item["approval_id"], "demo", "act", {"a": 2}, "write")
 
 
 def test_approval_expires(local_dir):

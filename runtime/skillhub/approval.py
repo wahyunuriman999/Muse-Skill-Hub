@@ -118,13 +118,19 @@ def deny(approval_id: str, approver: str = "local-user") -> dict:
 
 
 def consume(approval_id: str, skill: str, action: str, params: dict,
-            actor: str = "local-user") -> dict:
+            risk: str, actor: str = "local-user") -> dict:
     """Atomically validate and single-use consume an approval.
 
-    The status check and the ``approved → consumed`` write happen inside
-    one file-locked critical section, so concurrent processes cannot both
-    observe ``approved`` and both execute. Also binds the executing actor:
-    the principal consuming the approval must be the one that requested it.
+    The approval is bound to the full tuple
+    ``(skill, action, params_hash, risk, actor)`` — every element is
+    verified inside one file-locked critical section, and the status check
+    plus the ``approved → consumed`` write happen atomically, so concurrent
+    processes cannot both observe ``approved`` and both execute.
+
+    ``risk`` is the registry-canonical risk of the action at consume time.
+    A mismatch fails closed: an approval requested (or labelled) as
+    ``"write"`` can never bless a ``"destructive"`` execution, and a
+    caller cannot smuggle a lower risk label past the human approver.
     Raises on any mismatch.
     """
     with localstore.locked_json(_STORE, {"approvals": {}}) as data:
@@ -157,6 +163,13 @@ def consume(approval_id: str, skill: str, action: str, params: dict,
                 item["params_hash"] != _params_hash(params):
             raise ApprovalRevoked(
                 f"Approval '{approval_id}' does not match this skill/action/parameters.")
+        # risk binding: the approval was granted for a specific risk tier.
+        # A "write"-labelled approval can never bless a "destructive"
+        # execution (or vice versa) — fail closed on any mismatch.
+        if item.get("risk", "write") != risk:
+            raise ApprovalRevoked(
+                f"Approval '{approval_id}' was granted for risk "
+                f"'{item.get('risk')}', not '{risk}'.")
         item["status"] = "consumed"
         item["consumed_at"] = now
         return dict(item)

@@ -57,7 +57,7 @@ def test_approval_consume_is_atomic_under_concurrency(local_dir):
 
     def worker():
         try:
-            approval.consume(aid, "s", "a", {"x": 1})
+            approval.consume(aid, "s", "a", {"x": 1}, "write")
             wins.append(1)
         except ApprovalRevoked:
             losses.append(1)
@@ -74,9 +74,9 @@ def test_approval_actor_binding(local_dir):
                                      actor="alice")
     approval.approve(item["approval_id"], approver="alice")
     with pytest.raises(ApprovalRevoked):
-        approval.consume(item["approval_id"], "s", "a", {"x": 1}, actor="bob")
+        approval.consume(item["approval_id"], "s", "a", {"x": 1}, "write", actor="bob")
     # the rightful actor can still consume (the failed attempt didn't burn it)
-    approval.consume(item["approval_id"], "s", "a", {"x": 1}, actor="alice")
+    approval.consume(item["approval_id"], "s", "a", {"x": 1}, "write", actor="alice")
 
 
 # --- atomic idempotency ----------------------------------------------------------
