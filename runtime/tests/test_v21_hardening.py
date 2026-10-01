@@ -18,7 +18,7 @@ import pytest
 
 from skillhub import approval, audit, registry
 from skillhub.credentials import (cred, credential_scopes, require_scopes,
-                                  save_local, set_scopes)
+                                  resolve_credential, save_local, set_scopes)
 from skillhub.driver import ActionDef
 from skillhub.errors import (ApprovalRevoked, CredentialsMissing,
                              IdempotencyConflict, InvalidInput,
@@ -191,15 +191,19 @@ def test_scope_enforcement(local_dir):
                scopes=["https://www.googleapis.com/auth/gmail.readonly"])
     assert credential_scopes("TEST_TOKEN") == \
         ["https://www.googleapis.com/auth/gmail.readonly"]
-    assert require_scopes(["TEST_TOKEN"],
-                          ["https://www.googleapis.com/auth/gmail.readonly"],
-                          "gmail") == "verified"
+    # GATE 1: scope checks run on the resolved object, not the name
+    r = resolve_credential("TEST_TOKEN", skill="gmail")
+    assert require_scopes(
+        r, ["https://www.googleapis.com/auth/gmail.readonly"],
+        "gmail") == "verified"
     with pytest.raises(ScopeMismatch):
-        require_scopes(["TEST_TOKEN"],
-                       ["https://www.googleapis.com/auth/gmail.send"], "gmail")
+        require_scopes(
+            resolve_credential("TEST_TOKEN", skill="gmail"),
+            ["https://www.googleapis.com/auth/gmail.send"], "gmail")
     # unknown scopes (plain env-style credential) → unverified, allowed
     save_local("PLAIN_TOKEN", "v")
-    assert require_scopes(["PLAIN_TOKEN"], ["anything"], "x") == "unverified"
+    assert require_scopes(resolve_credential("PLAIN_TOKEN", skill="x"),
+                          ["anything"], "x") == "unverified"
 
 
 def test_dispatch_scope_mismatch_blocked(local_dir):

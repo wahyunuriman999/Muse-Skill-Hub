@@ -38,6 +38,7 @@ import json
 import os
 import time
 from contextlib import contextmanager
+from dataclasses import dataclass, field
 
 from . import localstore
 from .errors import (CredentialStoreCorruptError, CredentialsMissing,
@@ -46,6 +47,11 @@ from .errors import (CredentialStoreCorruptError, CredentialsMissing,
 VAULT_REF_PREFIX = "ref:vault:"
 _ENC_STORE = "credentials.enc"
 _LOCK_NAME = "credentials"  # localstore lock: <datadir>/credentials.lock
+
+# Credential sources — where a resolved value actually came from.
+SOURCE_ENVIRONMENT = "environment"
+SOURCE_VAULT = "vault"
+SOURCE_ENCRYPTED_STORE = "encrypted_store"
 
 
 def _fernet():
@@ -179,7 +185,12 @@ def set_scopes(name: str, scopes: list[str]) -> None:
 
 
 def credential_scopes(name: str) -> list[str] | None:
-    """Scopes declared for a credential, or None if unknown."""
+    """Scopes declared for a credential in the encrypted store, if any.
+
+    NOTE: source-blind helper kept for introspection/CLI use only. Scope
+    ENFORCEMENT must go through resolve_credential() + require_scopes()
+    on the same CredentialResolution object (GATE 1).
+    """
     rec = _read_store().get(name)
     if isinstance(rec, dict):
         return rec.get("scopes")
@@ -225,35 +236,104 @@ def _maybe_refresh(name: str, rec: dict, skill: str) -> str | None:
     return oauth_mgr.get_valid_token(name, rec, skill)
 
 
-def cred(name: str, skill: str = "unknown") -> str:
-    """Resolve a credential by name or vault reference. Raises if missing."""
+@dataclass
+class CredentialResolution:
+    """One resolved credential: value + source + scopes bound together.
+
+    GATE 1 guarantee: scope verification MUST run on this same object —
+    never on a same-named record from a different source. In particular,
+    an ``environment`` or ``vault`` credential NEVER inherits scope
+    metadata from an encrypted-store record of the same name
+    (``scopes`` stays ``None`` → ``scope_status`` ``"unverified"``).
+    """
+    name: str
+    value: str
+    source: str  # "environment" | "vault" | "encrypted_store"
+    scopes: list[str] | None = None
+    scope_status: str = "unknown"  # -> "verified" | "unverified" after check
+
+
+def resolve_credential(name: str, skill: str = "unknown") -> CredentialResolution:
+    """Resolve a credential ONCE, binding value+source+scopes in one object.
+
+    Resolution order: explicit ``ref:vault:`` reference → environment →
+    encrypted store. Raises CredentialsMissing if no source has it.
+    """
     if name.startswith(VAULT_REF_PREFIX):
-        return resolve_vault_ref(name[len(VAULT_REF_PREFIX):], skill=skill)
+        value = resolve_vault_ref(name[len(VAULT_REF_PREFIX):], skill=skill)
+        return CredentialResolution(name=name, value=value,
+                                    source=SOURCE_VAULT)
     env_value = os.environ.get(name)
     if env_value:
-        return env_value
+        return CredentialResolution(name=name, value=env_value,
+                                    source=SOURCE_ENVIRONMENT)
     value, rec = _stored_value(name)
     if value:
         refreshed = _maybe_refresh(name, rec, skill)
-        if refreshed:
-            return refreshed
-        return value
+        scopes = rec.get("scopes") if isinstance(rec, dict) else None
+        return CredentialResolution(
+            name=name, value=refreshed or value,
+            source=SOURCE_ENCRYPTED_STORE,
+            scopes=list(scopes) if scopes else None)
     raise CredentialsMissing(
         skill, [name],
         "Set it as an environment variable, store it encrypted with "
         "credentials.save_local, or use a ref:vault:<name> reference.")
 
 
-def cred_any(*names: str, skill: str = "unknown") -> str:
-    """Resolve the first credential name that has a value. Raises if none."""
+def resolve_any(*names: str, skill: str = "unknown") -> CredentialResolution:
+    """Resolve the first credential name that has a value, as one object."""
     for name in names:
         try:
-            return cred(name, skill=skill)
+            return resolve_credential(name, skill=skill)
         except CredentialsMissing:
             continue
     raise CredentialsMissing(skill, list(names),
                              "Set one of these as an environment variable, "
                              "store it encrypted, or use a ref:vault:<name>.")
+
+
+def require_scopes(resolution: CredentialResolution, required: list[str],
+                   skill: str = "unknown") -> str:
+    """Enforce scopes on the SAME resolved credential object.
+
+    Returns ``"verified"`` when the resolution's own scopes cover
+    ``required``, ``"unverified"`` when this credential declares no scopes
+    (environment / vault / scopeless store records — allowed with an audit
+    note on this single-user runtime). Raises ScopeMismatch when declared
+    scopes are insufficient. Also stamps ``resolution.scope_status``.
+    """
+    if not required:
+        resolution.scope_status = "verified"
+        return "verified"
+    if resolution.scopes is None:
+        resolution.scope_status = "unverified"
+        return "unverified"
+    missing = [s for s in required if s not in resolution.scopes]
+    if missing:
+        raise ScopeMismatch(
+            f"Credential '{resolution.name}' ({resolution.source}) lacks "
+            f"required scopes: {missing}. Action requires {required}; "
+            f"credential declares {resolution.scopes}.",
+            skill=skill)
+    resolution.scope_status = "verified"
+    return "verified"
+
+
+def cred(name: str, skill: str = "unknown") -> str:
+    """Resolve a credential by name or vault reference. Raises if missing.
+
+    Backward-compatible value-only wrapper around resolve_credential().
+    """
+    return resolve_credential(name, skill=skill).value
+
+
+def cred_any(*names: str, skill: str = "unknown") -> str:
+    """Resolve the first credential name that has a value. Raises if none.
+
+    Backward-compatible value-only wrapper around resolve_any().
+    """
+    return resolve_any(*names, skill=skill).value
 
 
 def maybe_cred(name: str, skill: str = "unknown") -> str | None:
@@ -271,26 +351,3 @@ def maybe_resolve(value: str | None, skill: str = "unknown") -> str | None:
     return value
 
 
-def require_scopes(credential_names: list[str], required: list[str],
-                   skill: str = "unknown") -> str:
-    """Enforce credential scopes for an action.
-
-    Returns ``"verified"`` when a stored credential's declared scopes cover
-    ``required``, ``"unverified"`` when no credential declares scopes (plain
-    env vars — allowed with an audit note on this single-user runtime).
-    Raises ScopeMismatch when declared scopes are insufficient.
-    """
-    if not required:
-        return "verified"
-    for name in credential_names:
-        scopes = credential_scopes(name)
-        if scopes is None:
-            continue
-        missing = [s for s in required if s not in scopes]
-        if missing:
-            raise ScopeMismatch(
-                f"Credential '{name}' lacks required scopes: {missing}. "
-                f"Action requires {required}; credential declares {scopes}.",
-                skill=skill)
-        return "verified"
-    return "unverified"

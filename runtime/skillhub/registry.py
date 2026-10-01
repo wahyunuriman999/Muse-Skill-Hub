@@ -475,12 +475,21 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
             from .errors import CredentialsMissing
             raise CredentialsMissing(entry.name, missing, entry.setup_help)
 
-        # 5. credential scope check (enforced when scopes are known)
+        # 5. credential scope check — GATE 1: resolve ONCE per credential
+        #    and verify scopes on that SAME CredentialResolution object.
+        #    Never check scopes on a same-named record from another source.
+        from . import credentials as creds
+        resolutions = [creds.resolve_credential(name, entry.name)
+                       for name in entry.required_env]
+        credential_source = ",".join(
+            f"{r.name}:{r.source}" for r in resolutions)
         scope_check = ""
         if action_def.required_scopes:
-            from . import credentials as creds
-            scope_check = creds.require_scopes(
-                entry.required_env, action_def.required_scopes, entry.name)
+            checks = [creds.require_scopes(r, action_def.required_scopes,
+                                           entry.name)
+                      for r in resolutions]
+            scope_check = ("verified" if all(c == "verified" for c in checks)
+                           else "unverified")
 
         # 6. idempotency reservation — atomic claim BEFORE the handler runs
         reserved = False
@@ -493,7 +502,9 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
                     result = dict(existing.get("result") or {})
                     result["deduplicated"] = True
                     _audit("deduplicated", risk=risk, approval_id=approval_used,
-                           idempotency_key=idempotency_key)
+                           idempotency_key=idempotency_key,
+                           scope_check=scope_check,
+                           credential_source=credential_source)
                     return result
                 # pending → another execution owns this key right now
                 raise IdempotencyConflict(
@@ -529,7 +540,7 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
 
         _audit("success", risk=risk, approval_id=approval_used,
                idempotency_key=idempotency_key or "",
-               scope_check=scope_check)
+               scope_check=scope_check, credential_source=credential_source)
         if isinstance(result, dict):
             result = dict(result)
             result.setdefault("meta", {})["request_id"] = request_id
