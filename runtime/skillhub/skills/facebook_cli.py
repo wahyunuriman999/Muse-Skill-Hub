@@ -40,5 +40,9 @@ ACTIONS = {
     "run_command": ActionDef("Run a facebook-cli command and return its output.",
         {"args": {"type": "array", "items": {"type": "string"},
                   "description": "e.g. ['post', '--help']"}},
-        ["args"], run_command),
+        ["args"], run_command,
+        # Broad argv passthrough: the caller controls the full facebook-cli
+        # command surface (read, post, delete, message as the user), so this
+        # is typed destructive — it always needs a real approval_id.
+        risk="destructive"),
 }
