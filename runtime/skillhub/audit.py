@@ -74,6 +74,34 @@ def _canonical(record: dict) -> bytes:
                       ensure_ascii=False, default=str).encode("utf-8")
 
 
+def _repair_torn_tail(fh) -> None:
+    """Truncate a torn final line (crash between write() and flush()).
+
+    The torn fragment can never parse as JSON; leaving it would glue the
+    NEXT appended event onto garbage and lose that event too. Truncate
+    back to the last complete line. Call with the exclusive lock held.
+    """
+    fh.seek(0, 2)
+    end = fh.tell()
+    if end == 0:
+        return
+    found = None
+    pos = end
+    while pos > 0 and found is None:
+        chunk_size = min(pos, 8192)
+        pos -= chunk_size
+        fh.seek(pos)
+        idx = fh.read(chunk_size).rfind("\n")
+        if idx != -1:
+            found = pos + idx + 1
+    if found is None:
+        fh.seek(0)
+        fh.truncate(0)
+    elif found < end:
+        fh.seek(found)
+        fh.truncate()
+
+
 def _event_hash(record: dict) -> str:
     return "sha256:" + hashlib.sha256(_canonical(record)).hexdigest()[:32]
 
@@ -98,6 +126,7 @@ def log(record: dict) -> dict:
     }
     path = _ls.data_dir() / f"{_STORE}.jsonl"
     with _ls.locked(path, "a+") as fh:
+        _repair_torn_tail(fh)  # discard any half-written final line first
         fh.seek(0)
         prev_hash = "GENESIS"
         for line in fh:

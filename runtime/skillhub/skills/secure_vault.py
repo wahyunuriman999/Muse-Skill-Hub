@@ -12,9 +12,11 @@ from __future__ import annotations
 import base64
 import json
 import os
+import time
+from contextlib import contextmanager
 
 from ..driver import ActionDef
-from ..errors import SkillError
+from ..errors import SkillError, StoreCorruptError
 from ..localstore import LOCAL_NOTE, data_dir
 
 SKILL = "secure-vault"
@@ -22,6 +24,9 @@ REQUIRED_ENV: list[str] = []
 SETUP_HELP = ("Set SKILLHUB_VAULT_KEY to a Fernet key "
               "(generate: python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'). "
               "If unset, one is generated and stored locally. " + LOCAL_NOTE)
+
+_VAULT_FILE = "vault.enc.json"
+_VAULT_LOCK = "vault.lock"  # separate lock file; never the data file itself
 
 
 def _fernet():
@@ -43,17 +48,64 @@ def _fernet():
 
 
 def _load() -> dict:
-    p = data_dir() / "vault.enc.json"
+    """Read the vault. Missing file → {}. Corrupt file → backed up and
+    StoreCorruptError (fail-closed: NEVER silently return {} or partial
+    data — a corrupt vault must be explicit, not invisible)."""
+    p = data_dir() / _VAULT_FILE
     if not p.exists():
         return {}
+    try:
+        f = _fernet()
+        return json.loads(f.decrypt(p.read_bytes()).decode())
+    except Exception as exc:
+        backup = data_dir() / f"vault.corrupt.{int(time.time())}.enc.json"
+        try:
+            os.replace(p, backup)
+        except OSError:
+            backup = p
+        raise StoreCorruptError(SKILL, str(backup)) from exc
+
+
+def _save_nolock(vault: dict) -> None:
+    """Crash-atomic write: tmp + fsync + os.replace. Caller MUST hold the
+    vault lock (see _locked_vault) — the data file itself is never locked."""
     f = _fernet()
-    return json.loads(f.decrypt(p.read_bytes()).decode())
+    payload = f.encrypt(json.dumps(vault).encode())
+    p = data_dir() / _VAULT_FILE
+    tmp = data_dir() / f"vault.enc.json.tmp.{os.getpid()}"
+    with open(tmp, "wb") as fh:
+        fh.write(payload)
+        fh.flush()
+        os.fsync(fh.fileno())
+    try:
+        os.chmod(tmp, 0o600)
+    except OSError:
+        pass
+    os.replace(tmp, p)
 
 
 def _save(vault: dict) -> None:
-    f = _fernet()
-    (data_dir() / "vault.enc.json").write_bytes(f.encrypt(
-        json.dumps(vault).encode()))
+    """Replace the whole vault, crash-atomically, under the vault lock."""
+    with _locked_vault() as current:
+        current.clear()
+        current.update(vault)
+
+
+@contextmanager
+def _locked_vault():
+    """Serialized read-modify-write on the vault.
+
+    The exclusive cross-process lock lives on the separate ``vault.lock``
+    file; the data file is written crash-atomically (tmp + fsync +
+    replace), so this is atomic against both concurrency AND crashes.
+    Yields the mutable vault dict and saves it on clean exit.
+    """
+    from .. import filelock
+
+    with filelock.locked(data_dir() / _VAULT_LOCK):
+        vault = _load()
+        yield vault
+        _save_nolock(vault)
 
 
 def _read_secret_value(name: str) -> str | None:
@@ -62,9 +114,8 @@ def _read_secret_value(name: str) -> str | None:
 
 
 async def store_secret(params: dict) -> dict:
-    vault = _load()
-    vault[params["name"]] = params["value"]
-    _save(vault)
+    with _locked_vault() as vault:
+        vault[params["name"]] = params["value"]
     return {"status": "ok", "stored": params["name"]}
 
 
@@ -98,9 +149,8 @@ async def reveal_secret(params: dict) -> dict:
 
 
 async def delete_secret(params: dict) -> dict:
-    vault = _load()
-    vault.pop(params["name"], None)
-    _save(vault)
+    with _locked_vault() as vault:
+        vault.pop(params["name"], None)
     return {"status": "ok", "deleted": params["name"]}
 
 

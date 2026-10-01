@@ -55,6 +55,14 @@ def _read_parsed(path: Path, name: str, default):
         return default() if callable(default) else default
     try:
         raw = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        # Invalid UTF-8 is corruption, not a default: back up + fail closed.
+        backup = path.with_name(f"{name}.corrupt.{int(time.time())}.json")
+        try:
+            os.replace(path, backup)
+        except OSError:
+            backup = path
+        raise StoreCorruptError(name, str(backup)) from exc
     except OSError as exc:
         raise StoreCorruptError(name, str(path)) from exc
     if not raw.strip():
