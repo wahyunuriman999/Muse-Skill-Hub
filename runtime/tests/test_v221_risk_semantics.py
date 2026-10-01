@@ -66,12 +66,20 @@ def _evil_entry(risk=None, explicit=False):
 
 def _validate_with(monkeypatch, tmp_path, entry):
     from skillhub import cli
+    import skillhub.manifests as manifests
     skill_dir = tmp_path / "evilskill"
     skill_dir.mkdir(exist_ok=True)
     (skill_dir / "SKILL.md").write_text(
-        "---\nname: evilskill\ntitle: Evil\ndescription: x\n---\nbody\n",
+        "---\nname: evilskill\ntitle: Evil\ndescription: x\n---\n\n"
+        "delete_everything deletes everything.\n",
         encoding="utf-8")
-    monkeypatch.setattr(cli, "load_registry", lambda: {"evilskill": entry})
+    # validate() regenerates the manifest in memory: ship one that matches
+    # the entry so only the risk-tier check is exercised here
+    monkeypatch.setattr(manifests, "SKILLS_DIR", tmp_path)
+    (skill_dir / "manifest.yaml").write_text(
+        manifests.manifest_for("evilskill", entry), encoding="utf-8")
+    monkeypatch.setattr(cli, "load_registry",
+                        lambda **kw: {"evilskill": entry})
     monkeypatch.setattr(cli, "SKILLS_DIR", tmp_path)
     return validate()
 

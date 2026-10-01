@@ -15,6 +15,7 @@ from pathlib import Path
 
 from . import __version__
 from .driver import RISK_LEVELS
+from .manifests import manifest_for
 from .policy import risk_for
 from .registry import SKILLS_DIR, load_registry
 
@@ -43,37 +44,36 @@ def is_destructive_name(action_name: str) -> bool:
     return hit or lname.startswith("remove_") or lname.endswith("_delete")
 
 
-def _load_manifest(name: str) -> dict | None:
-    # minimal YAML reader for our generated manifests (flat + one list level)
+def manifest_contract_drift(name: str, entry) -> list[str]:
+    """Diff the shipped manifest.yaml against a fresh generator run.
+
+    Returns failure lines (empty when in sync). The generator preserves
+    hand-tuned manifest risks, so any remaining diff is real drift:
+    params, required lists, output schemas, descriptions, versions, or
+    action sets that changed in the driver/SKILL.md without regenerating.
+    """
     path = SKILLS_DIR / name / "manifest.yaml"
     if not path.exists():
-        return None
-    data: dict = {}
-    actions: list[dict] = []
-    current: dict | None = None
-    in_actions = False
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        if raw.startswith("  - name: "):
-            current = {"name": raw.split("  - name: ", 1)[1].strip()}
-            actions.append(current)
-            in_actions = True
-        elif raw.startswith("actions:"):
-            in_actions = True
-        elif raw.startswith("auth:") or raw.startswith("dependencies:"):
-            in_actions = False
-            current = None
-        elif in_actions and current is not None and raw.startswith("    "):
-            k, _, v = raw.strip().partition(":")
-            current[k.strip()] = v.strip()
-        elif not in_actions and ":" in raw and not raw.startswith(" "):
-            k, _, v = raw.partition(":")
-            data[k.strip()] = v.strip().strip('"')
-    data["actions"] = actions
-    return data
+        return [f"missing manifest.yaml (run tools/generate_manifests.py)"]
+    expected = manifest_for(name, entry)
+    actual = path.read_text(encoding="utf-8")
+    if actual == expected:
+        return []
+    import difflib
+    diff = list(difflib.unified_diff(
+        expected.splitlines(), actual.splitlines(),
+        "generated", "shipped", lineterm="", n=1))
+    excerpt = "\n    ".join(diff[:14])
+    return [f"manifest.yaml drift from driver/SKILL.md "
+            f"(run tools/generate_manifests.py):\n    {excerpt}"]
 
 
 def validate() -> int:
     reg = load_registry()
+    # Raw driver view (no manifest risk override): driver edits — including
+    # risk bumps — must be visible to the generator, otherwise a stale
+    # manifest would mask them.
+    regen = load_registry(apply_manifest_risks=False)
     failures: list[str] = []
     warnings: list[str] = []
     names = list(reg)
@@ -132,21 +132,18 @@ def validate() -> int:
                     f"{tag} action '{aname}': destructive name but risk "
                     f"'write' (bare confirm=true suffices) — bump to "
                     f"'destructive' (or another approval-gated risk)")
-            # doc drift: driver action should be mentioned in SKILL.md
+            # doc drift: driver action MUST be mentioned in SKILL.md — the doc
+            # is part of the contract, an undocumented action is a breach.
             if aname not in text and aname.replace("_", " ") not in text.lower():
-                warnings.append(f"{tag} action '{aname}' not mentioned in SKILL.md")
+                failures.append(f"{tag} action '{aname}' not mentioned in SKILL.md")
 
-        # manifest drift
-        manifest = _load_manifest(name)
-        if manifest is None:
-            warnings.append(f"{tag} missing manifest.yaml (run generate_manifests.py)")
-        else:
-            mactions = {a["name"] for a in manifest.get("actions", [])}
-            dactions = set(entry.actions)
-            if mactions != dactions:
-                failures.append(
-                    f"{tag} manifest/driver drift: manifest={sorted(mactions)} "
-                    f"driver={sorted(dactions)}")
+        # manifest contract: the shipped manifest.yaml must be EXACTLY what
+        # the generator produces from driver + SKILL.md (modulo hand-tuned
+        # risks, which the generator preserves). Any other drift — params,
+        # required, output_schema, descriptions, versions, action sets —
+        # means the contract lies. Regenerate with tools/generate_manifests.py.
+        for _mline in manifest_contract_drift(name, regen[name]):
+            failures.append(f"{tag} {_mline}")
 
         # secret leakage scan
         mod = Path(__file__).resolve().parent / "skills" / \
