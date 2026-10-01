@@ -6,11 +6,10 @@ instagram driver).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "social-content-performance"
 REQUIRED_ENV = ["INSTAGRAM_ACCESS_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://graph.facebook.com/v21.0"
 
 
 def _token() -> str:
-    token = os.environ.get("INSTAGRAM_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("INSTAGRAM_ACCESS_TOKEN", SKILL)
     return token
 
 

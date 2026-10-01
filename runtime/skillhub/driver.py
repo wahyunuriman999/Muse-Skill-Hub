@@ -34,8 +34,17 @@ class ActionDef:
     write: bool = False  # legacy flag; prefer `risk`
     risk: str = ""  # one of RISK_LEVELS; defaults to "write" if write else "read"
     output_schema: dict[str, Any] = field(default_factory=dict)  # JSON schema of result
-    idempotent: bool = True  # safe to retry with the same idempotency key
+    # NOTE on terminology: this does NOT mean "the operation is mathematically
+    # idempotent". It means "the runtime may deduplicate this action with a
+    # client-supplied idempotency key" (reservation before execution, atomic
+    # commit after). Renamed from `idempotent` in v2.1 for exactly this reason.
+    supports_idempotency_key: bool = True
     sensitive_params: list[str] = field(default_factory=list)  # never audit-logged raw
+    required_scopes: list[str] = field(default_factory=list)  # credential scopes
+    strict: bool = True  # reject unknown params (schema is the source of truth)
+
+    # deprecated alias for `supports_idempotency_key` (v2.0 name)
+    idempotent: bool | None = None
 
     def __post_init__(self):
         if not self.risk:
@@ -45,3 +54,7 @@ class ActionDef:
         # write=True actions are never pure reads
         if self.write and self.risk == "read":
             self.risk = "write"
+        if self.idempotent is not None:
+            # explicit v2.0-style kwarg wins, then clear the alias
+            self.supports_idempotency_key = self.idempotent
+            self.idempotent = None

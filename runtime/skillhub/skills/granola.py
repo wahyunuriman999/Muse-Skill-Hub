@@ -8,11 +8,10 @@ a Granola plan that includes it) and set GRANOLA_API_KEY.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "granola"
 REQUIRED_ENV = ["GRANOLA_API_KEY"]
@@ -25,9 +24,7 @@ _BASE = "https://public-api.granola.ai/v1"
 
 
 def _headers() -> dict:
-    key = os.environ.get("GRANOLA_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("GRANOLA_API_KEY", SKILL)
     return {"Authorization": f"Bearer {key}"}
 
 

@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_conversation** — Get the reply conversation around a thread.  
+  Risk: `read` · parameters: thread_id · required: thread_id
+- **list_replies** — List replies on one of your threads.  
+  Risk: `read` · parameters: thread_id · required: thread_id

@@ -84,3 +84,14 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_posts** — List feed posts, newest first.  
+  Risk: `read` · parameters: limit · required: none
+- **publish_post** — Publish a feed post (needs confirm=true).  
+  Risk: `write` · parameters: title, body, category · required: title

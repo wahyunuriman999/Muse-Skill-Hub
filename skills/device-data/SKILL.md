@@ -104,3 +104,18 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **delete_local_copy** — Delete the local copy (needs confirm=true).  
+  Risk: `write` · parameters: none · required: none
+- **get_calendar** — Read cached calendar events.  
+  Risk: `read` · parameters: limit · required: none
+- **get_contacts** — Read cached contacts.  
+  Risk: `read` · parameters: query, limit · required: none
+- **import_snapshot** — Import a contacts/calendar snapshot (needs confirm=true).  
+  Risk: `write` · parameters: contacts, calendar · required: none

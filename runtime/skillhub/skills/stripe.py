@@ -5,11 +5,10 @@ Use test-mode keys (sk_test_...) for safe experimentation.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "stripe"
 REQUIRED_ENV = ["STRIPE_SECRET_KEY"]
@@ -19,9 +18,7 @@ _BASE = "https://api.stripe.com/v1"
 
 
 def _auth() -> tuple[dict, str]:
-    key = os.environ.get("STRIPE_SECRET_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("STRIPE_SECRET_KEY", SKILL)
     return ({}, key)
 
 

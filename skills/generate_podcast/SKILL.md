@@ -105,3 +105,12 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **compose_episode** — Synthesize a multi-voice episode (needs confirm=true).  
+  Risk: `write` · parameters: title, segments · required: segments

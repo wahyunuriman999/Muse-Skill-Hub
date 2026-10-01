@@ -12,8 +12,10 @@ Default policy:
                        → APPROVAL_REQUIRED (real approval_id required;
                          bare ``confirm=true`` is NOT enough)
 
-Per-action risk overrides live in RISK_OVERRIDES below so drivers don't
-all need editing; a driver may also declare ``risk=`` directly on ActionDef.
+Per-action risk lives in ``skills/<name>/manifest.yaml`` (canonical source
+of truth), applied by ``registry.load_registry()``. A driver may still
+declare ``risk=`` directly on ActionDef as the default the manifest
+overrides.
 
 A custom policy file (JSON) can be pointed at with SKILLHUB_POLICY_FILE::
 
@@ -28,43 +30,21 @@ import fnmatch
 import json
 import os
 
-# skill.action -> risk level (curated from real driver actions;
-# everything else defaults from the write flag)
-RISK_OVERRIDES: dict[str, str] = {
-    # financial
-    "stripe.create_payment_link": "financial",
-    "duffel.create_order": "financial",
-    "wallet.add_payment_method": "financial",
-    # communication
-    "gmail.send_message": "communication",
-    "outlook-mail.send_mail": "communication",
-    "slack.send_message": "communication",
-    "messenger.send_message": "communication",
-    "instagram-messages.send_message": "communication",
-    "meta-threads.post_text": "communication",
-    "voice-calls.make_call": "communication",
-    "tts.synthesize": "communication",
-    "zapier.trigger_zap": "communication",
-    # destructive
-    "muse_db.execute_write": "destructive",
-    "forget.forget_fact": "destructive",
-    "data-control.delete_data": "destructive",
-    # sensitive reads
-    "gmail.get_message": "sensitive",
-    "secure-vault.reveal_secret": "sensitive",
-    # account
-    "connector-management.remove_connector": "account",
-    # device
-    "philips-hue.set_light": "device",
-}
+# NOTE (v2.1): per-action risk is no longer hardcoded here. It lives in
+# skills/<name>/manifest.yaml (canonical source of truth), applied by
+# registry.load_registry(). This function stays as a compatibility shim:
+# the "driver_risk" it receives is already manifest-resolved.
 
-# Risks that need a REAL approval_id (bare confirm=true is not enough).
-STRICT_RISKS = {"sensitive", "destructive", "communication",
-                "financial", "account", "device"}
+
+# Risks that ALWAYS need a real approval_id (bare confirm=true is not enough)
+STRICT_RISKS = frozenset({
+    "sensitive", "destructive", "communication", "financial", "account", "device",
+})
 
 
 def risk_for(skill: str, action: str, declared: str) -> str:
-    return RISK_OVERRIDES.get(f"{skill}.{action}", declared or "read")
+    """Compatibility shim: ``declared`` is already manifest-resolved."""
+    return declared or "read"
 
 
 class PolicyEngine:

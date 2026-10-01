@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_metadata** — Get metadata for one file/folder path.  
+  Risk: `read` · parameters: path · required: path
+- **list_folder** — List files and folders at a Dropbox path ('' = root).  
+  Risk: `read` · parameters: path, recursive, limit · required: none

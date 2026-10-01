@@ -5,11 +5,10 @@ Set GOOGLE_OAUTH_TOKEN (shared with the other Google drivers).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "google-docs"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://docs.googleapis.com/v1/documents"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -63,8 +60,8 @@ async def create_document(params: dict) -> dict:
 
 ACTIONS = {
     "get_document": ActionDef("Read a Google Doc's text (ID from its URL).",
-        {"document_id": {"type": "string"}}, ["document_id"], get_document),
+        {"document_id": {"type": "string"}}, ["document_id"], get_document, required_scopes=["https://www.googleapis.com/auth/documents.readonly"]),
     "create_document": ActionDef("Create a doc, optionally with initial text (needs confirm=true).",
         {"title": {"type": "string"}, "text": {"type": "string"}},
-        ["title"], create_document, write=True),
+        ["title"], create_document, write=True, required_scopes=["https://www.googleapis.com/auth/documents"]),
 }

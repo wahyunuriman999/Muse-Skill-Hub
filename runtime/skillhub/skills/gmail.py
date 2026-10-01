@@ -8,11 +8,10 @@ or mint one from your own OAuth client. Set GOOGLE_OAUTH_TOKEN.
 from __future__ import annotations
 
 import base64
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "gmail"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -26,9 +25,7 @@ _BASE = "https://gmail.googleapis.com/gmail/v1/users/me"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -65,12 +62,12 @@ ACTIONS = {
         {"query": {"type": "string", "default": "",
                    "description": "Gmail search query, e.g. 'from:boss subject:report newer_than:7d'"},
          "limit": {"type": "integer", "default": 10, "maximum": 50}},
-        [], list_messages),
+        [], list_messages, required_scopes=["https://www.googleapis.com/auth/gmail.readonly"]),
     "get_message": ActionDef("Get a message's headers and snippet.",
         {"message_id": {"type": "string", "description": "Gmail message ID"}},
-        ["message_id"], get_message),
+        ["message_id"], get_message, required_scopes=["https://www.googleapis.com/auth/gmail.readonly"]),
     "send_message": ActionDef("Send an email (needs confirm=true).",
         {"to": {"type": "string"}, "subject": {"type": "string"},
          "body": {"type": "string"}},
-        ["to", "subject", "body"], send_message, write=True),
+        ["to", "subject", "body"], send_message, write=True, required_scopes=["https://www.googleapis.com/auth/gmail.send"]),
 }

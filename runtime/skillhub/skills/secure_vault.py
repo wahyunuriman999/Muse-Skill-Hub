@@ -14,7 +14,7 @@ import json
 import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing, SkillError
+from ..errors import SkillError
 from ..localstore import LOCAL_NOTE, data_dir
 
 SKILL = "secure-vault"

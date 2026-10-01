@@ -7,10 +7,9 @@ Set PLAID_CLIENT_ID and PLAID_SECRET.
 """
 from __future__ import annotations
 
-import os
 
+from ..credentials import cred
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
 
 SKILL = "plaid"
@@ -25,10 +24,7 @@ _BASE = "https://sandbox.plaid.com"
 
 
 def _creds() -> tuple[str, str]:
-    cid, sec = os.environ.get("PLAID_CLIENT_ID"), os.environ.get("PLAID_SECRET")
-    if not cid or not sec:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
-    return cid, sec
+    return cred("PLAID_CLIENT_ID", SKILL), cred("PLAID_SECRET", SKILL)
 
 
 async def sandbox_connect(params: dict) -> dict:

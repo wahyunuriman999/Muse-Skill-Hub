@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **search_episodes** — Search podcast episodes (with audio URLs).  
+  Risk: `read` · parameters: query, limit · required: query
+- **search_podcasts** — Search podcast shows.  
+  Risk: `read` · parameters: query, limit · required: query

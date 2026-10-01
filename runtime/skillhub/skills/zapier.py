@@ -6,11 +6,10 @@ Calling trigger_zap POSTs your payload to that Zap (needs confirm=true).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "zapier"
 REQUIRED_ENV = ["ZAPIER_WEBHOOK_URL"]
@@ -21,9 +20,7 @@ SETUP_HELP = (
 
 
 def _url() -> str:
-    url = os.environ.get("ZAPIER_WEBHOOK_URL")
-    if not url:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    url = cred("ZAPIER_WEBHOOK_URL", SKILL)
     return url
 
 

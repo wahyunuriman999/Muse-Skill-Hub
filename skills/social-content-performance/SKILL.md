@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **account_insights** — Account-level reach/impressions/profile views.  
+  Risk: `read` · parameters: ig_user_id · required: none
+- **media_insights** — Per-post reach, likes, comments, shares, saves.  
+  Risk: `read` · parameters: media_id · required: media_id

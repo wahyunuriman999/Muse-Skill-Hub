@@ -86,3 +86,20 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **delete_secret** — Delete a secret (needs confirm=true).  
+  Risk: `write` · parameters: name · required: name
+- **get_secret** — Get a credential_ref for a secret (the VALUE is never returned to the LLM).  
+  Risk: `read` · parameters: name · required: name
+- **list_secrets** — List secret names (never values).  
+  Risk: `read` · parameters: none · required: none
+- **reveal_secret** — Reveal a secret value explicitly (needs confirm=true; audit-logged; prefer credential_ref).  
+  Risk: `sensitive` · parameters: name · required: name
+- **store_secret** — Store a secret in the encrypted local vault (needs confirm=true).  
+  Risk: `write` · parameters: name, value · required: name, value

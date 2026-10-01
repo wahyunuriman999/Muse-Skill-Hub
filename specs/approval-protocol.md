@@ -25,6 +25,9 @@ LLM                    runtime                  human
  │                        │  • not consumed before │
  │                        │  • same skill/action   │
  │                        │  • same params hash    │
+ │                        │  • same actor (session │
+ │                        │    label bound at      │
+ │                        │    request time)       │
  │                        │ executes (single-use)  │
  │  ◄─────────────────────┤                        │
  │  result                │ audit-logged           │
@@ -38,3 +41,25 @@ approval instead.
 The `permission-model` skill (`request_approval`, `list_pending`,
 `approve`, `deny`) is the user-facing surface of this engine — one
 system, not two.
+
+## Concurrency (v2.1)
+
+The `approved → consumed` transition happens inside one locked
+read-modify-write critical section (`localstore.locked_json`), so two
+workers racing on the same approval id get exactly one winner — the other
+sees `approval_revoked`. The `actor` label is bound at request time and
+checked at consumption; it is a local session label, not cryptographic
+authentication. This remains a trusted single-user local boundary, not a
+multi-user identity system.
+
+## Idempotency states (v2.1)
+
+Reservation is atomic and happens *before* side effects:
+`PENDING → SUCCEEDED | FAILED → CONFLICT`. A concurrent duplicate sees
+`pending` and does not re-execute; a mismatched call on the same key raises
+`idempotency_conflict`; a failed record may be reclaimed exactly once for a
+retry.
+
+The field is `supports_idempotency_key` (renamed from `idempotent` in
+v2.1): it means "the runtime may deduplicate with a key", not "the
+underlying operation is mathematically idempotent".

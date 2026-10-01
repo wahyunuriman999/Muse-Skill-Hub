@@ -5,11 +5,10 @@ Set DUFFEL_ACCESS_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "duffel"
 REQUIRED_ENV = ["DUFFEL_ACCESS_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://api.duffel.com"
 
 
 def _headers() -> dict:
-    token = os.environ.get("DUFFEL_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("DUFFEL_ACCESS_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Duffel-Version": "v2",
             "Content-Type": "application/json"}
 

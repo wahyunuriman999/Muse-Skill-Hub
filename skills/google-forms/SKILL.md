@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **create_form** — Create an empty Google Form (needs confirm=true).  
+  Risk: `write` · parameters: title · required: title
+- **get_responses** — Read a form's responses.  
+  Risk: `read` · parameters: form_id · required: form_id

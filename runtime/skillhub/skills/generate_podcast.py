@@ -9,11 +9,11 @@ Setup: ELEVENLABS_API_KEY (shared with the tts driver).
 from __future__ import annotations
 
 import base64
-import os
 
 from ..driver import ActionDef
 from ..errors import CredentialsMissing
 from . import tts as tts_driver
+from ..credentials import maybe_cred
 
 SKILL = "generate_podcast"
 REQUIRED_ENV = ["ELEVENLABS_API_KEY"]
@@ -25,7 +25,7 @@ SETUP_HELP = (
 
 
 def _check() -> None:
-    if not os.environ.get("ELEVENLABS_API_KEY"):
+    if not maybe_cred("ELEVENLABS_API_KEY", SKILL):
         raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
 
 

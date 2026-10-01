@@ -105,3 +105,12 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **design_voice** — Design a custom voice from a text description (needs confirm=true).  
+  Risk: `write` · parameters: description, preview_text · required: description

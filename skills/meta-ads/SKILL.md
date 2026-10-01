@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_ad_accounts** — List ad accounts the token can access.  
+  Risk: `read` · parameters: limit · required: none
+- **list_campaigns** — List campaigns in an ad account.  
+  Risk: `read` · parameters: ad_account_id, limit · required: ad_account_id

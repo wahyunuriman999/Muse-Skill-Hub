@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {file_key: {type: "string"}, node_ids: {type: "string", description: "Comma-separated node IDs"}, format: {type: "string", default: "png"}, scale: {type: "integer", default: 1}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {file_key: {type: "string", description: "From the file URL after /design/"}}

@@ -6,12 +6,11 @@ Set QUICKBOOKS_ACCESS_TOKEN and QUICKBOOKS_REALM_ID (company ID).
 """
 from __future__ import annotations
 
-import os
 import urllib.parse
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "quickbooks"
 REQUIRED_ENV = ["QUICKBOOKS_ACCESS_TOKEN", "QUICKBOOKS_REALM_ID"]
@@ -24,10 +23,8 @@ _BASE = "https://quickbooks.api.intuit.com/v3/company"
 
 
 def _ctx() -> tuple[dict, str]:
-    token = os.environ.get("QUICKBOOKS_ACCESS_TOKEN")
-    realm = os.environ.get("QUICKBOOKS_REALM_ID")
-    if not token or not realm:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("QUICKBOOKS_ACCESS_TOKEN", SKILL)
+    realm = cred("QUICKBOOKS_REALM_ID", SKILL)
     return {"Authorization": f"Bearer {token}", "Accept": "application/json",
             "Content-Type": "application/json"}, realm
 

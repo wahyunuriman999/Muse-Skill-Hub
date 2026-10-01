@@ -105,3 +105,18 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **complete_task** — Mark a task completed (needs confirm=true).  
+  Risk: `write` · parameters: task_id, task_list_id · required: task_id
+- **create_task** — Create a task (needs confirm=true). Due is RFC3339.  
+  Risk: `write` · parameters: title, notes, due, task_list_id · required: title
+- **list_task_lists** — List task lists.  
+  Risk: `read` · parameters: none · required: none
+- **list_tasks** — List tasks in a list.  
+  Risk: `read` · parameters: task_list_id, show_completed, limit · required: none

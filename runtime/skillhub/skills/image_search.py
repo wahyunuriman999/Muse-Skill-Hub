@@ -5,11 +5,10 @@ Returns direct image URLs plus source page links.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "image-search"
 REQUIRED_ENV = ["SERPER_API_KEY"]
@@ -22,9 +21,7 @@ _BASE = "https://google.serper.dev/images"
 
 
 def _headers() -> dict:
-    key = os.environ.get("SERPER_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("SERPER_API_KEY", SKILL)
     return {"X-API-KEY": key, "Content-Type": "application/json"}
 
 

@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_lights** — List Hue lights and their state.  
+  Risk: `read` · parameters: none · required: none
+- **set_light** — Turn a light on/off or set brightness 1-254 (needs confirm=true).  
+  Risk: `device` · parameters: light_id, on, brightness · required: light_id

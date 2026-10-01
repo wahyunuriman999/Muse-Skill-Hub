@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {owner: {type: "string"}, repo: {type: "string"}, title: {type: "string"}, body: {type: "string", default: ""}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {owner: {type: "string", description: "Repository owner"}, repo: {type: "string", description: "Repository name"}}
@@ -30,7 +32,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {owner: {type: "string"}, repo: {type: "string"}, state: {type: "string", enum: ["open", "closed", "all"], default: "open"}, per_page: {type: "integer", default: 10, maximum: 50}}
@@ -40,7 +43,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {query: {type: "string", description: "Search keywords, e.g. 'mcp server language:python'"}, sort: {type: "string", enum: ["best match", "stars", "forks", "updated"], default: "best match"}, per_page: {type: "integer", default: 5, maximum: 30}}

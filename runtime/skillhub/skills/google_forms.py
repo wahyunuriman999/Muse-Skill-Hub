@@ -5,11 +5,10 @@ Set GOOGLE_OAUTH_TOKEN (shared with the other Google drivers).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "google-forms"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://forms.googleapis.com/v1/forms"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -47,7 +44,7 @@ async def get_responses(params: dict) -> dict:
 
 ACTIONS = {
     "create_form": ActionDef("Create an empty Google Form (needs confirm=true).",
-        {"title": {"type": "string"}}, ["title"], create_form, write=True),
+        {"title": {"type": "string"}}, ["title"], create_form, write=True, required_scopes=["https://www.googleapis.com/auth/forms.body"]),
     "get_responses": ActionDef("Read a form's responses.",
-        {"form_id": {"type": "string"}}, ["form_id"], get_responses),
+        {"form_id": {"type": "string"}}, ["form_id"], get_responses, required_scopes=["https://www.googleapis.com/auth/forms.body.readonly"]),
 }

@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_profile** — Get the connected Threads profile.  
+  Risk: `read` · parameters: none · required: none
+- **post_text** — Publish a text post (two-step create+publish; needs confirm=true).  
+  Risk: `write` · parameters: text · required: text

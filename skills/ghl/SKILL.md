@@ -105,3 +105,16 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **create_contact** — Create a contact (needs confirm=true).  
+  Risk: `write` · parameters: firstName, lastName, email, phone, location_id · required: none
+- **get_contact** — Get one contact's details.  
+  Risk: `read` · parameters: contact_id · required: contact_id
+- **list_contacts** — List/search contacts.  
+  Risk: `read` · parameters: query, limit · required: none

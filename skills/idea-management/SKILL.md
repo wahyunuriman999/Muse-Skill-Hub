@@ -84,3 +84,14 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **add_idea** — Add an idea card (needs confirm=true).  
+  Risk: `write` · parameters: title, description · required: title
+- **dismiss_idea** — Dismiss an idea (needs confirm=true).  
+  Risk: `write` · parameters: idea_id · required: idea_id

@@ -5,11 +5,11 @@ Set TESSIE_API_TOKEN and optionally TESSIE_VIN (default vehicle).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
 from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred, maybe_cred
 
 SKILL = "tessie"
 REQUIRED_ENV = ["TESSIE_API_TOKEN"]
@@ -22,14 +22,12 @@ _BASE = "https://api.tessie.com"
 
 
 def _headers() -> dict:
-    token = os.environ.get("TESSIE_API_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("TESSIE_API_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}"}
 
 
 def _vin(params: dict) -> str:
-    vin = params.get("vin") or os.environ.get("TESSIE_VIN")
+    vin = params.get("vin") or maybe_cred("TESSIE_VIN", SKILL)
     if not vin:
         raise CredentialsMissing(SKILL, ["TESSIE_VIN"],
                                  "Pass vin or set TESSIE_VIN.")

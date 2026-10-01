@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {}
@@ -18,9 +19,10 @@ actions:
     output_schema: {}
   - name: post_text
     type: write
-    risk: communication
+    risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {text: {type: "string", maxLength: 500}}

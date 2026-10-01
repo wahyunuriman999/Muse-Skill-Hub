@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {restaurant_slug: {type: "string", description: "Slug from the restaurant's OpenTable URL"}, covers: {type: "integer", default: 2}, datetime: {type: "string", description: "ISO8601"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {query: {type: "string"}, covers: {type: "integer", default: 2}}

@@ -105,3 +105,18 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **complete_goal** — Mark a goal completed (needs confirm=true).  
+  Risk: `write` · parameters: goal_id · required: goal_id
+- **create_goal** — Create a goal (needs confirm=true).  
+  Risk: `write` · parameters: title, description, target_date · required: title
+- **list_goals** — List goals, optionally filtered by status.  
+  Risk: `read` · parameters: status · required: none
+- **log_progress** — Log a progress note (needs confirm=true).  
+  Risk: `write` · parameters: goal_id, note · required: goal_id, note

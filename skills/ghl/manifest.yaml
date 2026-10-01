@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {firstName: {type: "string"}, lastName: {type: "string"}, email: {type: "string"}, phone: {type: "string"}, location_id: {type: "string"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {contact_id: {type: "string"}}
@@ -30,7 +32,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {query: {type: "string"}, limit: {type: "integer", default: 20, maximum: 100}}

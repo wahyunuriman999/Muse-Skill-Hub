@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_file_info** — Get metadata for one file.  
+  Risk: `read` · parameters: file_id · required: file_id
+- **list_folder** — List items in a Box folder ('0' = root).  
+  Risk: `read` · parameters: folder_id, limit · required: none

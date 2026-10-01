@@ -192,6 +192,22 @@ class IdempotencyConflict(SkillError):
     retryable = False
 
 
+class OutputContractViolation(SkillError):
+    """A driver's result did not match its declared output_schema.
+
+    This is a driver bug, not a caller error: the safe message stays
+    generic, the schema diff goes to ``internal`` (audit log only).
+    """
+    code = "output_contract_violation"
+    retryable = False
+
+
+class ScopeMismatch(SkillError):
+    """The credential's scopes do not cover the action's required_scopes."""
+    code = "scope_mismatch"
+    retryable = False
+
+
 # --- upstream -----------------------------------------------------------------
 
 class UpstreamError(SkillError):

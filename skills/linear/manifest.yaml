@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {team_id: {type: "string", description: "Linear team UUID"}, title: {type: "string"}, description: {type: "string", default: ""}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {limit: {type: "integer", default: 10, maximum: 25}}

@@ -6,11 +6,10 @@ Explorer for testing. Set MICROSOFT_ACCESS_TOKEN (shared with outlook-calendar/c
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "outlook-mail"
 REQUIRED_ENV = ["MICROSOFT_ACCESS_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://graph.microsoft.com/v1.0/me"
 
 
 def _headers() -> dict:
-    token = os.environ.get("MICROSOFT_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("MICROSOFT_ACCESS_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -61,9 +58,9 @@ ACTIONS = {
     "list_messages": ActionDef("List/search mailbox messages.",
         {"query": {"type": "string", "description": "Search keywords"},
          "limit": {"type": "integer", "default": 20, "maximum": 100}},
-        [], list_messages),
+        [], list_messages, required_scopes=["Mail.Read"]),
     "send_mail": ActionDef("Send an email (needs confirm=true).",
         {"to": {"type": "string"}, "subject": {"type": "string"},
          "body": {"type": "string"}},
-        ["to", "subject", "body"], send_mail, write=True),
+        ["to", "subject", "body"], send_mail, write=True, required_scopes=["Mail.Send"]),
 }

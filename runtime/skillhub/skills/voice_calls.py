@@ -6,11 +6,10 @@ Twilio phone number (TWILIO_FROM_NUMBER) and TwiML instructions URL.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "voice-calls"
 REQUIRED_ENV = ["TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN"]
@@ -22,10 +21,8 @@ SETUP_HELP = (
 
 
 def _ctx():
-    sid = os.environ.get("TWILIO_ACCOUNT_SID")
-    token = os.environ.get("TWILIO_AUTH_TOKEN")
-    if not sid or not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    sid = cred("TWILIO_ACCOUNT_SID", SKILL)
+    token = cred("TWILIO_AUTH_TOKEN", SKILL)
     return sid, (sid, token)
 
 
@@ -46,10 +43,7 @@ async def list_calls(params: dict) -> dict:
 async def make_call(params: dict) -> dict:
     import base64
     sid, auth = _ctx()
-    from_number = os.environ.get("TWILIO_FROM_NUMBER")
-    if not from_number:
-        raise CredentialsMissing(SKILL, ["TWILIO_FROM_NUMBER"],
-                                 "Set TWILIO_FROM_NUMBER to your Twilio phone number.")
+    from_number = cred("TWILIO_FROM_NUMBER", SKILL)
     basic = base64.b64encode(f"{auth[0]}:{auth[1]}".encode()).decode()
     r = await api_request(SKILL, "POST",
                           f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Calls.json",

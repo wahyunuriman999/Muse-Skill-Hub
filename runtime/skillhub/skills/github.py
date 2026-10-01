@@ -5,10 +5,10 @@ Set GITHUB_TOKEN for higher limits and write actions.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
 from ..http import api_request
+from ..credentials import maybe_cred
 
 SKILL = "github"
 REQUIRED_ENV: list[str] = []
@@ -25,7 +25,7 @@ def _headers() -> dict:
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
     }
-    token = os.environ.get("GITHUB_TOKEN")
+    token = maybe_cred("GITHUB_TOKEN", SKILL)
     if token:
         headers["Authorization"] = f"Bearer {token}"
     return headers
@@ -108,7 +108,7 @@ async def list_issues(params: dict) -> dict:
 
 
 async def create_issue(params: dict) -> dict:
-    if not os.environ.get("GITHUB_TOKEN"):
+    if not maybe_cred("GITHUB_TOKEN", SKILL):
         from ..errors import CredentialsMissing
 
         raise CredentialsMissing(

@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {limit: {type: "integer", default: 20}}
@@ -20,7 +21,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {title: {type: "string"}, body: {type: "string"}, category: {type: "string", default: "general"}}

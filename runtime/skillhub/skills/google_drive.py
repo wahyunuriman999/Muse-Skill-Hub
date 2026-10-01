@@ -7,11 +7,10 @@ Set GOOGLE_OAUTH_TOKEN (shared with the gmail/calendar/sheets drivers).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "google-drive"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://www.googleapis.com/drive/v3/files"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -54,9 +51,9 @@ async def search_files(params: dict) -> dict:
 ACTIONS = {
     "list_files": ActionDef("List recently modified files.",
         {"limit": {"type": "integer", "default": 20, "maximum": 100}},
-        [], list_files),
+        [], list_files, required_scopes=["https://www.googleapis.com/auth/drive.readonly"]),
     "search_files": ActionDef("Search files by name.",
         {"query": {"type": "string", "description": "Substring to match in file names"},
          "limit": {"type": "integer", "default": 20, "maximum": 100}},
-        ["query"], search_files),
+        ["query"], search_files, required_scopes=["https://www.googleapis.com/auth/drive.readonly"]),
 }

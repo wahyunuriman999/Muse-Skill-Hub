@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {title: {type: "string"}, segments: {type: "array", maxItems: 20, items: {type: "object", required: ["voice_id", "text"], properties: {speaker: {type: "string"}, voice_id: {type: "string"}, text: {type: "string"}}}}}

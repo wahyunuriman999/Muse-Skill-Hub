@@ -18,7 +18,8 @@ actions:
     type: read               # read | write
     risk: read               # read|write|sensitive|destructive|communication|financial|account|device
     approval: not_required   # not_required | required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []      # OAuth/token scopes the action needs; enforced when known
     input_schema:
       type: object
       properties:

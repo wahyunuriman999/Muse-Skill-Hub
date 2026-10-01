@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_outbox** — List queued/delivered wearable messages.  
+  Risk: `read` · parameters: status · required: none
+- **queue_notification** — Queue a notification/message for a wearable (needs confirm=true).  
+  Risk: `write` · parameters: text, to, kind · required: text

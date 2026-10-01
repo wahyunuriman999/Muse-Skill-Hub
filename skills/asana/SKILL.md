@@ -105,3 +105,12 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **create_task** — Create a task (needs confirm=true).  
+  Risk: `write` · parameters: project_id, name, notes, due_on · required: project_id, name

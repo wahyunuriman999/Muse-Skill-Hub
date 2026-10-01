@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/tasks"]
     input_schema:
       type: object
       properties: {task_id: {type: "string"}, task_list_id: {type: "string", default: "@default"}}
@@ -20,7 +21,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/tasks"]
     input_schema:
       type: object
       properties: {title: {type: "string"}, notes: {type: "string"}, due: {type: "string"}, task_list_id: {type: "string", default: "@default"}}
@@ -30,7 +32,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/tasks.readonly"]
     input_schema:
       type: object
       properties: {}
@@ -40,7 +43,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/tasks.readonly"]
     input_schema:
       type: object
       properties: {task_list_id: {type: "string", default: "@default"}, show_completed: {type: "boolean", default: false}, limit: {type: "integer", default: 50, maximum: 100}}

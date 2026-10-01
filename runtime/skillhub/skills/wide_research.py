@@ -7,11 +7,10 @@ Set SERPER_API_KEY (shared with image-search/shopping).
 from __future__ import annotations
 
 import asyncio
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "wide-research"
 REQUIRED_ENV = ["SERPER_API_KEY"]
@@ -23,9 +22,7 @@ _BASE = "https://google.serper.dev/search"
 
 
 def _headers() -> dict:
-    key = os.environ.get("SERPER_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("SERPER_API_KEY", SKILL)
     return {"X-API-KEY": key, "Content-Type": "application/json"}
 
 

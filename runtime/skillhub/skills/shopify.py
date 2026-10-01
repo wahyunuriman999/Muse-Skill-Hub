@@ -5,11 +5,11 @@ Set SHOPIFY_STORE (e.g. my-shop) and SHOPIFY_ADMIN_TOKEN (shpat_...).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
 from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "shopify"
 REQUIRED_ENV = ["SHOPIFY_STORE", "SHOPIFY_ADMIN_TOKEN"]
@@ -18,8 +18,8 @@ SETUP_HELP = ("In Shopify admin: Settings > Apps > Develop apps > create app wit
 
 
 def _base() -> tuple[str, dict]:
-    store = os.environ.get("SHOPIFY_STORE")
-    token = os.environ.get("SHOPIFY_ADMIN_TOKEN")
+    store = cred("SHOPIFY_STORE", SKILL)
+    token = cred("SHOPIFY_ADMIN_TOKEN", SKILL)
     if not store or not token:
         raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
     return (f"https://{store}.myshopify.com/admin/api/2024-10",

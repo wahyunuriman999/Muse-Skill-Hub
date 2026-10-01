@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_state** — Read a vehicle's live state (battery, location, locks).  
+  Risk: `read` · parameters: vin · required: none
+- **list_vehicles** — List Tessie vehicles on the account.  
+  Risk: `read` · parameters: none · required: none

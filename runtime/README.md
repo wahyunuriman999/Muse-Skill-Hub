@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 # run the MCP server (stdio transport)
 python -m skillhub.server
-# → "muse-skill-hub v2.0.0: 97 skills registered, 94 with executable drivers, 210 MCP tools."
+# → "muse-skill-hub v2.1.0: 97 skills registered, 94 with executable drivers, 210 MCP tools."
 ```
 
 ### Claude Desktop

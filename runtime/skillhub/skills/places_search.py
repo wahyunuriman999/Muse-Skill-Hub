@@ -5,11 +5,10 @@ Set GOOGLE_MAPS_API_KEY.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "places-search"
 REQUIRED_ENV = ["GOOGLE_MAPS_API_KEY"]
@@ -20,9 +19,7 @@ _BASE = "https://places.googleapis.com/v1/places"
 
 
 def _headers() -> dict:
-    key = os.environ.get("GOOGLE_MAPS_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("GOOGLE_MAPS_API_KEY", SKILL)
     return {"X-Goog-Api-Key": key, "Content-Type": "application/json",
             "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.id"}
 

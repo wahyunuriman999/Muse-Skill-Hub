@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **reservation_link** — Build a prefilled reservation link for a restaurant.  
+  Risk: `read` · parameters: restaurant_slug, covers, datetime · required: restaurant_slug
+- **search_restaurants** — Build a prefilled OpenTable restaurant search link.  
+  Risk: `read` · parameters: query, covers · required: none

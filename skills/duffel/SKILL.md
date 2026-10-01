@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **create_order** — Book a selected offer — real money (needs confirm=true).  
+  Risk: `financial` · parameters: offer_id, currency, amount, passenger · required: offer_id, currency, amount
+- **search_offers** — Search flight offers (origin/destination are IATA codes).  
+  Risk: `read` · parameters: origin, destination, departure_date, passenger_age, max_connections, limit · required: origin, destination, departure_date

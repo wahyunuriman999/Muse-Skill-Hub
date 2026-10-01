@@ -6,11 +6,10 @@ AeroAPI uses HTTP Basic auth with the API key as the username. Set FLIGHTAWARE_A
 from __future__ import annotations
 
 import base64
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "flightaware"
 REQUIRED_ENV = ["FLIGHTAWARE_API_KEY"]
@@ -23,9 +22,7 @@ _BASE = "https://flightaware.com/aeroapi"
 
 
 def _headers() -> dict:
-    key = os.environ.get("FLIGHTAWARE_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("FLIGHTAWARE_API_KEY", SKILL)
     basic = base64.b64encode(f"{key}:".encode()).decode()
     return {"Authorization": f"Basic {basic}"}
 

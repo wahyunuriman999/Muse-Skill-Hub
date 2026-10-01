@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_design** — Get one design's details.  
+  Risk: `read` · parameters: design_id · required: design_id
+- **list_designs** — List the user's Canva designs.  
+  Risk: `read` · parameters: limit · required: none

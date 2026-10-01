@@ -7,12 +7,11 @@ ZOOM_ACCOUNT_ID.
 from __future__ import annotations
 
 import base64
-import os
 import time
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "zoom"
 REQUIRED_ENV = ["ZOOM_CLIENT_ID", "ZOOM_CLIENT_SECRET", "ZOOM_ACCOUNT_ID"]
@@ -23,11 +22,9 @@ _token_cache: dict = {}
 
 
 async def _token() -> str:
-    cid = os.environ.get("ZOOM_CLIENT_ID")
-    secret = os.environ.get("ZOOM_CLIENT_SECRET")
-    aid = os.environ.get("ZOOM_ACCOUNT_ID")
-    if not cid or not secret or not aid:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    cid = cred("ZOOM_CLIENT_ID", SKILL)
+    secret = cred("ZOOM_CLIENT_SECRET", SKILL)
+    aid = cred("ZOOM_ACCOUNT_ID", SKILL)
     if _token_cache.get("exp", 0) > time.time() + 60:
         return _token_cache["token"]
     basic = base64.b64encode(f"{cid}:{secret}".encode()).decode()

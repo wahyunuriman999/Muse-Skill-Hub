@@ -84,3 +84,18 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_agent** — Describe one agent.  
+  Risk: `read` · parameters: name · required: name
+- **list_agents** — List registered agents.  
+  Risk: `read` · parameters: none · required: none
+- **register_agent** — Register an agent definition (needs confirm=true).  
+  Risk: `write` · parameters: name, description, capabilities · required: name
+- **remove_agent** — Remove an agent (needs confirm=true).  
+  Risk: `write` · parameters: name · required: name

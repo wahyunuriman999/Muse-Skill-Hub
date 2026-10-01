@@ -105,3 +105,16 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **forget_fact** — Remove facts matching a query (needs confirm=true).  
+  Risk: `destructive` · parameters: query · required: query
+- **list_facts** — List stored facts.  
+  Risk: `read` · parameters: none · required: none
+- **remember_fact** — Store a fact in local memory (needs confirm=true).  
+  Risk: `write` · parameters: fact, topic · required: fact

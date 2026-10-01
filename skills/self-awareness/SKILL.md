@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **describe_skill** — Describe one skill's real capabilities.  
+  Risk: `read` · parameters: skill · required: skill
+- **get_runtime_info** — Report real runtime facts: versions, skill counts, driver list.  
+  Risk: `read` · parameters: none · required: none

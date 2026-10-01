@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/drive.readonly"]
     input_schema:
       type: object
       properties: {limit: {type: "integer", default: 20, maximum: 100}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/drive.readonly"]
     input_schema:
       type: object
       properties: {query: {type: "string", description: "Substring to match in file names"}, limit: {type: "integer", default: 20, maximum: 100}}

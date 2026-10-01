@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {channel_id: {type: "string", description: "Channel ID, e.g. C012AB345CD"}, limit: {type: "integer", default: 10, maximum: 50}}
@@ -30,7 +32,8 @@ actions:
     type: write
     risk: communication
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {channel_id: {type: "string"}, text: {type: "string"}}

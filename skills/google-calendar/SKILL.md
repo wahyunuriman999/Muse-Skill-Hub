@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **create_event** — Create an event (needs confirm=true). Times are RFC3339 with offset.  
+  Risk: `write` · parameters: summary, start, end, description, location · required: summary, start, end
+- **list_events** — List upcoming events on the primary calendar.  
+  Risk: `read` · parameters: time_min, time_max, query, limit · required: none

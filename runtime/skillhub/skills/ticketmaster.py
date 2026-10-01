@@ -5,11 +5,10 @@ copy the Consumer Key). Set TICKETMASTER_API_KEY.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "ticketmaster"
 REQUIRED_ENV = ["TICKETMASTER_API_KEY"]
@@ -22,9 +21,7 @@ _BASE = "https://app.ticketmaster.com/discovery/v2/events.json"
 
 
 def _key() -> str:
-    key = os.environ.get("TICKETMASTER_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("TICKETMASTER_API_KEY", SKILL)
     return key
 
 

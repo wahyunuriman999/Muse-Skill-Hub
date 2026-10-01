@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **export_image** — Export node(s) as image URLs.  
+  Risk: `read` · parameters: file_key, node_ids, format, scale · required: file_key, node_ids
+- **get_file** — Get a Figma file's structure (file key from its URL).  
+  Risk: `read` · parameters: file_key · required: file_key

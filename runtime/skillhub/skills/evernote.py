@@ -6,10 +6,10 @@ Set EVERNOTE_DEV_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing, SkillError
+from ..errors import SkillError
+from ..credentials import cred
 
 SKILL = "evernote"
 REQUIRED_ENV = ["EVERNOTE_DEV_TOKEN"]
@@ -20,9 +20,7 @@ SETUP_HELP = (
 
 
 def _client():
-    token = os.environ.get("EVERNOTE_DEV_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("EVERNOTE_DEV_TOKEN", SKILL)
     try:
         from evernote.api.client import EvernoteClient
     except ImportError as exc:

@@ -5,11 +5,10 @@ Set CALENDLY_API_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "calendly"
 REQUIRED_ENV = ["CALENDLY_API_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://api.calendly.com"
 
 
 def _headers() -> dict:
-    token = os.environ.get("CALENDLY_API_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("CALENDLY_API_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 

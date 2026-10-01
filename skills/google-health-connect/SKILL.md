@@ -105,3 +105,16 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_daily_metrics** — Daily metrics (steps, distance, calories, HR, HRV...).  
+  Risk: `read` · parameters: date, limit · required: none
+- **get_sleep** — Sleep sessions.  
+  Risk: `read` · parameters: limit · required: none
+- **get_workouts** — Workouts.  
+  Risk: `read` · parameters: limit · required: none

@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_balances** — Read accounts and balances for an access token.  
+  Risk: `read` · parameters: access_token · required: access_token
+- **sandbox_connect** — Create a Plaid Sandbox item and get an access token (needs confirm=true).  
+  Risk: `write` · parameters: institution_id · required: none

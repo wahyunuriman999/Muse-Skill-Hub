@@ -7,11 +7,10 @@ Set GOOGLE_OAUTH_TOKEN (shared with the gmail/calendar/drive drivers).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "google-sheets"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://sheets.googleapis.com/v4/spreadsheets"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -51,10 +48,10 @@ ACTIONS = {
     "read_range": ActionDef("Read values from a range, e.g. 'Sheet1!A1:D20'.",
         {"spreadsheet_id": {"type": "string", "description": "The spreadsheet ID from its URL"},
          "range": {"type": "string", "description": "A1 notation range"}},
-        ["spreadsheet_id", "range"], read_range),
+        ["spreadsheet_id", "range"], read_range, required_scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"]),
     "append_row": ActionDef("Append one row to a range (needs confirm=true).",
         {"spreadsheet_id": {"type": "string"}, "range": {"type": "string"},
          "values": {"type": "array", "items": {"type": "string"},
                     "description": "Row values left to right"}},
-        ["spreadsheet_id", "range", "values"], append_row, write=True),
+        ["spreadsheet_id", "range", "values"], append_row, write=True, required_scopes=["https://www.googleapis.com/auth/spreadsheets"]),
 }

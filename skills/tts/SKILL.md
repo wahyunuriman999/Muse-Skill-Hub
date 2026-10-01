@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_voices** — List available voices.  
+  Risk: `read` · parameters: none · required: none
+- **synthesize** — Turn text into spoken audio (MP3, base64). Needs confirm=true.  
+  Risk: `communication` · parameters: voice_id, text · required: voice_id, text

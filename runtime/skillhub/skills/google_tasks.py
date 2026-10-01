@@ -5,11 +5,10 @@ Set GOOGLE_OAUTH_TOKEN (shared with the other Google drivers).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "google-tasks"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://tasks.googleapis.com/tasks/v1/users/@me"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -69,17 +66,17 @@ async def complete_task(params: dict) -> dict:
 
 
 ACTIONS = {
-    "list_task_lists": ActionDef("List task lists.", {}, [], list_task_lists),
+    "list_task_lists": ActionDef("List task lists.", {}, [], list_task_lists, required_scopes=["https://www.googleapis.com/auth/tasks.readonly"]),
     "list_tasks": ActionDef("List tasks in a list.",
         {"task_list_id": {"type": "string", "default": "@default"},
          "show_completed": {"type": "boolean", "default": False},
          "limit": {"type": "integer", "default": 50, "maximum": 100}},
-        [], list_tasks),
+        [], list_tasks, required_scopes=["https://www.googleapis.com/auth/tasks.readonly"]),
     "create_task": ActionDef("Create a task (needs confirm=true). Due is RFC3339.",
         {"title": {"type": "string"}, "notes": {"type": "string"},
          "due": {"type": "string"}, "task_list_id": {"type": "string", "default": "@default"}},
-        ["title"], create_task, write=True),
+        ["title"], create_task, write=True, required_scopes=["https://www.googleapis.com/auth/tasks"]),
     "complete_task": ActionDef("Mark a task completed (needs confirm=true).",
         {"task_id": {"type": "string"}, "task_list_id": {"type": "string", "default": "@default"}},
-        ["task_id"], complete_task, write=True),
+        ["task_id"], complete_task, write=True, required_scopes=["https://www.googleapis.com/auth/tasks"]),
 }

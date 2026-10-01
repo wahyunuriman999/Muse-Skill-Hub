@@ -9,11 +9,10 @@ HEALTHEX_AUTH_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import _proxy
+from ..credentials import cred
 
 SKILL = "healthex"
 REQUIRED_ENV = ["HEALTHEX_AUTH_TOKEN"]
@@ -26,9 +25,7 @@ _MCP_URL = "https://api.healthex.io/mcp"
 
 
 def _token() -> str:
-    token = os.environ.get("HEALTHEX_AUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("HEALTHEX_AUTH_TOKEN", SKILL)
     return token
 
 

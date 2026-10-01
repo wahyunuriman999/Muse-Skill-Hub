@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_messages** — List/search mailbox messages.  
+  Risk: `read` · parameters: query, limit · required: none
+- **send_mail** — Send an email (needs confirm=true).  
+  Risk: `communication` · parameters: to, subject, body · required: to, subject, body

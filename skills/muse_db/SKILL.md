@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **execute_write** — Run INSERT/UPDATE/DELETE (needs approval; DROP/ALTER/PRAGMA blocked).  
+  Risk: `destructive` · parameters: sql · required: sql
+- **list_tables** — List tables in the local database.  
+  Risk: `read` · parameters: none · required: none

@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_playlists** — List the user's playlists.  
+  Risk: `read` · parameters: limit · required: none
+- **pause** — Pause playback (needs confirm=true).  
+  Risk: `write` · parameters: device_id · required: none

@@ -10,7 +10,8 @@ actions:
     type: write
     risk: financial
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {offer_id: {type: "string"}, currency: {type: "string"}, amount: {type: "string"}, passenger: {type: "object", description: "Duffel passenger object (given_name, family_name, ...)"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {origin: {type: "string", description: "e.g. CGK"}, destination: {type: "string", description: "e.g. SIN"}, departure_date: {type: "string", description: "YYYY-MM-DD"}, passenger_age: {type: "integer", default: 30}, max_connections: {type: "integer", default: 1}, limit: {type: "integer", default: 5, maximum: 20}}

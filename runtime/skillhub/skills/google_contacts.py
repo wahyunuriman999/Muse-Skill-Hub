@@ -5,11 +5,10 @@ Set GOOGLE_OAUTH_TOKEN (shared with the other Google drivers).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "google-contacts"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://people.googleapis.com/v1"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -55,9 +52,9 @@ async def create_contact(params: dict) -> dict:
 ACTIONS = {
     "list_contacts": ActionDef("List Google contacts.",
         {"limit": {"type": "integer", "default": 50, "maximum": 200}},
-        [], list_contacts),
+        [], list_contacts, required_scopes=["https://www.googleapis.com/auth/contacts.readonly"]),
     "create_contact": ActionDef("Create a contact (needs confirm=true).",
         {"given_name": {"type": "string"}, "family_name": {"type": "string"},
          "email": {"type": "string"}},
-        [], create_contact, write=True),
+        [], create_contact, write=True, required_scopes=["https://www.googleapis.com/auth/contacts"]),
 }

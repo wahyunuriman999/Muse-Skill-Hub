@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {destination: {type: "string"}, checkin: {type: "string"}, checkout: {type: "string"}, adults: {type: "integer", default: 2}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {restaurant: {type: "string"}, covers: {type: "integer", default: 2}, datetime: {type: "string", description: "ISO8601"}}
@@ -30,7 +32,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {keyword: {type: "string"}, city: {type: "string"}, limit: {type: "integer", default: 10}}
@@ -40,7 +43,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {origin: {type: "string"}, destination: {type: "string"}, departure_date: {type: "string"}, limit: {type: "integer", default: 5}}

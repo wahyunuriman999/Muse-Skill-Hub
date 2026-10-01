@@ -5,11 +5,10 @@ Setup: an OAuth2 access token with Contacts.ReadWrite. Set MICROSOFT_ACCESS_TOKE
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "outlook-contacts"
 REQUIRED_ENV = ["MICROSOFT_ACCESS_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://graph.microsoft.com/v1.0/me/contacts"
 
 
 def _headers() -> dict:
-    token = os.environ.get("MICROSOFT_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("MICROSOFT_ACCESS_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -54,9 +51,9 @@ ACTIONS = {
     "list_contacts": ActionDef("List/search Outlook contacts.",
         {"query": {"type": "string"},
          "limit": {"type": "integer", "default": 20, "maximum": 100}},
-        [], list_contacts),
+        [], list_contacts, required_scopes=["Contacts.Read"]),
     "create_contact": ActionDef("Create a contact (needs confirm=true).",
         {"given_name": {"type": "string"}, "surname": {"type": "string"},
          "display_name": {"type": "string"}, "email": {"type": "string"}},
-        [], create_contact, write=True),
+        [], create_contact, write=True, required_scopes=["Contacts.ReadWrite"]),
 }

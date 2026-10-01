@@ -84,3 +84,14 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **explain_collection** — Explain what data this runtime collects.  
+  Risk: `read` · parameters: none · required: none
+- **export_data** — Export all local data as a zip archive.  
+  Risk: `read` · parameters: none · required: none

@@ -10,7 +10,8 @@ actions:
     type: write
     risk: sensitive
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/gmail.readonly"]
     input_schema:
       type: object
       properties: {message_id: {type: "string", description: "Gmail message ID"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/gmail.readonly"]
     input_schema:
       type: object
       properties: {query: {type: "string", default: "", description: "Gmail search query, e.g. 'from:boss subject:report newer_than:7d'"}, limit: {type: "integer", default: 10, maximum: 50}}
@@ -30,7 +32,8 @@ actions:
     type: write
     risk: communication
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/gmail.send"]
     input_schema:
       type: object
       properties: {to: {type: "string"}, subject: {type: "string"}, body: {type: "string"}}

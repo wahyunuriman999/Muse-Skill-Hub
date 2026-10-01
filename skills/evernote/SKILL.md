@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_notebooks** — List Evernote notebooks.  
+  Risk: `read` · parameters: none · required: none
+- **list_notes** — Search notes (optionally in one notebook).  
+  Risk: `read` · parameters: query, notebook_guid, limit · required: none

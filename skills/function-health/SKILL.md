@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **query_audit_log** — Query the runtime audit log (newest first). Secrets are never stored raw.  
+  Risk: `read` · parameters: limit, skill, action, result · required: none
+- **runtime_health** — Run the runtime self health check.  
+  Risk: `read` · parameters: none · required: none

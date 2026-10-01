@@ -6,11 +6,10 @@ TAILSCALE_TAILNET (your tailnet name, e.g. 'example.com').
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "tailscale"
 REQUIRED_ENV = ["TAILSCALE_API_KEY", "TAILSCALE_TAILNET"]
@@ -23,10 +22,8 @@ _BASE = "https://api.tailscale.com"
 
 
 def _ctx() -> tuple[dict, str]:
-    key = os.environ.get("TAILSCALE_API_KEY")
-    tailnet = os.environ.get("TAILSCALE_TAILNET")
-    if not key or not tailnet:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("TAILSCALE_API_KEY", SKILL)
+    tailnet = cred("TAILSCALE_TAILNET", SKILL)
     return {"Authorization": f"Bearer {key}"}, tailnet
 
 

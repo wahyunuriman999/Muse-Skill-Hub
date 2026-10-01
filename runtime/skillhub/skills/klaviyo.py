@@ -5,11 +5,10 @@ Set KLAVIYO_API_KEY.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "klaviyo"
 REQUIRED_ENV = ["KLAVIYO_API_KEY"]
@@ -22,9 +21,7 @@ _BASE = "https://a.klaviyo.com/api"
 
 
 def _headers() -> dict:
-    key = os.environ.get("KLAVIYO_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("KLAVIYO_API_KEY", SKILL)
     return {"Authorization": f"Klaviyo-API-Key {key}",
             "revision": "2024-10-15", "Content-Type": "application/json"}
 

@@ -5,11 +5,10 @@ Set NOTION_TOKEN (starts with ntn_ or secret_).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "notion"
 REQUIRED_ENV = ["NOTION_TOKEN"]
@@ -20,9 +19,7 @@ _BASE = "https://api.notion.com/v1"
 
 
 def _headers() -> dict:
-    token = os.environ.get("NOTION_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("NOTION_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Notion-Version": "2022-06-28",
             "Content-Type": "application/json"}
 

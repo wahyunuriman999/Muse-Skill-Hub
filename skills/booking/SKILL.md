@@ -105,3 +105,18 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **hotel_search_link** — Build a prefilled Booking.com hotel search link.  
+  Risk: `read` · parameters: destination, checkin, checkout, adults · required: destination
+- **restaurant_search_link** — Build a prefilled OpenTable search link.  
+  Risk: `read` · parameters: restaurant, covers, datetime · required: none
+- **search_events** — Search event tickets via the ticketmaster driver.  
+  Risk: `read` · parameters: keyword, city, limit · required: none
+- **search_flights** — Search flights via the duffel driver.  
+  Risk: `read` · parameters: origin, destination, departure_date, limit · required: origin, destination, departure_date

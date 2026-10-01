@@ -1,12 +1,17 @@
 """Skill registry: loads the catalog, validates input, enforces policy,
-and dispatches actions (v2).
+and dispatches actions (v2.1).
 
 Execution pipeline::
 
-    params → validate → policy → approval → idempotency → credentials
-           → handler → audit
+    params → validate → policy → approval → credentials → scope check
+           → idempotency reserve → handler → output validation
+           → idempotency commit → audit
 
-Every dispatch is audit-logged. Secrets are never logged raw.
+The manifest (``skills/<name>/manifest.yaml``) is the canonical source of
+truth for per-action risk: the registry applies manifest risk over driver
+defaults at load time. Approval consumption and idempotency reservation
+are atomic (single file-locked critical section each). Every dispatch is
+audit-logged. Secrets are never logged raw.
 """
 from __future__ import annotations
 
@@ -18,11 +23,11 @@ from pathlib import Path
 from typing import Any
 
 from . import approval, audit, localstore
-from .driver import ActionDef
+from .driver import RISK_LEVELS, ActionDef
 from .errors import (ApprovalRequired, DriverNotImplemented, IdempotencyConflict,
                      PolicyBlocked, SkillError, UpstreamError)
 from .policy import DEFAULT_POLICY, STRICT_RISKS, PolicyEngine, risk_for
-from .validate import validate_params
+from .validate import validate_output, validate_params
 
 SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "skills"
 RUNTIME_SKILLS = Path(__file__).resolve().parent / "skills"
@@ -60,6 +65,33 @@ def _frontmatter(path: Path) -> tuple[dict, str]:
     return meta, text
 
 
+def _manifest_risks(name: str) -> dict[str, str]:
+    """Per-action risk from the skill manifest — the canonical source of truth.
+
+    The manifest is generated from drivers + policy, but at runtime the
+    manifest wins: ``manifest → driver → MCP → policy`` all agree because
+    they all read this value.
+    """
+    path = SKILLS_DIR / name / "manifest.yaml"
+    risks: dict[str, str] = {}
+    if not path.exists():
+        return risks
+    try:
+        import yaml
+        doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return risks
+    for item in doc.get("actions") or []:
+        if isinstance(item, dict) and item.get("name") and item.get("risk"):
+            risk = str(item["risk"])
+            if risk not in RISK_LEVELS:
+                raise ValueError(
+                    f"manifest {name}: unknown risk level '{risk}' "
+                    f"for action '{item['name']}'")
+            risks[str(item["name"])] = risk
+    return risks
+
+
 def load_registry() -> dict[str, SkillEntry]:
     reg: dict[str, SkillEntry] = {}
     if not SKILLS_DIR.exists():
@@ -83,24 +115,87 @@ def load_registry() -> dict[str, SkillEntry]:
             entry.actions = getattr(mod, "ACTIONS", {})
             entry.required_env = getattr(mod, "REQUIRED_ENV", [])
             entry.setup_help = getattr(mod, "SETUP_HELP", "")
+            # manifest is the canonical source of truth for per-action risk
+            manifest_risks = _manifest_risks(name)
+            for aname, ad in entry.actions.items():
+                manifest_risk = manifest_risks.get(aname)
+                if manifest_risk:
+                    ad.risk = manifest_risk
         reg[name] = entry
     return reg
 
 
 # --- capability discovery -----------------------------------------------------
 
+import math as _math
+import re as _re
+
+_TOKEN_RE = _re.compile(r"[a-z0-9]+")
+
+
+def _tokens(text: str) -> list[str]:
+    return _TOKEN_RE.findall(text.lower())
+
+
+def _capability_corpus(registry: dict[str, SkillEntry]) -> dict[str, str]:
+    docs = {}
+    for name, entry in registry.items():
+        name_words = entry.name.replace("-", " ")
+        docs[name] = " ".join([
+            # skill name repeated: an exact name match should outrank a
+            # description-only match (same 3x boost the old scorer used)
+            name_words, name_words, name_words,
+            entry.description,
+            *[a.replace("_", " ") for a in entry.actions],
+            *[ad.description for ad in entry.actions.values()],
+        ])
+    return docs
+
+
 def search_capabilities(registry: dict[str, SkillEntry], query: str,
                         top_k: int = 8) -> list[dict]:
-    """Keyword search over the catalog → top-K candidates for dynamic loading."""
-    terms = [t.lower() for t in query.split() if t]
-    scored: list[tuple[int, SkillEntry]] = []
-    for entry in registry.values():
-        hay = " ".join([entry.name, entry.description,
-                        *[a for a in entry.actions],
-                        *[ad.description for ad in entry.actions.values()]]).lower()
-        score = sum(3 if t in entry.name.lower() else 1 for t in terms if t in hay)
-        if score:
-            scored.append((score, entry))
+    """Relevance-ranked capability search (TF-IDF cosine, no external deps).
+
+    Each skill is a document (name + description + action names +
+    descriptions); the query is scored by TF-IDF cosine similarity. This
+    is lexical relevance ranking — better than substring matching, but not
+    semantic embeddings. Dynamic code loading is still out of scope:
+    results name tools that already exist in the MCP server.
+    """
+    docs = _capability_corpus(registry)
+    names = list(docs)
+    # document frequency
+    df: dict[str, int] = {}
+    doc_tokens: dict[str, list[str]] = {}
+    for n in names:
+        toks = _tokens(docs[n])
+        doc_tokens[n] = toks
+        for t in set(toks):
+            df[t] = df.get(t, 0) + 1
+    n_docs = max(1, len(names))
+    idf = {t: _math.log(n_docs / (1 + c)) for t, c in df.items()}
+
+    def vec(toks: list[str]) -> dict[str, float]:
+        tf: dict[str, float] = {}
+        for t in toks:
+            tf[t] = tf.get(t, 0) + 1
+        total = max(1, len(toks))
+        return {t: (c / total) * idf.get(t, 0.0) for t, c in tf.items()}
+
+    def cosine(a: dict[str, float], b: dict[str, float]) -> float:
+        dot = sum(a[t] * b.get(t, 0.0) for t in a)
+        na = _math.sqrt(sum(v * v for v in a.values()))
+        nb = _math.sqrt(sum(v * v for v in b.values()))
+        return dot / (na * nb) if na and nb else 0.0
+
+    qvec = vec(_tokens(query))
+    scored = []
+    for n in names:
+        s = cosine(qvec, vec(doc_tokens[n]))
+        # min_score (standard IR practice): incidental single-term overlap in
+        # long docs yields tiny cosine values; real queries score higher.
+        if s >= 0.06:
+            scored.append((s, registry[n]))
     scored.sort(key=lambda s: -s[0])
     return [{"skill": e.name, "description": e.description,
              "implemented": e.implemented,
@@ -224,24 +319,83 @@ def tool_schema(entry: SkillEntry) -> dict:
 # --- dispatch --------------------------------------------------------------------
 
 _IDEMPOTENCY_STORE = "idempotency"
+_IDEMPOTENCY_MAX = 2000
+
+
+def _params_hash(params: dict) -> str:
+    import hashlib
+    import json as _json
+    return hashlib.sha256(
+        _json.dumps(params or {}, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def _idem_prune(data: dict) -> None:
+    if len(data) > _IDEMPOTENCY_MAX:
+        keep = sorted(data.items(),
+                      key=lambda kv: kv[1].get("claimed_at", 0))[-_IDEMPOTENCY_MAX:]
+        data.clear()
+        data.update(keep)
+
+
+def _idem_reserve(key: str, skill: str, action: str,
+                  params_hash: str) -> tuple[bool, dict | None]:
+    """Atomically claim an idempotency key — the concurrency-safe core.
+
+    Returns ``(owned, record)``:
+    - ``(True, None)`` — we created a PENDING record; we own the execution.
+    - ``(True, None)`` — we atomically moved a FAILED record back to
+      PENDING; we own the single retry.
+    - ``(False, record)`` — the key is already owned (PENDING in-flight or
+      SUCCEEDED); the caller must not execute.
+
+    The check and the claim happen inside ONE file-locked critical
+    section, so two concurrent processes cannot both start. A key claimed
+    for different skill/action/params raises IdempotencyConflict.
+    """
+    with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
+        existing = data.get(key)
+        if existing:
+            if (existing.get("skill"), existing.get("action"),
+                    existing.get("params_hash")) != (skill, action, params_hash):
+                raise IdempotencyConflict(
+                    f"Idempotency key '{key}' was already used for a "
+                    f"different call.")
+            if existing.get("status") == "failed":
+                existing["status"] = "pending"
+                existing["claimed_at"] = int(time.time())
+                existing["error_code"] = None
+                return True, None
+            return False, dict(existing)
+        data[key] = {"skill": skill, "action": action,
+                     "params_hash": params_hash, "status": "pending",
+                     "result": None, "error_code": None,
+                     "claimed_at": int(time.time())}
+        _idem_prune(data)
+        return True, None
+
+
+def _idem_commit(key: str, result: Any) -> None:
+    """Atomically mark a claimed key SUCCEEDED with its result."""
+    with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
+        rec = data.get(key)
+        if rec:
+            rec["status"] = "succeeded"
+            rec["result"] = result if isinstance(result, dict) else {"result": result}
+            rec["completed_at"] = int(time.time())
+
+
+def _idem_fail(key: str, error_code: str) -> None:
+    """Atomically mark a claimed key FAILED (exactly one retry allowed later)."""
+    with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
+        rec = data.get(key)
+        if rec:
+            rec["status"] = "failed"
+            rec["error_code"] = error_code
 
 
 def _missing_env(entry: SkillEntry) -> list[str]:
-    return [v for v in entry.required_env if not os.environ.get(v)]
-
-
-def _idem_get(key: str) -> dict | None:
-    return localstore.read_json(_IDEMPOTENCY_STORE, {}).get(key)
-
-
-def _idem_put(key: str, record: dict) -> None:
-    data = localstore.read_json(_IDEMPOTENCY_STORE, {})
-    data[key] = record
-    # keep the store bounded
-    if len(data) > 2000:
-        data = dict(sorted(data.items(),
-                           key=lambda kv: kv[1].get("created_at", 0))[-2000:])
-    localstore.write_json(_IDEMPOTENCY_STORE, data)
+    from . import credentials as creds
+    return [v for v in entry.required_env if not creds.has(v)]
 
 
 async def dispatch(entry: SkillEntry, action: str, params: dict,
@@ -251,7 +405,18 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
                    request_id: str | None = None,
                    actor: str = "local-user",
                    policy: PolicyEngine | None = None) -> dict:
-    """Execute one skill action through the full v2 pipeline."""
+    """Execute one skill action through the v2.1 pipeline.
+
+    params → validate → policy → approval → credentials → scope check
+           → idempotency reserve → handler → output validation
+           → idempotency commit → audit
+
+    Reservation happens BEFORE the handler runs (never after): a retry
+    that arrives while the first execution is in-flight sees PENDING and
+    is rejected instead of double-executing. Approval is consumed before
+    any key is claimed, so failed approvals never pollute the idempotency
+    store with dead PENDING keys.
+    """
     request_id = request_id or uuid.uuid4().hex[:12]
     started = time.monotonic()
     policy = policy or DEFAULT_POLICY
@@ -273,9 +438,9 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
             raise DriverNotImplemented(entry.name)
         action_def = entry.actions[action]
 
-        # 1. input validation — before anything else
+        # 1. input validation — before anything else (schema is source of truth)
         validate_params(entry.name, action, action_def.parameters,
-                        action_def.required, params)
+                        action_def.required, params, strict=action_def.strict)
 
         # 2. policy
         risk = risk_for(entry.name, action, action_def.risk)
@@ -284,71 +449,84 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
             raise PolicyBlocked(entry.name, action,
                                 f"policy rule denies {entry.name}.{action}")
 
-        # 3. approval for anything riskier than read
+        # 3. approval for anything riskier than read (actor-bound, atomic)
         approval_used = ""
         if verdict == "approval_required":
             if approval_id:
-                approval.consume(approval_id, entry.name, action, params)
+                approval.consume(approval_id, entry.name, action, params,
+                                 actor=actor)
                 approval_used = approval_id
             elif confirm and risk == "write":
                 pass  # legacy simple confirmation for plain writes
             else:
                 pending = approval.request_approval(
-                    entry.name, action, params, risk=risk,
+                    entry.name, action, params, risk=risk, actor=actor,
                     preview={k: params.get(k) for k in action_def.required})
                 raise ApprovalRequired(entry.name, action,
                                        preview=pending["preview"],
                                        approval_id=pending["approval_id"])
 
-        # 4. idempotency — same key, same call → first result, no re-execution
-        idem_hit = False
-        if risk != "read" and action_def.idempotent and idempotency_key:
-            existing = _idem_get(idempotency_key)
-            if existing:
-                import hashlib, json as _json
-                phash = hashlib.sha256(
-                    _json.dumps(params, sort_keys=True, default=str).encode()
-                ).hexdigest()
-                if (existing.get("skill"), existing.get("action")) != \
-                        (entry.name, action) or existing.get("params_hash") != phash:
-                    raise IdempotencyConflict(
-                        f"Idempotency key '{idempotency_key}' was already used "
-                        f"for a different call.")
-                idem_hit = True
-                result = dict(existing["result"])
-                result["deduplicated"] = True
-                _audit("deduplicated", risk=risk, approval_id=approval_used,
-                       idempotency_key=idempotency_key)
-                return result
-
-        # 5. credentials
+        # 4. credentials must exist before anything is claimed or executed
         missing = _missing_env(entry)
         if missing:
             from .errors import CredentialsMissing
             raise CredentialsMissing(entry.name, missing, entry.setup_help)
 
-        # 6. execute
+        # 5. credential scope check (enforced when scopes are known)
+        scope_check = ""
+        if action_def.required_scopes:
+            from . import credentials as creds
+            scope_check = creds.require_scopes(
+                entry.required_env, action_def.required_scopes, entry.name)
+
+        # 6. idempotency reservation — atomic claim BEFORE the handler runs
+        reserved = False
+        if risk != "read" and action_def.supports_idempotency_key and idempotency_key:
+            owned, existing = _idem_reserve(
+                idempotency_key, entry.name, action, _params_hash(params))
+            if not owned:
+                assert existing is not None
+                if existing.get("status") == "succeeded":
+                    result = dict(existing.get("result") or {})
+                    result["deduplicated"] = True
+                    _audit("deduplicated", risk=risk, approval_id=approval_used,
+                           idempotency_key=idempotency_key)
+                    return result
+                # pending → another execution owns this key right now
+                raise IdempotencyConflict(
+                    f"Idempotency key '{idempotency_key}' is already claimed "
+                    f"by an in-flight execution; retry after it completes.")
+            reserved = True
+
+        # 7. execute
         try:
             result = await action_def.handler(dict(params))
-        except SkillError:
+        except SkillError as exc:
+            if reserved:
+                _idem_fail(idempotency_key, exc.code)
             raise
         except Exception as exc:  # never leak tracebacks as success
+            if reserved:
+                _idem_fail(idempotency_key, "upstream_error")
             raise UpstreamError(entry.name, f"{type(exc).__name__}: {exc}",
                                 action=action) from exc
 
-        if risk != "read" and action_def.idempotent and idempotency_key and not idem_hit:
-            import hashlib, json as _json
-            _idem_put(idempotency_key, {
-                "skill": entry.name, "action": action,
-                "params_hash": hashlib.sha256(
-                    _json.dumps(params, sort_keys=True, default=str).encode()
-                ).hexdigest(),
-                "result": result if isinstance(result, dict) else {"result": result},
-                "created_at": int(time.time()),
-            })
+        # 8. output validation — the declared contract is enforced, not documented
+        try:
+            result = validate_output(entry.name, action,
+                                     action_def.output_schema, result)
+        except SkillError as exc:
+            if reserved:
+                _idem_fail(idempotency_key, exc.code)
+            raise
+
+        # 9. commit the idempotency record atomically
+        if reserved:
+            _idem_commit(idempotency_key, result)
 
         _audit("success", risk=risk, approval_id=approval_used,
-               idempotency_key=idempotency_key or "")
+               idempotency_key=idempotency_key or "",
+               scope_check=scope_check)
         if isinstance(result, dict):
             result = dict(result)
             result.setdefault("meta", {})["request_id"] = request_id

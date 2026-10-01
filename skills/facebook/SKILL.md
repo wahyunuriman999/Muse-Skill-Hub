@@ -104,3 +104,16 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_posts** — List recent posts from the profile/Page feed.  
+  Risk: `read` · parameters: limit · required: none
+- **get_profile** — Get the connected Facebook profile.  
+  Risk: `read` · parameters: none · required: none
+- **post_to_feed** — Publish a post to the feed (needs confirm=true).  
+  Risk: `write` · parameters: message · required: message

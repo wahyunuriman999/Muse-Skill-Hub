@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_event_types** — List the user's Calendly event types.  
+  Risk: `read` · parameters: limit · required: none
+- **list_events** — List scheduled events.  
+  Risk: `read` · parameters: min_start_time, limit · required: none

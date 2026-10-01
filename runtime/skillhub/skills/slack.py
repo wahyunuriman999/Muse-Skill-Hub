@@ -1,29 +1,26 @@
 """Slack driver — real Slack Web API implementation.
 
-Setup: create a Slack app, add a Bot Token (xoxb-...), set SLACK_BOT_TOKEN.
+Setup: create a Slack app, add a Bot Token (starts with 'xoxb'), set SLACK_BOT_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "slack"
 REQUIRED_ENV = ["SLACK_BOT_TOKEN"]
 SETUP_HELP = (
     "Create a Slack app at https://api.slack.com/apps, install it to your workspace, "
-    "and copy the Bot User OAuth Token (starts with xoxb-)."
+    "and copy the Bot User OAuth Token (starts with 'xoxb')."
 )
 
 _BASE = "https://slack.com/api"
 
 
 def _headers() -> dict:
-    token = os.environ.get("SLACK_BOT_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("SLACK_BOT_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 

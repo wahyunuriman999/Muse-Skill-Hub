@@ -10,7 +10,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {limit: {type: "integer", default: 50, minimum: 1, maximum: 500}, skill: {type: "string", default: ""}, action: {type: "string", default: ""}, result: {type: "string", enum: ["", "success", "error", "blocked", "deduplicated"], default: ""}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {}

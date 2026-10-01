@@ -5,11 +5,10 @@ Setup: a Private Integration API key from your GoHighLevel sub-account
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "ghl"
 REQUIRED_ENV = ["GHL_API_KEY"]
@@ -22,9 +21,7 @@ _BASE = "https://services.leadconnectorhq.com"
 
 
 def _headers() -> dict:
-    key = os.environ.get("GHL_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("GHL_API_KEY", SKILL)
     return {"Authorization": f"Bearer {key}", "Version": "2021-07-28",
             "Content-Type": "application/json"}
 

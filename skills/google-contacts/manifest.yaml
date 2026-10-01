@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/contacts"]
     input_schema:
       type: object
       properties: {given_name: {type: "string"}, family_name: {type: "string"}, email: {type: "string"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/contacts.readonly"]
     input_schema:
       type: object
       properties: {limit: {type: "integer", default: 50, maximum: 200}}

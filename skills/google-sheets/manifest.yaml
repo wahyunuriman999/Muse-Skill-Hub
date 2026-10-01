@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/spreadsheets"]
     input_schema:
       type: object
       properties: {spreadsheet_id: {type: "string"}, range: {type: "string"}, values: {type: "array", items: {type: "string"}, description: "Row values left to right"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
     input_schema:
       type: object
       properties: {spreadsheet_id: {type: "string", description: "The spreadsheet ID from its URL"}, range: {type: "string", description: "A1 notation range"}}

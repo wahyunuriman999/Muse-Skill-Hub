@@ -84,3 +84,14 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_channels** — List registered channels.  
+  Risk: `read` · parameters: none · required: none
+- **register_channel** — Register a channel (needs confirm=true).  
+  Risk: `write` · parameters: name, provider, webhook_url · required: name

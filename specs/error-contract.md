@@ -29,6 +29,8 @@ Every failure surfaces as this envelope to the LLM:
 | `timeout` | upstream timeout | yes |
 | `upstream_error` | other upstream failure | yes |
 | `idempotency_conflict` | key reused for a different call | no |
+| `scope_mismatch` | credential lacks a scope the action requires | no |
+| `output_contract_violation` | handler result failed the action's output_schema | no |
 | `driver_not_implemented` | catalog-only stub | no |
 | `internal_error` | runtime bug / corrupt store | no |
 

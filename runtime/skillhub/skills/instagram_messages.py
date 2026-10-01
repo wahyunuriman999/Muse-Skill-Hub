@@ -7,11 +7,10 @@ Page access token granted instagram_manage_messages. Set INSTAGRAM_PAGE_TOKEN
 from __future__ import annotations
 
 import json
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred_any
 
 SKILL = "instagram-messages"
 REQUIRED_ENV = ["INSTAGRAM_PAGE_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://graph.facebook.com/v21.0"
 
 
 def _token() -> str:
-    token = os.environ.get("INSTAGRAM_PAGE_TOKEN") or os.environ.get("FACEBOOK_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred_any("INSTAGRAM_PAGE_TOKEN", "FACEBOOK_ACCESS_TOKEN", skill=SKILL)
     return token
 
 

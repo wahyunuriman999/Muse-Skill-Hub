@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/calendar"]
     input_schema:
       type: object
       properties: {summary: {type: "string"}, start: {type: "string", description: "e.g. 2026-10-02T09:00:00+07:00"}, end: {type: "string"}, description: {type: "string"}, location: {type: "string"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/calendar.readonly"]
     input_schema:
       type: object
       properties: {time_min: {type: "string", description: "RFC3339 lower bound, e.g. 2026-10-01T00:00:00+07:00"}, time_max: {type: "string", description: "RFC3339 upper bound"}, query: {type: "string", description: "Free-text search"}, limit: {type: "integer", default: 10, maximum: 100}}

@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **call_tool** — Call a HealthEx tool (e.g. get_medications, get_labs).  
+  Risk: `read` · parameters: tool, arguments · required: tool
+- **list_tools** — List the clinical tools HealthEx exposes.  
+  Risk: `read` · parameters: none · required: none

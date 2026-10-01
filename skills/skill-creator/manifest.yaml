@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {name: {type: "string", description: "kebab-case name"}, title: {type: "string"}, description: {type: "string"}}

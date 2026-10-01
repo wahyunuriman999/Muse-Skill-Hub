@@ -149,13 +149,28 @@ def metadata() -> int:
     return 0
 
 
+def audit_verify() -> int:
+    from .audit import verify_chain
+    report = verify_chain()
+    print(json.dumps(report, indent=2))
+    if report["ok"]:
+        print(f"RESULT: audit chain OK "
+              f"({report['chained']} chained, {report['legacy']} legacy)")
+        return 0
+    print(f"RESULT: AUDIT CHAIN BROKEN at line "
+          f"{report['first_bad']['line']}: {report['first_bad']['reason']}")
+    return 1
+
+
 def main() -> None:
     cmd = sys.argv[1] if len(sys.argv) > 1 else "validate"
     if cmd == "validate":
         sys.exit(validate())
     if cmd == "metadata":
         sys.exit(metadata())
-    print(f"unknown command: {cmd} (validate | metadata)")
+    if cmd == "audit-verify":
+        sys.exit(audit_verify())
+    print(f"unknown command: {cmd} (validate | metadata | audit-verify)")
     sys.exit(2)
 
 

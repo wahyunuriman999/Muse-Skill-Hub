@@ -6,11 +6,10 @@ Copy the returned username. Set HUE_BRIDGE_IP and HUE_USERNAME.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "philips-hue"
 REQUIRED_ENV = ["HUE_BRIDGE_IP", "HUE_USERNAME"]
@@ -22,10 +21,8 @@ SETUP_HELP = (
 
 
 def _base() -> str:
-    ip = os.environ.get("HUE_BRIDGE_IP")
-    user = os.environ.get("HUE_USERNAME")
-    if not ip or not user:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    ip = cred("HUE_BRIDGE_IP", SKILL)
+    user = cred("HUE_USERNAME", SKILL)
     return f"http://{ip}/api/{user}"
 
 

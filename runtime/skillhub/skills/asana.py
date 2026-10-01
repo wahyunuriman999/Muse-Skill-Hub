@@ -5,11 +5,10 @@ Set ASANA_ACCESS_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "asana"
 REQUIRED_ENV = ["ASANA_ACCESS_TOKEN"]
@@ -19,9 +18,7 @@ _BASE = "https://app.asana.com/api/1.0"
 
 
 def _headers() -> dict:
-    token = os.environ.get("ASANA_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("ASANA_ACCESS_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}"}
 
 

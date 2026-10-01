@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_feedback** — List queued feedback.  
+  Risk: `read` · parameters: none · required: none
+- **submit_feedback** — Queue a feedback item (needs confirm=true).  
+  Risk: `write` · parameters: text, category · required: text

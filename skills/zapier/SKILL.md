@@ -105,3 +105,12 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **trigger_zap** — POST a JSON payload to your Zapier Catch Hook (needs confirm=true).  
+  Risk: `communication` · parameters: payload · required: none

@@ -7,11 +7,10 @@ Set GOOGLE_OAUTH_TOKEN (shared with the gmail/sheets/drive drivers).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "google-calendar"
 REQUIRED_ENV = ["GOOGLE_OAUTH_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://www.googleapis.com/calendar/v3/calendars/primary"
 
 
 def _headers() -> dict:
-    token = os.environ.get("GOOGLE_OAUTH_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("GOOGLE_OAUTH_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -70,11 +67,11 @@ ACTIONS = {
          "time_max": {"type": "string", "description": "RFC3339 upper bound"},
          "query": {"type": "string", "description": "Free-text search"},
          "limit": {"type": "integer", "default": 10, "maximum": 100}},
-        [], list_events),
+        [], list_events, required_scopes=["https://www.googleapis.com/auth/calendar.readonly"]),
     "create_event": ActionDef("Create an event (needs confirm=true). Times are RFC3339 with offset.",
         {"summary": {"type": "string"},
          "start": {"type": "string", "description": "e.g. 2026-10-02T09:00:00+07:00"},
          "end": {"type": "string"},
          "description": {"type": "string"}, "location": {"type": "string"}},
-        ["summary", "start", "end"], create_event, write=True),
+        ["summary", "start", "end"], create_event, write=True, required_scopes=["https://www.googleapis.com/auth/calendar"]),
 }

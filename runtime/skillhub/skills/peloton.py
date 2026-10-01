@@ -5,11 +5,10 @@ Note: these are unofficial endpoints Peloton's own apps use; they may change.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "peloton"
 REQUIRED_ENV = ["PELOTON_USERNAME", "PELOTON_PASSWORD"]
@@ -22,10 +21,8 @@ _BASE = "https://api.onepeloton.com"
 
 
 async def _session() -> tuple[str, str]:
-    user = os.environ.get("PELOTON_USERNAME")
-    pw = os.environ.get("PELOTON_PASSWORD")
-    if not user or not pw:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    user = cred("PELOTON_USERNAME", SKILL)
+    pw = cred("PELOTON_PASSWORD", SKILL)
     r = await api_request(SKILL, "POST", f"{_BASE}/auth/login",
                           json={"username_or_email": user, "password": pw})
     return r["session_id"], r["user_id"]

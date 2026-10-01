@@ -136,8 +136,18 @@ async def api_request(
 
     Retries 429/5xx with backoff. Raises structured errors (never raw
     tracebacks) so LLMs get actionable feedback.
+
+    When the mock harness is enabled (``SKILLHUB_MOCK=1`` or
+    ``skillhub.mock.enable()``), a registered responder serves the call
+    instead of the network — the basis for provider contract tests.
     """
+    from . import mock as mock_harness
     rid = request_id or uuid.uuid4().hex[:12]
+    responder = mock_harness.responder_for(skill)
+    if responder is not None:
+        return await responder(method, url, headers=headers, params=params,
+                               json=json, data=data, timeout=timeout,
+                               action=action, request_id=rid)
     headers = dict(headers or {})
     headers.setdefault("X-Request-ID", rid)
     headers["User-Agent"] = f"muse-skill-hub-runtime/{__version__}"  # centralized version (overrides stale driver values)

@@ -105,3 +105,12 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **create_meeting** — Schedule a Zoom meeting (needs confirm=true).  
+  Risk: `write` · parameters: topic, start_time, duration_min · required: topic

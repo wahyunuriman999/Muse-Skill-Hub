@@ -6,11 +6,10 @@ connect a Facebook Page, subscribe it to messaging. Set MESSENGER_PAGE_TOKEN
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred_any
 
 SKILL = "messenger"
 REQUIRED_ENV = ["MESSENGER_PAGE_TOKEN"]
@@ -23,9 +22,7 @@ _BASE = "https://graph.facebook.com/v21.0"
 
 
 def _token() -> str:
-    token = os.environ.get("MESSENGER_PAGE_TOKEN") or os.environ.get("FACEBOOK_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred_any("MESSENGER_PAGE_TOKEN", "FACEBOOK_ACCESS_TOKEN", skill=SKILL)
     return token
 
 

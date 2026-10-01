@@ -86,3 +86,18 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_connector** — Get one connector's configuration.  
+  Risk: `read` · parameters: provider · required: provider
+- **list_connectors** — List connector configurations.  
+  Risk: `read` · parameters: none · required: none
+- **remove_connector** — Remove a connector configuration (needs confirm=true).  
+  Risk: `account` · parameters: provider · required: provider
+- **set_connector** — Add/update a connector configuration (needs confirm=true).  
+  Risk: `write` · parameters: provider, auth_type, status, scopes · required: provider

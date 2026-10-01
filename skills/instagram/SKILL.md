@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **get_media** — List recent media posts.  
+  Risk: `read` · parameters: limit · required: none
+- **get_profile** — Get the connected Instagram account's profile.  
+  Risk: `read` · parameters: none · required: none

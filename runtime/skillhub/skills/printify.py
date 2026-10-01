@@ -5,11 +5,10 @@ Set PRINTIFY_API_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "printify"
 REQUIRED_ENV = ["PRINTIFY_API_TOKEN"]
@@ -22,9 +21,7 @@ _BASE = "https://api.printify.com/v1"
 
 
 def _headers() -> dict:
-    token = os.environ.get("PRINTIFY_API_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("PRINTIFY_API_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 

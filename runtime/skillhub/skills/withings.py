@@ -5,11 +5,10 @@ https://developer.withings.com and complete OAuth. Set WITHINGS_ACCESS_TOKEN.
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "withings"
 REQUIRED_ENV = ["WITHINGS_ACCESS_TOKEN"]
@@ -26,9 +25,7 @@ MEASURES = {"1": "weight_kg", "76": "fat_mass_kg", "11": "heart_rate_bpm",
 
 
 def _token() -> str:
-    token = os.environ.get("WITHINGS_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("WITHINGS_ACCESS_TOKEN", SKILL)
     return token
 
 

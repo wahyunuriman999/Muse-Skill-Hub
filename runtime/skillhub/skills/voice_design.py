@@ -5,11 +5,10 @@ Set ELEVENLABS_API_KEY (shared with the tts driver).
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "voice-design"
 REQUIRED_ENV = ["ELEVENLABS_API_KEY"]
@@ -22,9 +21,7 @@ _BASE = "https://api.elevenlabs.io"
 
 
 def _headers() -> dict:
-    key = os.environ.get("ELEVENLABS_API_KEY")
-    if not key:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    key = cred("ELEVENLABS_API_KEY", SKILL)
     return {"xi-api-key": key, "Content-Type": "application/json"}
 
 

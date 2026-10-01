@@ -10,7 +10,8 @@ actions:
     type: write
     risk: communication
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: []
     input_schema:
       type: object
       properties: {payload: {type: "object", description: "JSON payload for the Zap"}}

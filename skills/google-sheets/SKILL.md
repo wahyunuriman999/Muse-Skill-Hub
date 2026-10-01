@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **append_row** — Append one row to a range (needs confirm=true).  
+  Risk: `write` · parameters: spreadsheet_id, range, values · required: spreadsheet_id, range, values
+- **read_range** — Read values from a range, e.g. 'Sheet1!A1:D20'.  
+  Risk: `read` · parameters: spreadsheet_id, range · required: spreadsheet_id, range

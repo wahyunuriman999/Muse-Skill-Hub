@@ -85,3 +85,12 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **request_approval** — Request approval for a skill action (returns approval_id).  
+  Risk: `write` · parameters: skill, action, params, risk, ttl_s · required: action

@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/documents"]
     input_schema:
       type: object
       properties: {title: {type: "string"}, text: {type: "string"}}
@@ -20,7 +21,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["https://www.googleapis.com/auth/documents.readonly"]
     input_schema:
       type: object
       properties: {document_id: {type: "string"}}

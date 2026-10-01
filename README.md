@@ -6,7 +6,7 @@
 
 > An open, LLM-agnostic capability runtime for AI agents. Define capabilities once. Discover them dynamically. Execute them through typed tools. Enforce permissions at runtime. Keep failures honest. Created by Wahyu.
 
-## ⚡ Executable Runtime (v2.0.0)
+## ⚡ Executable Runtime (v2.1.0)
 
 This repo is no longer just a catalog — it ships a **real MCP server** exposing
 **210 typed tools** (every action is its own tool, e.g. `github_search_repositories`,
@@ -31,6 +31,25 @@ cd runtime && pip install -r requirements.txt && python -m skillhub.server
 - **Hardened HTTP layer** — persistent connection pooling, retry with exponential backoff + `Retry-After`, `X-Request-ID` correlation, structured 429/5xx mapping
 - **Skill manifests** — `skills/<name>/manifest.yaml` is the machine-readable contract; `skillhub validate` runs the conformance test (schemas, risk, auth, manifest/driver/SKILL.md drift, secret scan)
 - **67 passing tests**, including live `api.github.com` calls, an end-to-end MCP stdio session with per-action tools, approval-lifecycle/idempotency/audit/security tests, and credential-error coverage for every API driver
+
+### What's new in v2.1.0 (security hardening)
+
+- **Atomic approval consumption** — approval approve/consume transitions happen inside a locked critical section, so concurrent workers can't double-spend one approval (proven by a 20-thread race test)
+- **Atomic idempotency** — `PENDING → SUCCEEDED | FAILED → CONFLICT` reservation happens *before* side effects; concurrent duplicates see `pending` and never re-execute; failed records allow exactly one reclaim
+- **Honest naming** — `idempotent` renamed to `supports_idempotency_key`: the runtime supports dedup keys, it does not claim mathematical idempotence of the underlying API
+- **Output contracts** — handler results are validated against each action's `output_schema` before success is committed; violations never get cached
+- **Full JSON-Schema validation** — recursive `type/enum/const/pattern/format/items/properties/oneOf/anyOf/allOf/not`, strict by default (unknown params rejected, like MCP's `additionalProperties: false`)
+- **Credential scopes** — actions declare `required_scopes` (Gmail/Outlook/Google Workspace drivers); mismatches are blocked, unknown scopes are allowed but marked `unverified` in audit
+- **Encrypted credential store** — local credentials now live in an encrypted `credentials.enc` (Fernet, secure-vault key); the old plaintext fallback is gone, legacy files are migrated and deleted
+- **OAuth refresh manager** — encrypted access/refresh tokens with auto-refresh before expiry and rotation persistence
+- **Audit hash chain** — every event carries `prev_hash`/`event_hash`; `python -m skillhub.cli audit-verify` detects tampering (tamper-evident, not tamper-proof)
+- **TF-IDF capability discovery** — `skillhub_search_capabilities` now ranks by lexical relevance instead of substring matching
+- **Provider mock harness** — `SKILLHUB_MOCK=1` routes `api_request` to canned responders; mock contract tests for GitHub and Stripe assert request shapes and auth flow without network
+- **SQL hardening** — `muse_db` strips comments/strings before keyword scanning, runs reads on a read-only SQLite connection, and enforces single statements
+- **Zero doc warnings** — all 178 missing action docs generated; `skillhub validate` passes clean
+- **91 passing tests** (was 67), including 20-thread concurrency races, scope mismatches, encrypted-store migration, OAuth refresh, audit tampering, and provider contracts
+
+**Security model (honest):** this is a trusted, local, single-user MCP runtime. Encryption protects against casual disk exposure, not against malware or same-user attackers. `actor` is a local session label, not authentication. Multi-user tenant isolation, distributed exactly-once, and workflow/saga engines remain out of scope (see `specs/`).
 
 See [`runtime/README.md`](runtime/README.md) for setup, driver docs, and how to add your own driver. Specs live in [`specs/`](specs/) (manifest, error contract, approval protocol).
 

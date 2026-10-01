@@ -6,11 +6,10 @@ own OAuth app at https://developer.spotify.com/dashboard. Set SPOTIFY_ACCESS_TOK
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "spotify"
 REQUIRED_ENV = ["SPOTIFY_ACCESS_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://api.spotify.com/v1"
 
 
 def _headers() -> dict:
-    token = os.environ.get("SPOTIFY_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("SPOTIFY_ACCESS_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 

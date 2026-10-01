@@ -84,3 +84,14 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_devices** — List paired devices.  
+  Risk: `read` · parameters: none · required: none
+- **register_device** — Register (pair) a device (needs confirm=true).  
+  Risk: `write` · parameters: device_id, name, platform · required: device_id

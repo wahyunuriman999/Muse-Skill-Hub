@@ -28,16 +28,62 @@ SETUP_HELP = ("No setup needed — local SQLite file. "
 _READ_PREFIXES = ("select", "with")
 # CREATE TABLE/INDEX allowed: this is a local scratch DB and the driver's
 # purpose includes creating tables. DROP/ALTER/ATTACH/PRAGMA stay blocked.
-_WRITE_PREFIXES = ("insert", "update", "delete", "create table", "create index")
 _BLOCKED_KEYWORDS = ("attach", "detach", "pragma", "vacuum", "reindex",
                      "drop ", "drop\t", "drop\n", "alter ", "create trigger",
                      "load_extension")
 _ROW_CAP = 200
 
 
-def _db() -> sqlite3.Connection:
+def _strip_comments_and_strings(sql: str) -> str:
+    """Remove -- comments, /* */ comments, and string literals.
+
+    Keyword scanning runs on the result, so `DROP` hidden inside a
+    comment or a string literal can neither bypass the blocklist nor
+    trigger a false positive.
+    """
+    out = []
+    i, n = 0, len(sql)
+    while i < n:
+        ch = sql[i]
+        nxt = sql[i + 1] if i + 1 < n else ""
+        if ch == "'" or ch == '"':
+            # skip string literal ('' is an escaped quote in SQL)
+            i += 1
+            while i < n:
+                if sql[i] == ch:
+                    if i + 1 < n and sql[i + 1] == ch:
+                        i += 2
+                        continue
+                    i += 1
+                    break
+                i += 1
+            out.append(" ")
+        elif ch == "-" and nxt == "-":
+            while i < n and sql[i] != "\n":
+                i += 1
+        elif ch == "/" and nxt == "*":
+            i += 2
+            while i + 1 < n and not (sql[i] == "*" and sql[i + 1] == "/"):
+                i += 1
+            i += 2
+        else:
+            out.append(ch)
+            i += 1
+    return "".join(out)
+
+
+def _db(readonly: bool = False) -> sqlite3.Connection:
     path = os.environ.get("SKILLHUB_DB_PATH", str(data_dir() / "muse.db"))
-    conn = sqlite3.connect(path, timeout=5.0)
+    if readonly:
+        # mode=ro cannot create the file — ensure it exists first (empty DB,
+        # no user data written), then reopen read-only.
+        if not os.path.exists(path):
+            sqlite3.connect(path, timeout=5.0).close()
+        # Defense in depth: the OS-level connection itself cannot write,
+        # even if the lexical guardrails below ever missed something.
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
+    else:
+        conn = sqlite3.connect(path, timeout=5.0)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -58,15 +104,22 @@ def _single_statement(sql: str) -> str:
             raise SkillError("Only one SQL statement per call.",
                              code="invalid_input", skill=SKILL)
     lowered = sql.lower()
+    # scan the comment/string-stripped form: keywords hidden in comments or
+    # string literals are not executable SQL, and executable keywords cannot
+    # hide inside them.
+    stripped = _strip_comments_and_strings(lowered)
     for kw in _BLOCKED_KEYWORDS:
-        if kw in lowered:
+        if kw in stripped:
             raise SkillError(f"Blocked SQL keyword: '{kw.strip()}'.",
                              code="policy_blocked", skill=SKILL)
-    return sql
+    # the statement must actually START with the claimed operation after
+    # stripping leading comments
+    first_token = stripped.lstrip().split(None, 1)[0] if stripped.strip() else ""
+    return sql, first_token
 
 
 async def list_tables(params: dict) -> dict:
-    conn = _db()
+    conn = _db(readonly=True)
     try:
         rows = conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").fetchall()
@@ -76,11 +129,11 @@ async def list_tables(params: dict) -> dict:
 
 
 async def query(params: dict) -> dict:
-    sql = _single_statement(params["sql"])
-    if not sql.lower().startswith(_READ_PREFIXES):
+    sql, first = _single_statement(params["sql"])
+    if first not in _READ_PREFIXES:
         raise SkillError("query only allows SELECT/WITH; use execute_write for writes.",
                          code="invalid_input", skill=SKILL)
-    conn = _db()
+    conn = _db(readonly=True)
     try:
         rows = conn.execute(sql).fetchall()
         return {"status": "ok", "rows": [dict(r) for r in rows[:_ROW_CAP]],
@@ -90,8 +143,13 @@ async def query(params: dict) -> dict:
 
 
 async def execute_write(params: dict) -> dict:
-    sql = _single_statement(params["sql"])
-    if not sql.lower().startswith(_WRITE_PREFIXES):
+    sql, first = _single_statement(params["sql"])
+    if not any(first == p or first.startswith(p) for p in ("insert", "update", "delete")) \
+            and first not in ("create",):
+        raise SkillError("execute_write allows INSERT/UPDATE/DELETE/CREATE TABLE only.",
+                         code="invalid_input", skill=SKILL)
+    if first == "create" and not _strip_comments_and_strings(sql.lower()).lstrip().startswith(
+            ("create table", "create index")):
         raise SkillError("execute_write allows INSERT/UPDATE/DELETE/CREATE TABLE only.",
                          code="invalid_input", skill=SKILL)
     conn = _db()

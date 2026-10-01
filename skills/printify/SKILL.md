@@ -105,3 +105,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **list_products** — List products in a shop.  
+  Risk: `read` · parameters: shop_id, limit · required: shop_id
+- **list_shops** — List Printify shops.  
+  Risk: `read` · parameters: none · required: none

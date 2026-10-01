@@ -10,7 +10,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["Calendars.ReadWrite"]
     input_schema:
       type: object
       properties: {subject: {type: "string"}, start: {type: "string"}, end: {type: "string"}, timezone: {type: "string", default: "UTC"}, body: {type: "string"}}
@@ -20,7 +21,8 @@ actions:
     type: write
     risk: write
     approval: required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["Calendars.ReadWrite"]
     input_schema:
       type: object
       properties: {event_id: {type: "string"}}
@@ -30,7 +32,8 @@ actions:
     type: read
     risk: read
     approval: not_required
-    idempotent: true
+    supports_idempotency_key: true
+    required_scopes: ["Calendars.Read"]
     input_schema:
       type: object
       properties: {start: {type: "string", description: "ISO8601 lower bound filter"}, limit: {type: "integer", default: 20, maximum: 100}}

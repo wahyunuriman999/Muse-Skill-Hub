@@ -83,3 +83,16 @@ details:
 ---
 
 *Platform capability pattern — documented so any LLM agent can implement an equivalent.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **add_payment_method** — Save a payment-method label record (needs confirm=true).  
+  Risk: `financial` · parameters: label, brand, last4 · required: label
+- **get_state** — Check wallet connection state.  
+  Risk: `read` · parameters: none · required: none
+- **list_payment_methods** — List saved payment-method records.  
+  Risk: `read` · parameters: none · required: none

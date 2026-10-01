@@ -6,11 +6,10 @@ token for testing. Set MICROSOFT_ACCESS_TOKEN (shared with outlook-mail/contacts
 """
 from __future__ import annotations
 
-import os
 
 from ..driver import ActionDef
-from ..errors import CredentialsMissing
 from ..http import api_request
+from ..credentials import cred
 
 SKILL = "outlook-calendar"
 REQUIRED_ENV = ["MICROSOFT_ACCESS_TOKEN"]
@@ -24,9 +23,7 @@ _BASE = "https://graph.microsoft.com/v1.0/me/calendar"
 
 
 def _headers() -> dict:
-    token = os.environ.get("MICROSOFT_ACCESS_TOKEN")
-    if not token:
-        raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
+    token = cred("MICROSOFT_ACCESS_TOKEN", SKILL)
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
@@ -68,12 +65,12 @@ ACTIONS = {
     "list_events": ActionDef("List Outlook calendar events.",
         {"start": {"type": "string", "description": "ISO8601 lower bound filter"},
          "limit": {"type": "integer", "default": 20, "maximum": 100}},
-        [], list_events),
+        [], list_events, required_scopes=["Calendars.Read"]),
     "create_event": ActionDef("Create an event (needs confirm=true).",
         {"subject": {"type": "string"}, "start": {"type": "string"},
          "end": {"type": "string"}, "timezone": {"type": "string", "default": "UTC"},
          "body": {"type": "string"}},
-        ["subject", "start", "end"], create_event, write=True),
+        ["subject", "start", "end"], create_event, write=True, required_scopes=["Calendars.ReadWrite"]),
     "delete_event": ActionDef("Delete an event (needs confirm=true).",
-        {"event_id": {"type": "string"}}, ["event_id"], delete_event, write=True),
+        {"event_id": {"type": "string"}}, ["event_id"], delete_event, write=True, required_scopes=["Calendars.ReadWrite"]),
 }

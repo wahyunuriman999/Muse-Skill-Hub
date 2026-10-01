@@ -104,3 +104,14 @@ details:
 ---
 
 *This is a universal, LLM-agnostic skill definition. Adapt the API calls to your host environment's available tools.*
+
+
+## Actions
+
+<!-- Auto-generated from the driver's ActionDef contracts
+     (v2.1 doc-sync). Kept in sync by `skillhub validate`. -->
+
+- **create_document** — Create a doc, optionally with initial text (needs confirm=true).  
+  Risk: `write` · parameters: title, text · required: title
+- **get_document** — Read a Google Doc's text (ID from its URL).  
+  Risk: `read` · parameters: document_id · required: document_id
