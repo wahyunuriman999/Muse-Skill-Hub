@@ -171,4 +171,4 @@ tool = Tool(name="github", description="...", func=your_impl)
 PRs and issues are welcome. If you adapt these skills for other LLMs, share it here.
 
 ---
-*Built with the help of Muse — Wahyu's personal AI agent.*
+*Copyright © 2024–2026 Wahyu Nur Iman.*
