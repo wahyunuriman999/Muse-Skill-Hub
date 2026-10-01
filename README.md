@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/hero.webp" alt="Muse Skill Hub - 87 universal AI skills" width="100%">
+</p>
+
 # Muse Skill Hub
 
 > A catalog of Muse's capabilities — built so other AIs & LLMs can understand Muse's capability patterns. Created by Wahyu.
