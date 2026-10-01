@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.webp" alt="Muse Skill Hub - 87 universal AI skills" width="100%">
+  <img src="assets/avatar.png" alt="Muse" width="180">
 </p>
 
 # Muse Skill Hub
