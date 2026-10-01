@@ -1,7 +1,7 @@
 ---
 name: "share-ideas"
 title: "Share ideas"
-description: "Provides share ideas functionality."
+description: Publish a portable Idea card from the Ideas tab — only after the user explicitly asks to publish it.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

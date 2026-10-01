@@ -1,6 +1,6 @@
 # Stripe (`stripe`)
 
-> Capability for stripe
+> Handle Stripe payments: create payment links and checkout sessions, manage customers, subscriptions, invoices, and refunds.
 
 ## What is this?
 

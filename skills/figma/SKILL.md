@@ -1,7 +1,7 @@
 ---
 name: "figma"
 title: "Figma"
-description: "Provides figma functionality."
+description: Work with Figma: read files, pages, frames and components, export assets, and manage design projects.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

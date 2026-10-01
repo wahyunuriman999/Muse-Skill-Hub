@@ -1,7 +1,7 @@
 ---
 name: "lovable"
 title: "Lovable"
-description: "Provides lovable functionality."
+description: Build web apps with Lovable: scaffold AI-generated projects, iterate on designs, and manage deployments.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

@@ -1,6 +1,6 @@
 # Shopify (`shopify`)
 
-> Capability for shopify
+> Manage a Shopify store: list and update products, orders, customers, inventory levels, and discount codes.
 
 ## What is this?
 

@@ -1,7 +1,7 @@
 ---
 name: "dropbox"
 title: "Dropbox"
-description: "Provides dropbox functionality."
+description: Manage Dropbox storage: upload and download files, create share links, organize folders, and check space usage.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

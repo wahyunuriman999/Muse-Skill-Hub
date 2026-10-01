@@ -1,7 +1,7 @@
 ---
 name: "klaviyo"
 title: "Klaviyo"
-description: "Provides klaviyo functionality."
+description: Run Klaviyo email/SMS marketing: manage lists and segments, build campaigns and flows, and edit templates.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

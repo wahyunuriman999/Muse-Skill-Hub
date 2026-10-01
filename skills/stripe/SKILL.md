@@ -1,7 +1,7 @@
 ---
 name: "stripe"
 title: "Stripe"
-description: "Provides stripe functionality."
+description: Handle Stripe payments: create payment links and checkout sessions, manage customers, subscriptions, invoices, and refunds.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

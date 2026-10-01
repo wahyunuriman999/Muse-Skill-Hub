@@ -1,6 +1,6 @@
 # Lovable (`lovable`)
 
-> Capability for lovable
+> Build web apps with Lovable: scaffold AI-generated projects, iterate on designs, and manage deployments.
 
 ## What is this?
 

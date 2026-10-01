@@ -1,7 +1,7 @@
 ---
 name: "asana"
 title: "Asana"
-description: "Provides asana functionality."
+description: Manage Asana work: create and list tasks, assign owners, set due dates, organize projects, and track team progress.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

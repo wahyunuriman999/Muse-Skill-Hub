@@ -1,7 +1,7 @@
 ---
 name: "shopify"
 title: "Shopify"
-description: "Provides shopify functionality."
+description: Manage a Shopify store: list and update products, orders, customers, inventory levels, and discount codes.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

@@ -1,6 +1,6 @@
 # Slack (`slack`)
 
-> Capability for slack
+> Work with Slack: list channels, read and send messages, manage threads and reactions, and search history.
 
 ## What is this?
 

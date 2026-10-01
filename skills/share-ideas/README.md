@@ -1,6 +1,6 @@
 # Share ideas (`share-ideas`)
 
-> Capability for share-ideas
+> Publish a portable Idea card from the Ideas tab — only after the user explicitly asks to publish it.
 
 ## What is this?
 

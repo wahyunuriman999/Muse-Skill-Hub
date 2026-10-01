@@ -1,6 +1,6 @@
 # Asana (`asana`)
 
-> Capability for asana
+> Manage Asana work: create and list tasks, assign owners, set due dates, organize projects, and track team progress.
 
 ## What is this?
 

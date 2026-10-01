@@ -1,7 +1,7 @@
 ---
 name: "zoom"
 title: "Zoom"
-description: "Provides zoom functionality."
+description: Manage Zoom: schedule and list meetings, fetch recordings, and manage meeting settings.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

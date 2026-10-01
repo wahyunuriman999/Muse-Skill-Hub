@@ -1,6 +1,6 @@
 # Dropbox (`dropbox`)
 
-> Capability for dropbox
+> Manage Dropbox storage: upload and download files, create share links, organize folders, and check space usage.
 
 ## What is this?
 

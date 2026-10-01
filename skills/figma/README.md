@@ -1,6 +1,6 @@
 # Figma (`figma`)
 
-> Capability for figma
+> Work with Figma: read files, pages, frames and components, export assets, and manage design projects.
 
 ## What is this?
 

@@ -1,7 +1,7 @@
 ---
 name: "vercel"
 title: "Vercel"
-description: "Provides vercel functionality."
+description: Deploy with Vercel: list projects and deployments, promote to production, manage domains and environment variables.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

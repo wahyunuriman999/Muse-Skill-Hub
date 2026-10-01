@@ -1,7 +1,7 @@
 ---
 name: "linear"
 title: "Linear"
-description: "Provides linear functionality."
+description: Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

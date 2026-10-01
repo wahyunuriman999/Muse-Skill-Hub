@@ -1,6 +1,6 @@
 # Klaviyo (`klaviyo`)
 
-> Capability for klaviyo
+> Run Klaviyo email/SMS marketing: manage lists and segments, build campaigns and flows, and edit templates.
 
 ## What is this?
 

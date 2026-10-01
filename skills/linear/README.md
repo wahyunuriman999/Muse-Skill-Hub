@@ -1,6 +1,6 @@
 # Linear (`linear`)
 
-> Capability for linear
+> Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status.
 
 ## What is this?
 

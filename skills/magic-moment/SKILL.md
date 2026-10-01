@@ -1,7 +1,7 @@
 ---
 name: "magic-moment"
 title: "Magic Moment"
-description: "Provides magic moment functionality."
+description: Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"

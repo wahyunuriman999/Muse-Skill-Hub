@@ -1,6 +1,6 @@
 # Magic Moment (`magic-moment`)
 
-> Capability for magic-moment
+> Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports.
 
 ## What is this?
 

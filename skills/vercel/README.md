@@ -1,6 +1,6 @@
 # Vercel (`vercel`)
 
-> Capability for vercel
+> Deploy with Vercel: list projects and deployments, promote to production, manage domains and environment variables.
 
 ## What is this?
 

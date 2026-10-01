@@ -1,6 +1,6 @@
 # Canva (`canva`)
 
-> Capability for canva
+> Design with Canva: create and edit designs and presentations, manage brand assets and folders, and generate share links.
 
 ## What is this?
 

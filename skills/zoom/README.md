@@ -1,6 +1,6 @@
 # Zoom (`zoom`)
 
-> Capability for zoom
+> Manage Zoom: schedule and list meetings, fetch recordings, and manage meeting settings.
 
 ## What is this?
 
