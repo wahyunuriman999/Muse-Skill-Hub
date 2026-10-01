@@ -72,6 +72,20 @@ def _looks_like_secret_value(value: str) -> bool:
     return any(p.search(value) for p in _SECRET_VALUE_PATTERNS)
 
 
+def scrub_text(text: str) -> str:
+    """Replace secret-shaped substrings in free text with ``[redacted]``.
+
+    Used for error/problem strings (e.g. JSON-Schema violation messages
+    embed ``repr()`` of the offending value) so a secret that breaks a
+    contract does not leak into the audit log through the error detail.
+    """
+    if not isinstance(text, str):
+        return text
+    for pattern in _SECRET_VALUE_PATTERNS:
+        text = pattern.sub(_REDACTED, text)
+    return text
+
+
 def _redact_value(key: str, value: Any, extra_secret_keys: tuple) -> Any:
     if _is_secret_key(key) or key in extra_secret_keys:
         return _REDACTED

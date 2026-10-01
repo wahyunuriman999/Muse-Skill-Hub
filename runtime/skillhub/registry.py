@@ -15,6 +15,7 @@ audit-logged. Secrets are never logged raw.
 """
 from __future__ import annotations
 
+import json
 import os
 import time
 import uuid
@@ -394,12 +395,20 @@ def _idem_reserve(key: str, skill: str, action: str,
 
 
 def _idem_commit(key: str, result: Any) -> None:
-    """Atomically mark a claimed key SUCCEEDED with its result."""
+    """Atomically mark a claimed key SUCCEEDED with its result.
+
+    The stored result is a JSON-round-tripped snapshot: exotic Python
+    values (``datetime``, ``set``, ...) are coerced with ``str()`` so the
+    store write can never crash on a handler's return type. The caller
+    keeps the original object; replays return the JSON snapshot.
+    """
+    raw = result if isinstance(result, dict) else {"result": result}
+    snapshot = json.loads(json.dumps(raw, ensure_ascii=False, default=str))
     with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
         rec = data.get(key)
         if rec:
             rec["status"] = "succeeded"
-            rec["result"] = result if isinstance(result, dict) else {"result": result}
+            rec["result"] = snapshot
             rec["completed_at"] = int(time.time())
 
 

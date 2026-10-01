@@ -36,13 +36,17 @@ def _validator_for(schema: dict) -> Draft202012Validator:
 
 
 def _problems(schema: dict, value: Any) -> list[str]:
+    from .audit import scrub_text
     validator = _validator_for(schema)
     problems = []
     for error in sorted(validator.iter_errors(value),
                         key=lambda e: (list(e.absolute_path), e.message)):
         loc = "$" + "".join(f"[{p!r}]" if not isinstance(p, str)
                             else f".{p}" for p in error.absolute_path)
-        problems.append(f"{loc}: {error.message}")
+        # jsonschema messages embed repr() of the offending value: scrub
+        # secret shapes so a contract violation cannot leak credentials
+        # into the audit log through the error detail.
+        problems.append(scrub_text(f"{loc}: {error.message}"))
     return problems
 
 
