@@ -354,6 +354,22 @@ def _idem_reserve(key: str, skill: str, action: str,
     The check and the claim happen inside ONE file-locked critical
     section, so two concurrent processes cannot both start. A key claimed
     for different skill/action/params raises IdempotencyConflict.
+
+    CRASH SEMANTICS (honest; proven in test_v221_idempotency_semantics.py):
+    - success → SUCCEEDED; replays return the stored result, the handler
+      never re-runs for the same key+call.
+    - SkillError / unexpected exception / output-contract violation →
+      FAILED; the documented retry path may claim it again.
+    - hard crash (SIGKILL, power loss) between reserve and commit → the
+      key stays PENDING. Retries raise IdempotencyConflict: the runtime
+      CANNOT distinguish "crashed" from "still running", so it never
+      auto-reclaims (that could double-execute). An operator who verified
+      no execution is running may release the key via ``_idem_release``
+      / ``skillhub idempotency release``.
+    - crash after a provider side effect but before _idem_commit is NOT
+      solved by this local runtime: a retried execution may repeat the
+      side effect. Providers with their own idempotency keys are the real
+      fix (see the threat model).
     """
     with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
         existing = data.get(key)
@@ -394,6 +410,35 @@ def _idem_fail(key: str, error_code: str) -> None:
         if rec:
             rec["status"] = "failed"
             rec["error_code"] = error_code
+
+
+def _idem_release(key: str, actor: str = "local-user") -> bool:
+    """Operator escape hatch: delete an idempotency key record entirely.
+
+    Use ONLY after verifying no execution is running for this key (e.g. a
+    crashed process left it PENDING). The release is audit-logged. Returns
+    True when a record existed and was removed.
+    """
+    with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
+        if key not in data:
+            return False
+        rec = data.pop(key)
+    audit.log({
+        "skill": "runtime", "action": "idempotency_release", "result": "success",
+        "actor": actor, "params_hash": "sha256:manual",
+        "params_preview": {"idempotency_key": key,
+                           "released_status": rec.get("status")},
+        "risk": "write",
+    })
+    return True
+
+
+def _idem_list() -> list[dict]:
+    """Operator introspection: all idempotency records newest-first."""
+    with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
+        rows = [{"idempotency_key": k, **v} for k, v in data.items()]
+    rows.sort(key=lambda r: r.get("claimed_at", 0), reverse=True)
+    return rows
 
 
 def _missing_env(entry: SkillEntry) -> list[str]:
@@ -506,10 +551,16 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
                            scope_check=scope_check,
                            credential_source=credential_source)
                     return result
-                # pending → another execution owns this key right now
+                # pending → another execution owns this key right now.
+                # (If that execution crashed, the key stays PENDING: the
+                # runtime cannot tell "crashed" from "slow", so it never
+                # auto-reclaims. An operator may release it after verifying
+                # nothing is running: `skillhub idempotency release <key>`.)
                 raise IdempotencyConflict(
                     f"Idempotency key '{idempotency_key}' is already claimed "
-                    f"by an in-flight execution; retry after it completes.")
+                    f"by an in-flight execution; retry after it completes. "
+                    f"If the holder crashed, an operator may release the key "
+                    f"with: skillhub idempotency release {idempotency_key}")
             reserved = True
 
         # 7. execute

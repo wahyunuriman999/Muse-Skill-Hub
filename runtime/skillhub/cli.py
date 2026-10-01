@@ -1,7 +1,10 @@
-"""skillhub CLI: validate | metadata
+"""skillhub CLI: validate | metadata | audit-verify | idempotency
 
     python -m skillhub.cli validate   # Skill Conformance Test v1
     python -m skillhub.cli metadata    # machine-readable catalog counts
+    python -m skillhub.cli audit-verify           # verify audit hash chain
+    python -m skillhub.cli idempotency list       # list idempotency keys
+    python -m skillhub.cli idempotency release K  # operator escape hatch
 """
 from __future__ import annotations
 
@@ -191,6 +194,35 @@ def audit_verify() -> int:
     return 1
 
 
+def idempotency() -> int:
+    """Operator tooling for idempotency keys.
+
+    skillhub idempotency list              # show all key records
+    skillhub idempotency release <key>      # delete one record (escape hatch
+                                           # for keys stuck PENDING after a
+                                           # crash — only after verifying no
+                                           # execution is running for it)
+    """
+    from .registry import _idem_list, _idem_release
+    args = sys.argv[2:]
+    if not args or args[0] == "list":
+        rows = _idem_list()
+        slim = [{k: r.get(k) for k in ("idempotency_key", "skill", "action",
+                                      "status", "error_code", "claimed_at")}
+                for r in rows]
+        print(json.dumps(slim, indent=2))
+        print(f"{len(slim)} idempotency key(s)")
+        return 0
+    if args[0] == "release" and len(args) == 2:
+        if _idem_release(args[1]):
+            print(f"released idempotency key '{args[1]}' (audit-logged)")
+            return 0
+        print(f"no such idempotency key: '{args[1]}'")
+        return 1
+    print("usage: skillhub idempotency [list | release <key>]")
+    return 2
+
+
 def main() -> None:
     cmd = sys.argv[1] if len(sys.argv) > 1 else "validate"
     if cmd == "validate":
@@ -199,7 +231,10 @@ def main() -> None:
         sys.exit(metadata())
     if cmd == "audit-verify":
         sys.exit(audit_verify())
-    print(f"unknown command: {cmd} (validate | metadata | audit-verify)")
+    if cmd == "idempotency":
+        sys.exit(idempotency())
+    print(f"unknown command: {cmd} "
+          f"(validate | metadata | audit-verify | idempotency)")
     sys.exit(2)
 
 
