@@ -12,6 +12,14 @@ destructive-risk security conformance check.
 import ast
 import json
 import multiprocessing as mp
+
+
+def _spawn():
+    """Portable process context: Windows/macOS only HAVE spawn; Linux
+    defaults to fork. GATE 2 forces spawn everywhere so the race tests
+    execute the same code path on every OS."""
+    return mp.get_context("spawn")
+
 import os
 import re
 import subprocess
@@ -80,7 +88,7 @@ def test_filelock_exclusive_across_processes(tmp_path):
     lock_path = str(tmp_path / "ctr.lock")
     counter_path = str(tmp_path / "ctr.txt")
     Path(counter_path).write_text("0")
-    ctx = mp.get_context("fork")
+    ctx = _spawn()
     q = ctx.Queue()
     procs = [ctx.Process(target=_lock_counter_worker,
                          args=(lock_path, counter_path, 50, q))
@@ -113,7 +121,7 @@ def test_approval_consume_is_atomic_across_processes(local_dir):
     item = approval.request_approval("s", "a", {"x": 1}, risk="write")
     approval.approve(item["approval_id"])
     aid = item["approval_id"]
-    ctx = mp.get_context("fork")
+    ctx = _spawn()
     q = ctx.Queue()
     procs = [ctx.Process(target=_consume_worker, args=(aid, q))
              for _ in range(20)]
@@ -140,7 +148,7 @@ def _reserve_worker(key, q):
 
 def test_idempotency_reserve_is_atomic_across_processes(local_dir):
     key = "idem-p22"
-    ctx = mp.get_context("fork")
+    ctx = _spawn()
     q = ctx.Queue()
     procs = [ctx.Process(target=_reserve_worker, args=(key, q))
              for _ in range(20)]
