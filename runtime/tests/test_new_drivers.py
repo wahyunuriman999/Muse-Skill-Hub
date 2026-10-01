@@ -17,6 +17,18 @@ from skillhub import registry
 from skillhub.errors import CredentialsMissing
 
 
+async def _approved(skill, action, params):
+    """Run a strict-risk write action through the real approval flow."""
+    from skillhub import approval as approval_engine
+    from skillhub.policy import risk_for
+    entry = registry.load_registry()[skill]
+    risk = risk_for(skill, action, entry.actions[action].risk)
+    item = approval_engine.request_approval(skill, action, params, risk=risk)
+    approval_engine.approve(item["approval_id"])
+    return await registry.dispatch(entry, action, params,
+                                   approval_id=item["approval_id"])
+
+
 def _mock_api(monkeypatch, module_name, fake):
     """Replace skillhub.skills.<module>.api_request with a fake; return captured calls."""
     calls = []
@@ -61,7 +73,7 @@ def test_batch2_write_actions_flagged():
 
 
 @pytest.mark.asyncio
-async def test_gmail_lists_and_sends(monkeypatch):
+async def test_gmail_lists_and_sends(monkeypatch, tmp_path):
     reg = registry.load_registry()
     _no_env(monkeypatch, "GOOGLE_OAUTH_TOKEN")
     with pytest.raises(CredentialsMissing):
@@ -81,8 +93,9 @@ async def test_gmail_lists_and_sends(monkeypatch):
     with pytest.raises(ConfirmationRequired):
         await registry.dispatch(reg["gmail"], "send_message",
                                 {"to": "a@b.c", "subject": "s", "body": "b"}, confirm=False)
-    r = await registry.dispatch(reg["gmail"], "send_message",
-                                {"to": "a@b.c", "subject": "s", "body": "b"}, confirm=True)
+    monkeypatch.setenv("SKILLHUB_LOCAL_DIR", str(tmp_path))
+    r = await _approved("gmail", "send_message",
+                        {"to": "a@b.c", "subject": "s", "body": "b"})
     assert r["id"] == "sent1"
     assert "raw" in calls2[0]["json"]  # base64url MIME payload
 
@@ -187,7 +200,7 @@ async def test_instagram_profile_and_media(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_threads_post_two_step_publish(monkeypatch):
+async def test_threads_post_two_step_publish(monkeypatch, tmp_path):
     reg = registry.load_registry()
     _no_env(monkeypatch, "THREADS_ACCESS_TOKEN")
     with pytest.raises(CredentialsMissing):
@@ -196,8 +209,8 @@ async def test_threads_post_two_step_publish(monkeypatch):
     monkeypatch.setenv("THREADS_ACCESS_TOKEN", "tok")
     calls = _mock_api(monkeypatch, "meta_threads", lambda url, m, kw:
         {"id": "creation123"} if url.endswith("/me/threads") else {"id": "post456"})
-    r = await registry.dispatch(reg["meta-threads"], "post_text",
-                                {"text": "hello"}, confirm=True)
+    monkeypatch.setenv("SKILLHUB_LOCAL_DIR", str(tmp_path))
+    r = await _approved("meta-threads", "post_text", {"text": "hello"})
     assert r["post_id"] == "post456"
     assert len(calls) == 2  # create container, then publish
     assert calls[1]["params"]["creation_id"] == "creation123"

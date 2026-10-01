@@ -1,0 +1,31 @@
+schema_version: "1"
+name: messenger
+version: "1.0.0"
+title: "Messenger"
+description: "Work with the user's Messenger account: read call history; read and search contacts; read, search, and summarize conversations; send, react to, unsend, or edit messages; and message Marketplace listing threads."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_conversations
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 50}}
+      required: []
+    output_schema: {}
+  - name: send_message
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {recipient_id: {type: "string"}, text: {type: "string"}}
+      required: ["recipient_id", "text"]
+    output_schema: {}
+auth:
+  required_env: ["MESSENGER_PAGE_TOKEN"]
+dependencies: []

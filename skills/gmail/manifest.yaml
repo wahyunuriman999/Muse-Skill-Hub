@@ -1,0 +1,41 @@
+schema_version: "1"
+name: gmail
+version: "1.0.0"
+title: "Gmail"
+description: "Work with the user's Gmail: search, read threads, draft, send, reply, forward, unsubscribe from mailing lists, manage labels, and open attachments."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_message
+    type: write
+    risk: sensitive
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {message_id: {type: "string", description: "Gmail message ID"}}
+      required: ["message_id"]
+    output_schema: {}
+  - name: list_messages
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string", default: "", description: "Gmail search query, e.g. 'from:boss subject:report newer_than:7d'"}, limit: {type: "integer", default: 10, maximum: 50}}
+      required: []
+    output_schema: {}
+  - name: send_message
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {to: {type: "string"}, subject: {type: "string"}, body: {type: "string"}}
+      required: ["to", "subject", "body"]
+    output_schema: {}
+auth:
+  required_env: ["GOOGLE_OAUTH_TOKEN"]
+dependencies: []

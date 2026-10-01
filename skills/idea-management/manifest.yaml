@@ -1,0 +1,41 @@
+schema_version: "1"
+name: idea-management
+version: "1.0.0"
+title: "Idea Management"
+description: "Manage the Ideas tab: idea cards the agent can run, dismissing ideas, and explaining why an idea appeared or disappeared."
+kind: skill
+lifecycle: stable
+actions:
+  - name: add_idea
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {title: {type: "string"}, description: {type: "string"}}
+      required: ["title"]
+    output_schema: {}
+  - name: dismiss_idea
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {idea_id: {type: "string"}}
+      required: ["idea_id"]
+    output_schema: {}
+  - name: list_ideas
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {status: {type: "string", description: "new|dismissed|done"}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

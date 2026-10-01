@@ -1,0 +1,41 @@
+schema_version: "1"
+name: paired-devices
+version: "1.0.0"
+title: "Paired Devices"
+description: "Manage the user's paired devices: list and describe devices, run commands on them, pull data such as location, and unpair devices."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_devices
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: register_device
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {device_id: {type: "string"}, name: {type: "string"}, platform: {type: "string", description: "e.g. android, ios, linux"}}
+      required: ["device_id"]
+    output_schema: {}
+  - name: unpair_device
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {device_id: {type: "string"}}
+      required: ["device_id"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

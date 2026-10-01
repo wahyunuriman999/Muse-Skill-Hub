@@ -1,0 +1,21 @@
+schema_version: "1"
+name: subscription-status
+version: "1.0.0"
+title: "Subscription Status"
+description: "Answer questions about the user's Muse subscription, plan, usage, tokens, reset timing, or available plans and prices, or verify information that references the Muse subscription."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_status
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

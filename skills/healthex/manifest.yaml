@@ -1,0 +1,31 @@
+schema_version: "1"
+name: healthex
+version: "1.0.0"
+title: "HealthEx"
+description: "Use to connect HealthEx and ask questions about your medications, lab results, and other health records."
+kind: skill
+lifecycle: stable
+actions:
+  - name: call_tool
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {tool: {type: "string"}, arguments: {type: "object", default: {}}}
+      required: ["tool"]
+    output_schema: {}
+  - name: list_tools
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["HEALTHEX_AUTH_TOKEN"]
+dependencies: []

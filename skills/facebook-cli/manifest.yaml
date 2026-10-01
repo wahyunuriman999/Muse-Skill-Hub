@@ -1,0 +1,21 @@
+schema_version: "1"
+name: facebook-cli
+version: "1.0.0"
+title: "Facebook"
+description: "Use when the user provides a Facebook URL or asks to read personal posts, comments, reactions, friends, timelines, profiles, stories, feeds, groups, events, or saved items, or to discover public events happening near a place, nearby, or in a local area on a date, or to create, edit, publish, or delete their own Marketplace listings. To find, browse, or buy Marketplace listings, use shopping instead. Use pages commands for managed Facebook Page discovery, insights, native draft editing/deletion, same-draft publication, approved posts and native scheduling."
+kind: skill
+lifecycle: stable
+actions:
+  - name: run_command
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {args: {type: "array", items: {type: "string"}, description: "e.g. ['post', '--help']"}}
+      required: ["args"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

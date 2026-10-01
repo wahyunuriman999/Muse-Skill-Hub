@@ -1,0 +1,31 @@
+schema_version: "1"
+name: google-drive
+version: "1.0.0"
+title: "Google Drive"
+description: "Work with the user's Google Drive: files, folders, uploads, downloads, and sharing."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_files
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+  - name: search_files
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string", description: "Substring to match in file names"}, limit: {type: "integer", default: 20, maximum: 100}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["GOOGLE_OAUTH_TOKEN"]
+dependencies: []

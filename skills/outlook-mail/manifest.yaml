@@ -1,0 +1,31 @@
+schema_version: "1"
+name: outlook-mail
+version: "1.0.0"
+title: "Outlook Mail"
+description: "Read, search, send, reply to, and delete messages in the user's Outlook Mail."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_messages
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string", description: "Search keywords"}, limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+  - name: send_mail
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {to: {type: "string"}, subject: {type: "string"}, body: {type: "string"}}
+      required: ["to", "subject", "body"]
+    output_schema: {}
+auth:
+  required_env: ["MICROSOFT_ACCESS_TOKEN"]
+dependencies: []

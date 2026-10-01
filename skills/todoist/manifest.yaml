@@ -1,0 +1,31 @@
+schema_version: "1"
+name: todoist
+version: "1.0.0"
+title: "Todoist"
+description: "Read and manage Todoist tasks, projects, comments, labels, filters, and reminders through Todoist's official MCP server."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_task
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {content: {type: "string"}}
+      required: ["content"]
+    output_schema: {}
+  - name: list_tasks
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["TODOIST_API_TOKEN"]
+dependencies: []

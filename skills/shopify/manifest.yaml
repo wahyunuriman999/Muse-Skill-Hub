@@ -1,0 +1,31 @@
+schema_version: "1"
+name: shopify
+version: "1.0.0"
+title: "Shopify"
+description: "Manage a Shopify store: list and update products, orders, customers, inventory levels, and discount codes."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_orders
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: list_products
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["SHOPIFY_STORE", "SHOPIFY_ADMIN_TOKEN"]
+dependencies: []

@@ -1,0 +1,31 @@
+schema_version: "1"
+name: opentable
+version: "1.0.0"
+title: "OpenTable"
+description: "Find restaurants on OpenTable, check availability, and make, change, or cancel reservations. Use for restaurant booking and live reservation data."
+kind: skill
+lifecycle: stable
+actions:
+  - name: reservation_link
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {restaurant_slug: {type: "string", description: "Slug from the restaurant's OpenTable URL"}, covers: {type: "integer", default: 2}, datetime: {type: "string", description: "ISO8601"}}
+      required: ["restaurant_slug"]
+    output_schema: {}
+  - name: search_restaurants
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, covers: {type: "integer", default: 2}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

@@ -1,0 +1,31 @@
+schema_version: "1"
+name: klaviyo
+version: "1.0.0"
+title: "Klaviyo"
+description: "Run Klaviyo email/SMS marketing: manage lists and segments, build campaigns and flows, and edit templates."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_campaigns
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+  - name: list_lists
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["KLAVIYO_API_KEY"]
+dependencies: []

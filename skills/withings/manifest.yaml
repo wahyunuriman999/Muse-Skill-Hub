@@ -1,0 +1,21 @@
+schema_version: "1"
+name: withings
+version: "1.0.0"
+title: "Withings"
+description: "Use when linking Withings or reading Withings body measurements, activity, sleep, workout, heart, and intraday data."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_body_measures
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {meastypes: {type: "string", default: "1,76,11", description: "Comma-separated Withings measure type ids"}, since: {type: "integer", default: 0, description: "Unix timestamp lower bound"}, limit: {type: "integer", default: 20}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["WITHINGS_ACCESS_TOKEN"]
+dependencies: []

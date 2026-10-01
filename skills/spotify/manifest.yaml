@@ -1,0 +1,51 @@
+schema_version: "1"
+name: spotify
+version: "1.0.0"
+title: "Spotify"
+description: "Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created with Save to Spotify."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_playlists
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 50}}
+      required: []
+    output_schema: {}
+  - name: pause
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {device_id: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: play
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {context_uri: {type: "string", description: "spotify:playlist:..., spotify:album:..."}, device_id: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: search
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, type: {type: "string", default: "track,artist"}, limit: {type: "integer", default: 5, maximum: 20}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["SPOTIFY_ACCESS_TOKEN"]
+dependencies: []

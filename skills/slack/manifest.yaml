@@ -1,0 +1,41 @@
+schema_version: "1"
+name: slack
+version: "1.0.0"
+title: "Slack"
+description: "Work with Slack: list channels, read and send messages, manage threads and reactions, and search history."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_channels
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: read_channel
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {channel_id: {type: "string", description: "Channel ID, e.g. C012AB345CD"}, limit: {type: "integer", default: 10, maximum: 50}}
+      required: ["channel_id"]
+    output_schema: {}
+  - name: send_message
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {channel_id: {type: "string"}, text: {type: "string"}}
+      required: ["channel_id", "text"]
+    output_schema: {}
+auth:
+  required_env: ["SLACK_BOT_TOKEN"]
+dependencies: []

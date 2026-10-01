@@ -1,0 +1,31 @@
+schema_version: "1"
+name: canva
+version: "1.0.0"
+title: "Canva"
+description: "Design with Canva: create and edit designs and presentations, manage brand assets and folders, and generate share links."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_design
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {design_id: {type: "string"}}
+      required: ["design_id"]
+    output_schema: {}
+  - name: list_designs
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["CANVA_ACCESS_TOKEN"]
+dependencies: []

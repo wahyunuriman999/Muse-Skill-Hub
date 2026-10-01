@@ -1,0 +1,51 @@
+schema_version: "1"
+name: github
+version: "1.0.0"
+title: "GitHub"
+description: "Search and work with the user's GitHub repositories through GitHub's official MCP server."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_issue
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {owner: {type: "string"}, repo: {type: "string"}, title: {type: "string"}, body: {type: "string", default: ""}}
+      required: ["owner", "repo", "title"]
+    output_schema: {}
+  - name: get_repository
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {owner: {type: "string", description: "Repository owner"}, repo: {type: "string", description: "Repository name"}}
+      required: ["owner", "repo"]
+    output_schema: {}
+  - name: list_issues
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {owner: {type: "string"}, repo: {type: "string"}, state: {type: "string", enum: ["open", "closed", "all"], default: "open"}, per_page: {type: "integer", default: 10, maximum: 50}}
+      required: ["owner", "repo"]
+    output_schema: {}
+  - name: search_repositories
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string", description: "Search keywords, e.g. 'mcp server language:python'"}, sort: {type: "string", enum: ["best match", "stars", "forks", "updated"], default: "best match"}, per_page: {type: "integer", default: 5, maximum: 30}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

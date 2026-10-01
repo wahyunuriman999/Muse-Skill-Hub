@@ -1,0 +1,31 @@
+schema_version: "1"
+name: figma
+version: "1.0.0"
+title: "Figma"
+description: "Work with Figma: read files, pages, frames and components, export assets, and manage design projects."
+kind: skill
+lifecycle: stable
+actions:
+  - name: export_image
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {file_key: {type: "string"}, node_ids: {type: "string", description: "Comma-separated node IDs"}, format: {type: "string", default: "png"}, scale: {type: "integer", default: 1}}
+      required: ["file_key", "node_ids"]
+    output_schema: {}
+  - name: get_file
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {file_key: {type: "string", description: "From the file URL after /design/"}}
+      required: ["file_key"]
+    output_schema: {}
+auth:
+  required_env: ["FIGMA_ACCESS_TOKEN"]
+dependencies: []

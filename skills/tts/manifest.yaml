@@ -1,0 +1,31 @@
+schema_version: "1"
+name: tts
+version: "1.0.0"
+title: "Tts"
+description: "Turn supplied text into spoken audio, single or multi-speaker. For composed audio content (a podcast, briefing, or narrated summary), use podcast."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_voices
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: synthesize
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {voice_id: {type: "string", description: "From list_voices"}, text: {type: "string", maxLength: 5000}}
+      required: ["voice_id", "text"]
+    output_schema: {}
+auth:
+  required_env: ["ELEVENLABS_API_KEY"]
+dependencies: []

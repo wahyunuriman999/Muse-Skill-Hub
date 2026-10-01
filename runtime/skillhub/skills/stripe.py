@@ -22,7 +22,7 @@ def _auth() -> tuple[dict, str]:
     key = os.environ.get("STRIPE_SECRET_KEY")
     if not key:
         raise CredentialsMissing(SKILL, REQUIRED_ENV, SETUP_HELP)
-    return ({"User-Agent": "muse-skill-hub-runtime/1.1.0"}, key)
+    return ({}, key)
 
 
 async def _req(method: str, path: str, data: dict | None = None) -> dict:

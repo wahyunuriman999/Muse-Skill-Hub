@@ -1,0 +1,21 @@
+schema_version: "1"
+name: ticketmaster
+version: "1.0.0"
+title: "Ticketmaster"
+description: "Search Ticketmaster events and seats with pricing. Returns Buy-now links to Ticketmaster checkout; it cannot complete a purchase itself."
+kind: skill
+lifecycle: stable
+actions:
+  - name: search_events
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {keyword: {type: "string", description: "e.g. 'Coldplay', 'jazz'"}, city: {type: "string"}, countryCode: {type: "string", description: "e.g. ID, US"}, classificationName: {type: "string", description: "music, sports, arts"}, limit: {type: "integer", default: 10, maximum: 50}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["TICKETMASTER_API_KEY"]
+dependencies: []

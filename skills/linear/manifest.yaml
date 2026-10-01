@@ -1,0 +1,31 @@
+schema_version: "1"
+name: linear
+version: "1.0.0"
+title: "Linear"
+description: "Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_issue
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {team_id: {type: "string", description: "Linear team UUID"}, title: {type: "string"}, description: {type: "string", default: ""}}
+      required: ["team_id", "title"]
+    output_schema: {}
+  - name: list_issues
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 10, maximum: 25}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["LINEAR_API_KEY"]
+dependencies: []

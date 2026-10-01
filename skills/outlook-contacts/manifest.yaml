@@ -1,0 +1,31 @@
+schema_version: "1"
+name: outlook-contacts
+version: "1.0.0"
+title: "Outlook Contacts"
+description: "List, search, create, update, and delete contacts in the user's Outlook account."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_contact
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {given_name: {type: "string"}, surname: {type: "string"}, display_name: {type: "string"}, email: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: list_contacts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["MICROSOFT_ACCESS_TOKEN"]
+dependencies: []

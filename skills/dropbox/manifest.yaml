@@ -1,0 +1,31 @@
+schema_version: "1"
+name: dropbox
+version: "1.0.0"
+title: "Dropbox"
+description: "Manage Dropbox storage: upload and download files, create share links, organize folders, and check space usage."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_metadata
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {path: {type: "string", description: "Full Dropbox path, e.g. /docs/report.pdf"}}
+      required: ["path"]
+    output_schema: {}
+  - name: list_folder
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {path: {type: "string", default: ""}, recursive: {type: "boolean", default: false}, limit: {type: "integer", default: 100, maximum: 2000}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["DROPBOX_ACCESS_TOKEN"]
+dependencies: []

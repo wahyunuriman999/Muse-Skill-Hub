@@ -1,0 +1,31 @@
+schema_version: "1"
+name: google-sheets
+version: "1.0.0"
+title: "Google Sheets"
+description: "Read, write, and manage the user's Google Sheets."
+kind: skill
+lifecycle: stable
+actions:
+  - name: append_row
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {spreadsheet_id: {type: "string"}, range: {type: "string"}, values: {type: "array", items: {type: "string"}, description: "Row values left to right"}}
+      required: ["spreadsheet_id", "range", "values"]
+    output_schema: {}
+  - name: read_range
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {spreadsheet_id: {type: "string", description: "The spreadsheet ID from its URL"}, range: {type: "string", description: "A1 notation range"}}
+      required: ["spreadsheet_id", "range"]
+    output_schema: {}
+auth:
+  required_env: ["GOOGLE_OAUTH_TOKEN"]
+dependencies: []

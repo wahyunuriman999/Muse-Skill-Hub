@@ -1,0 +1,51 @@
+schema_version: "1"
+name: device-data
+version: "1.0.0"
+title: "Device Data"
+description: "Read cached contacts and calendar events from Muse storage. Delete Muse's local copy of either source without modifying paired devices."
+kind: skill
+lifecycle: stable
+actions:
+  - name: delete_local_copy
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: get_calendar
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 50}}
+      required: []
+    output_schema: {}
+  - name: get_contacts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 50}}
+      required: []
+    output_schema: {}
+  - name: import_snapshot
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {contacts: {type: "array", items: {type: "object"}}, calendar: {type: "array", items: {type: "object"}}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

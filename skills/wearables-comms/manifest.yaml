@@ -1,0 +1,31 @@
+schema_version: "1"
+name: wearables-comms
+version: "1.0.0"
+title: "Wearables Calls and Messages"
+description: "Handle calls and messages through connected wearables: read notifications, place and answer calls, and send quick replies."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_outbox
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {status: {type: "string", description: "queued|delivered"}}
+      required: []
+    output_schema: {}
+  - name: queue_notification
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {text: {type: "string"}, to: {type: "string"}, kind: {type: "string", default: "notification"}}
+      required: ["text"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

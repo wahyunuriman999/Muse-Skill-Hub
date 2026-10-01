@@ -1,0 +1,31 @@
+schema_version: "1"
+name: vercel
+version: "1.0.0"
+title: "Vercel"
+description: "Deploy with Vercel: list projects and deployments, promote to production, manage domains and environment variables."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_deployments
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: list_projects
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["VERCEL_TOKEN"]
+dependencies: []

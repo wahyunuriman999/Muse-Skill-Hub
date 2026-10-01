@@ -1,0 +1,31 @@
+schema_version: "1"
+name: evernote
+version: "1.0.0"
+title: "Evernote"
+description: "Read and create notes through Evernote's official MCP server."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_notebooks
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: list_notes
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string", description: "Evernote search grammar"}, notebook_guid: {type: "string"}, limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["EVERNOTE_DEV_TOKEN"]
+dependencies: []

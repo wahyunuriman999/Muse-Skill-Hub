@@ -1,0 +1,51 @@
+schema_version: "1"
+name: permission-model
+version: "1.0.0"
+title: "Permission Model"
+description: "Work with the runtime permission system: list pending permission requests, explain what access each one grants, and respect the user's approve/deny decision."
+kind: skill
+lifecycle: stable
+actions:
+  - name: approve
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {request_id: {type: "string"}}
+      required: ["request_id"]
+    output_schema: {}
+  - name: deny
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {request_id: {type: "string"}}
+      required: ["request_id"]
+    output_schema: {}
+  - name: list_pending
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: request_approval
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {skill: {type: "string"}, action: {type: "string"}, params: {type: "object", default: {}}, risk: {type: "string", default: "write"}, ttl_s: {type: "integer", default: 600}}
+      required: ["action"]
+    output_schema: {type: "object"}
+auth:
+  required_env: []
+dependencies: []

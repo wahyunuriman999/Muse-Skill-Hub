@@ -1,0 +1,21 @@
+schema_version: "1"
+name: places-search
+version: "1.0.0"
+title: "Places Search"
+description: "Find, compare, and share details on physical places near the user or in a specified area, including restaurants, cafes, bars, hotels, parks, attractions, shops, and businesses with local services. Not for itineraries, choosing a city or region, dated events or showtimes, or directions."
+kind: skill
+lifecycle: stable
+actions:
+  - name: search_places
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string", description: "e.g. 'coffee shop Jakarta Selatan'"}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["GOOGLE_MAPS_API_KEY"]
+dependencies: []

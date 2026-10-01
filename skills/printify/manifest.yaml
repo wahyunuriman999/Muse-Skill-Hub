@@ -1,0 +1,31 @@
+schema_version: "1"
+name: printify
+version: "1.0.0"
+title: "Printify"
+description: "Use Printify to browse catalog data, manage shops and products, and review or create orders."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_products
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {shop_id: {type: "string"}, limit: {type: "integer", default: 20, maximum: 100}}
+      required: ["shop_id"]
+    output_schema: {}
+  - name: list_shops
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["PRINTIFY_API_TOKEN"]
+dependencies: []

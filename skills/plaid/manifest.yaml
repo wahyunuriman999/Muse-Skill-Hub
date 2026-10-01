@@ -1,0 +1,31 @@
+schema_version: "1"
+name: plaid
+version: "1.0.0"
+title: "Finances (Plaid)"
+description: "Use to connect Plaid and read linked financial accounts: metadata, balances, transactions, recurring transactions, liabilities, and investments."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_balances
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {access_token: {type: "string"}}
+      required: ["access_token"]
+    output_schema: {}
+  - name: sandbox_connect
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {institution_id: {type: "string", default: "ins_109508", description: "Sandbox institution, e.g. ins_109508 (First Platypus Bank)"}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["PLAID_CLIENT_ID", "PLAID_SECRET"]
+dependencies: []

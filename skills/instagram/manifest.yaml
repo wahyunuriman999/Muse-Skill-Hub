@@ -1,0 +1,31 @@
+schema_version: "1"
+name: instagram
+version: "1.0.0"
+title: "Instagram"
+description: "Read Instagram profiles, followers, posts, comments, likes, stories, feed, saved content, and account insights. Answer questions about posts, reels, and Instagram links. Manage interests and profile details, and publish stories, reels, posts, or carousels on request."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_media
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 10, maximum: 50}}
+      required: []
+    output_schema: {}
+  - name: get_profile
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["INSTAGRAM_ACCESS_TOKEN"]
+dependencies: []

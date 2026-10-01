@@ -1,0 +1,41 @@
+schema_version: "1"
+name: google-health-connect
+version: "1.0.0"
+title: "Health Connect"
+description: "The user's synced Google Health Connect data from their Android device: daily metrics (steps, distance, calories, heart rate, HRV, VO2max), sleep sessions (stages, quality, efficiency), and workouts."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_daily_metrics
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {date: {type: "string", description: "YYYY-MM-DD"}, limit: {type: "integer", default: 7}}
+      required: []
+    output_schema: {}
+  - name: get_sleep
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 7}}
+      required: []
+    output_schema: {}
+  - name: get_workouts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 10}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

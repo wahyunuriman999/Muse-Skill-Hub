@@ -1,0 +1,31 @@
+schema_version: "1"
+name: podcast
+version: "1.0.0"
+title: "Podcast"
+description: "Compose and deliver audio content: a podcast episode, briefing, or narrated summary, with one or more voices, as an MP3. For reading supplied text aloud verbatim, use tts."
+kind: skill
+lifecycle: stable
+actions:
+  - name: search_episodes
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 10, maximum: 50}}
+      required: ["query"]
+    output_schema: {}
+  - name: search_podcasts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 10, maximum: 50}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

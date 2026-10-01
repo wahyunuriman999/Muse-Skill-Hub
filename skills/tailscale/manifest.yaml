@@ -1,0 +1,21 @@
+schema_version: "1"
+name: tailscale
+version: "1.0.0"
+title: "Tailscale"
+description: "Set up Muse's built-in Tailscale connector, join a tailnet or Headscale network, check status, and reach private machines through the TCP tunnel proxy. Read for Tailscale, VPN, MagicDNS, network egress, exit-node, or browser routing questions and supported limits."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_devices
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["TAILSCALE_API_KEY", "TAILSCALE_TAILNET"]
+dependencies: []

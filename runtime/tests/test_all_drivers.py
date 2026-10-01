@@ -8,6 +8,7 @@
   CredentialsMissing (never fake success) when env is cleared.
 - Live tests for no-key APIs and local reference drivers.
 """
+import asyncio
 import json
 import os
 
@@ -20,6 +21,18 @@ from skillhub.registry import dispatch, load_registry
 # lovable/replit: documented GitHub-sync workarounds in their SKILL.md.
 # muse-early-access: Meta-internal program, no outside access exists.
 DOCUMENTED_STUBS = {"lovable", "muse-early-access", "replit"}
+
+
+def _approved(reg, skill, action, params):
+    """Run a strict-risk write action through the real approval flow."""
+    from skillhub import approval as approval_engine
+    from skillhub.policy import risk_for
+    entry = reg[skill]
+    risk = risk_for(skill, action, entry.actions[action].risk)
+    item = approval_engine.request_approval(skill, action, params, risk=risk)
+    approval_engine.approve(item["approval_id"])
+    return asyncio.run(dispatch(entry, action, params,
+                                approval_id=item["approval_id"]))
 
 
 def test_coverage():
@@ -66,10 +79,24 @@ def test_credential_errors_all_drivers(monkeypatch):
         else:
             action, confirm = next(iter(entry.actions)), True
         params = {r: "x" for r in entry.actions[action].required}
-        # fill required params with benign values
+        # fill required params with type-appropriate dummies (validation runs first)
+        for r in entry.actions[action].required:
+            t = (entry.actions[action].parameters.get(r) or {}).get("type")
+            params[r] = {"array": [], "object": {}, "integer": 1,
+                         "number": 1, "boolean": True}.get(t, "x")
+        # strict-risk actions need a real approval to reach the credentials check
+        from skillhub.policy import STRICT_RISKS, risk_for
+        risk = risk_for(name, action, entry.actions[action].risk)
+        if risk in STRICT_RISKS:
+            from skillhub import approval as approval_engine
+            item = approval_engine.request_approval(name, action, params, risk=risk)
+            approval_engine.approve(item["approval_id"])
+            kwargs = {"approval_id": item["approval_id"]}
+        else:
+            kwargs = {"confirm": confirm}
         with pytest.raises(CredentialsMissing):
             import asyncio
-            asyncio.run(dispatch(entry, action, params, confirm=confirm))
+            asyncio.run(dispatch(entry, action, params, **kwargs))
         checked += 1
     assert checked >= 40, f"only checked {checked} drivers"
 
@@ -144,7 +171,12 @@ def test_secure_vault_roundtrip(local_dir):
                   {"name": "k", "value": "v"}, confirm=True))
     res = _run(dispatch(reg["secure-vault"], "get_secret", {"name": "k"},
                         confirm=False))
-    assert res["value"] == "v"
+    # the VALUE must never come back to the LLM — only a credential_ref
+    assert "value" not in res
+    assert res["credential_ref"] == "ref:vault:k"
+    # explicit reveal needs a real approval (sensitive risk) and is audit-logged
+    rev = _approved(reg, "secure-vault", "reveal_secret", {"name": "k"})
+    assert rev["value"] == "v"
     names = _run(dispatch(reg["secure-vault"], "list_secrets", {}, confirm=False))
     assert names["secrets"] == ["k"]
 
@@ -152,14 +184,16 @@ def test_secure_vault_roundtrip(local_dir):
 def test_permission_model_flow(local_dir):
     reg = load_registry()
     r = _run(dispatch(reg["permission-model"], "request_approval",
-                      {"action": "send_mail"}, confirm=True))
-    rid = r["request"]["id"]
+                      {"skill": "gmail", "action": "send_message",
+                       "params": {"to": "a@b.c"}}, confirm=True))
+    aid = r["approval"]["approval_id"]
+    assert aid.startswith("apr_")
     pending = _run(dispatch(reg["permission-model"], "list_pending", {},
                             confirm=False))
-    assert any(p["id"] == rid for p in pending["pending"])
-    ok = _run(dispatch(reg["permission-model"], "approve", {"request_id": rid},
+    assert any(p["approval_id"] == aid for p in pending["pending"])
+    ok = _run(dispatch(reg["permission-model"], "approve", {"request_id": aid},
                        confirm=True))
-    assert ok["request"]["status"] == "approved"
+    assert ok["approval"]["status"] == "approved"
 
 
 def test_goals_flow(local_dir):
@@ -193,8 +227,7 @@ def test_forget_flow(local_dir):
     reg = load_registry()
     _run(dispatch(reg["forget"], "remember_fact",
                   {"fact": "likes nasi goreng"}, confirm=True))
-    out = _run(dispatch(reg["forget"], "forget_fact", {"query": "nasi goreng"},
-                        confirm=True))
+    out = _approved(reg, "forget", "forget_fact", {"query": "nasi goreng"})
     assert out["removed"] == 1
     assert _run(dispatch(reg["forget"], "list_facts", {},
                          confirm=False))["facts"] == []
@@ -202,10 +235,11 @@ def test_forget_flow(local_dir):
 
 def test_muse_db_sqlite(local_dir):
     reg = load_registry()
-    _run(dispatch(reg["muse_db"], "execute_write",
-                  {"sql": "CREATE TABLE t (id INTEGER, name TEXT)"}, confirm=True))
-    _run(dispatch(reg["muse_db"], "execute_write",
-                  {"sql": "INSERT INTO t VALUES (1, 'a')"}, confirm=True))
+    # execute_write is destructive-risk: goes through the approval engine
+    _approved(reg, "muse_db", "execute_write",
+              {"sql": "CREATE TABLE t (id INTEGER, name TEXT)"})
+    _approved(reg, "muse_db", "execute_write",
+              {"sql": "INSERT INTO t VALUES (1, 'a')"})
     rows = _run(dispatch(reg["muse_db"], "query",
                          {"sql": "SELECT * FROM t"}, confirm=False))
     assert rows["rows"] == [{"id": 1, "name": "a"}]
@@ -236,8 +270,9 @@ def test_function_health():
 def test_wallet_and_channels(local_dir):
     reg = load_registry()
     _run(dispatch(reg["wallet"], "connect", {"provider": "manual"}, confirm=True))
-    _run(dispatch(reg["wallet"], "add_payment_method",
-                  {"label": "BCA debit", "last4": "1234"}, confirm=True))
+    # financial risk: needs a real approval, not bare confirm=true
+    _approved(reg, "wallet", "add_payment_method",
+              {"label": "BCA debit", "last4": "1234"})
     methods = _run(dispatch(reg["wallet"], "list_payment_methods", {},
                              confirm=False))
     assert methods["methods"][0]["label"] == "BCA debit"

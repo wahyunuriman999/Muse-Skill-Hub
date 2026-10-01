@@ -56,6 +56,11 @@ def _save(vault: dict) -> None:
         json.dumps(vault).encode()))
 
 
+def _read_secret_value(name: str) -> str | None:
+    """Server-side only. Never expose through an MCP tool response."""
+    return _load().get(name)
+
+
 async def store_secret(params: dict) -> dict:
     vault = _load()
     vault[params["name"]] = params["value"]
@@ -64,10 +69,32 @@ async def store_secret(params: dict) -> dict:
 
 
 async def get_secret(params: dict) -> dict:
+    """Return a credential_ref, NOT the value.
+
+    The value never leaves the runtime. Drivers resolve ``ref:vault:<name>``
+    server-side via skillhub.credentials. Use ``reveal_secret`` (write +
+    confirm, audit-logged) only when the user explicitly asks to see it.
+    """
+    if params["name"] not in _load():
+        raise SkillError(SKILL, "not_found", f"No secret named '{params['name']}'.")
+    return {"status": "ok", "name": params["name"],
+            "credential_ref": f"ref:vault:{params['name']}",
+            "usage": "Pass credential_ref as a parameter to drivers that accept "
+                     "vault references; the runtime resolves it server-side."}
+
+
+async def reveal_secret(params: dict) -> dict:
+    """Explicitly reveal a secret value (write + confirm, audit-logged).
+
+    Only for cases where the user themselves asked to see the value.
+    Prefer credential_ref for agent-to-driver flows.
+    """
     vault = _load()
     if params["name"] not in vault:
         raise SkillError(SKILL, "not_found", f"No secret named '{params['name']}'.")
-    return {"status": "ok", "name": params["name"], "value": vault[params["name"]]}
+    return {"status": "ok", "name": params["name"],
+            "value": vault[params["name"]],
+            "warning": "This reveal was audit-logged. Do not paste secrets into prompts."}
 
 
 async def delete_secret(params: dict) -> dict:
@@ -84,9 +111,11 @@ async def list_secrets(params: dict) -> dict:
 ACTIONS = {
     "store_secret": ActionDef("Store a secret in the encrypted local vault (needs confirm=true).",
         {"name": {"type": "string"}, "value": {"type": "string"}},
-        ["name", "value"], store_secret, write=True),
-    "get_secret": ActionDef("Retrieve a secret by name.",
+        ["name", "value"], store_secret, write=True, sensitive_params=["value"]),
+    "get_secret": ActionDef("Get a credential_ref for a secret (the VALUE is never returned to the LLM).",
         {"name": {"type": "string"}}, ["name"], get_secret),
+    "reveal_secret": ActionDef("Reveal a secret value explicitly (needs confirm=true; audit-logged; prefer credential_ref).",
+        {"name": {"type": "string"}}, ["name"], reveal_secret, write=True, risk="sensitive"),
     "delete_secret": ActionDef("Delete a secret (needs confirm=true).",
         {"name": {"type": "string"}}, ["name"], delete_secret, write=True),
     "list_secrets": ActionDef("List secret names (never values).", {}, [], list_secrets),

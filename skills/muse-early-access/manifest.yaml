@@ -1,0 +1,11 @@
+schema_version: "1"
+name: muse-early-access
+version: "1.0.0"
+title: "Muse early access"
+description: "Use for questions about Muse's general early access program, requests to join it, checking or withdrawing a join request, and admission updates."
+kind: skill
+lifecycle: stable
+actions:
+auth:
+  required_env: []
+dependencies: []

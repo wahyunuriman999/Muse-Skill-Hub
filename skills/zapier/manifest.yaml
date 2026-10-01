@@ -1,0 +1,21 @@
+schema_version: "1"
+name: zapier
+version: "1.0.0"
+title: "Zapier"
+description: "Connect Muse to actions across apps through Zapier's official MCP server."
+kind: skill
+lifecycle: stable
+actions:
+  - name: trigger_zap
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {payload: {type: "object", description: "JSON payload for the Zap"}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["ZAPIER_WEBHOOK_URL"]
+dependencies: []

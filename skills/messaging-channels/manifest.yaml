@@ -1,0 +1,41 @@
+schema_version: "1"
+name: messaging-channels
+version: "1.0.0"
+title: "Messaging Channels"
+description: "Work across connected messaging providers (e.g. WhatsApp): check connection status, read side chats, and send messages on the user's behalf with approval."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_channels
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: register_channel
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}, provider: {type: "string"}, webhook_url: {type: "string"}}
+      required: ["name"]
+    output_schema: {}
+  - name: send_message
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {channel: {type: "string"}, to: {type: "string"}, text: {type: "string"}}
+      required: ["channel", "to", "text"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

@@ -1,0 +1,31 @@
+schema_version: "1"
+name: voice-calls
+version: "1.0.0"
+title: "Voice Calls"
+description: "Provides the static system voice catalog used by Jarvis. It does not define a user-facing workflow."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_calls
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+  - name: make_call
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {to: {type: "string", description: "E.164 number, e.g. +62812..."}, twiml_url: {type: "string", description: "URL serving TwiML instructions"}}
+      required: ["to", "twiml_url"]
+    output_schema: {}
+auth:
+  required_env: ["TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN"]
+dependencies: []

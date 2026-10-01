@@ -1,0 +1,51 @@
+schema_version: "1"
+name: goals
+version: "1.0.0"
+title: "Goals"
+description: "Guidance for helping users create and accomplish goals. Read it before you create a goal for the user when no goal-creation contract is in context, and whenever you help with an existing goal. A Goals-tab creation turn already carries that contract and does not need this skill."
+kind: skill
+lifecycle: stable
+actions:
+  - name: complete_goal
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {goal_id: {type: "string"}}
+      required: ["goal_id"]
+    output_schema: {}
+  - name: create_goal
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {title: {type: "string"}, description: {type: "string"}, target_date: {type: "string", description: "YYYY-MM-DD"}}
+      required: ["title"]
+    output_schema: {}
+  - name: list_goals
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {status: {type: "string", description: "active|completed"}}
+      required: []
+    output_schema: {}
+  - name: log_progress
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {goal_id: {type: "string"}, note: {type: "string"}}
+      required: ["goal_id", "note"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

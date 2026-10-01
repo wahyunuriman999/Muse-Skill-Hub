@@ -1,0 +1,31 @@
+schema_version: "1"
+name: meta-ads
+version: "1.0.0"
+title: "Meta Ads"
+description: "Create, write, or manage Meta ads and assets: ad copy, campaigns, spend, reports, audiences, catalogs, product feeds, feed refresh schedules, experiments, and policy. Always load for any request to create or write an ad, or to advertise a product or service, even when no platform is named; this includes sensitive or restricted categories. Always load for any question asking what a Meta, Facebook, or Instagram advertising policy means, allows, prohibits, or requires, including a standalone policy-definition question with no account context. Those questions must use ads_policy_tool, never browser search or memory. Load for a specifically named catalog or feed with an upload or refresh-schedule request; use Ads reads to resolve ownership before writing. Generic unnamed feeds need context. Whether an image, claim or piece of copy may be used in an ad is ALWAYS a Meta Ads task — 'can I use this in an ad', 'is it allowed', 'is this against policy', and any rights, likeness, celebrity, logo or trademark question about advertising with an image, including a follow-up about one just generated. Those are ads-policy questions, not general legal ones. An ad request uses the campaign workflow unless explicitly only an image or organic post."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_ad_accounts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 25, maximum: 100}}
+      required: []
+    output_schema: {}
+  - name: list_campaigns
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {ad_account_id: {type: "string", description: "Numeric ID without act_ prefix"}, limit: {type: "integer", default: 25, maximum: 100}}
+      required: ["ad_account_id"]
+    output_schema: {}
+auth:
+  required_env: ["META_ADS_ACCESS_TOKEN"]
+dependencies: []

@@ -1,0 +1,31 @@
+schema_version: "1"
+name: meta-threads
+version: "1.0.0"
+title: "Meta Threads"
+description: "Read and manage the user's Threads account: profile, posts, feed, saved posts, activity, insights, social graph, search, trends, and a specific post by URL or ID. Can tune feed ranking and publish posts on request."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_profile
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: post_text
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {text: {type: "string", maxLength: 500}}
+      required: ["text"]
+    output_schema: {}
+auth:
+  required_env: ["THREADS_ACCESS_TOKEN"]
+dependencies: []

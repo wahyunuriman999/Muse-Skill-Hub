@@ -1,0 +1,31 @@
+schema_version: "1"
+name: instagram-messages
+version: "1.0.0"
+title: "Instagram Messages"
+description: "Use this to interact with the user's Instagram messages. Read inboxes, threads, top recipients, filtered inbox views, DM search results, and send messages through `instagram-messages-cli`."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_conversations
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 50}}
+      required: []
+    output_schema: {}
+  - name: send_message
+    type: write
+    risk: communication
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {recipient_id: {type: "string"}, text: {type: "string"}}
+      required: ["recipient_id", "text"]
+    output_schema: {}
+auth:
+  required_env: ["INSTAGRAM_PAGE_TOKEN"]
+dependencies: []

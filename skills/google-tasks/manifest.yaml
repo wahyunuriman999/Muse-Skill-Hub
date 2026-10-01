@@ -1,0 +1,51 @@
+schema_version: "1"
+name: google-tasks
+version: "1.0.0"
+title: "Google Tasks"
+description: "Manage the user's Google Tasks: lists, task details, creation, updates, and completion."
+kind: skill
+lifecycle: stable
+actions:
+  - name: complete_task
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {task_id: {type: "string"}, task_list_id: {type: "string", default: "@default"}}
+      required: ["task_id"]
+    output_schema: {}
+  - name: create_task
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {title: {type: "string"}, notes: {type: "string"}, due: {type: "string"}, task_list_id: {type: "string", default: "@default"}}
+      required: ["title"]
+    output_schema: {}
+  - name: list_task_lists
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: list_tasks
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {task_list_id: {type: "string", default: "@default"}, show_completed: {type: "boolean", default: false}, limit: {type: "integer", default: 50, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["GOOGLE_OAUTH_TOKEN"]
+dependencies: []

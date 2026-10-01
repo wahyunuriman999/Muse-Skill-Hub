@@ -1,0 +1,41 @@
+schema_version: "1"
+name: data-control
+version: "1.0.0"
+title: "Data Control"
+description: "Handle user data rights: explain what data is collected and how it is used, export chats and files, delete data on request, and manage training opt-outs."
+kind: skill
+lifecycle: stable
+actions:
+  - name: delete_data
+    type: write
+    risk: destructive
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {scope: {type: "string", default: "all", description: "all, or e.g. feed, ideas, goals, vault.enc"}}
+      required: []
+    output_schema: {}
+  - name: explain_collection
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: export_data
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

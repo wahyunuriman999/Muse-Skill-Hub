@@ -1,0 +1,51 @@
+schema_version: "1"
+name: connector-management
+version: "1.0.0"
+title: "Connector Management"
+description: "Manage third-party service connectors: discover available connectors, check connection status and granted scopes, guide OAuth connect flows, and disconnect services."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_connector
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {provider: {type: "string"}}
+      required: ["provider"]
+    output_schema: {}
+  - name: list_connectors
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: remove_connector
+    type: write
+    risk: account
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {provider: {type: "string"}}
+      required: ["provider"]
+    output_schema: {}
+  - name: set_connector
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {provider: {type: "string"}, auth_type: {type: "string"}, status: {type: "string"}, scopes: {type: "array", items: {type: "string"}}}
+      required: ["provider"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

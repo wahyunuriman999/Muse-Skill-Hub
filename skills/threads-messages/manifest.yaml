@@ -1,0 +1,31 @@
+schema_version: "1"
+name: threads-messages
+version: "1.0.0"
+title: "Threads Messages"
+description: "Use this to interact with the user's Threads messages: read inboxes and message threads, and send messages through `threads-messages-cli`."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_conversation
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {thread_id: {type: "string"}}
+      required: ["thread_id"]
+    output_schema: {}
+  - name: list_replies
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {thread_id: {type: "string", description: "Threads post ID"}}
+      required: ["thread_id"]
+    output_schema: {}
+auth:
+  required_env: ["THREADS_ACCESS_TOKEN"]
+dependencies: []

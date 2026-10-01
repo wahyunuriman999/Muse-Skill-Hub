@@ -1,0 +1,21 @@
+schema_version: "1"
+name: wearable-device-skills
+version: "1.0.0"
+title: "Wearable Device Skills"
+description: "Use when the user asks to discover, inspect, or invoke an agentic capability dynamically published by a paired phone or wearable, including device controls, app actions, camera or media actions, and smart-home actions."
+kind: skill
+lifecycle: stable
+actions:
+  - name: discover
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

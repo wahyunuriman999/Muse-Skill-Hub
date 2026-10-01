@@ -1,0 +1,41 @@
+schema_version: "1"
+name: box
+version: "1.0.0"
+title: "Box"
+description: "Search, read, upload, download, move, rename, delete, restore, and share Box content; manage comments and metadata."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_file_info
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {file_id: {type: "string"}}
+      required: ["file_id"]
+    output_schema: {}
+  - name: list_folder
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {folder_id: {type: "string", default: "0"}, limit: {type: "integer", default: 50, maximum: 200}}
+      required: []
+    output_schema: {}
+  - name: search
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 20, maximum: 200}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["BOX_ACCESS_TOKEN"]
+dependencies: []

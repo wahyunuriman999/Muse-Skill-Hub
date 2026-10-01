@@ -1,0 +1,21 @@
+schema_version: "1"
+name: voice-design
+version: "1.0.0"
+title: "Voice Design"
+description: "Choose or design a speaking voice when the user asks for a new, different, custom, invented, or generated voice, or restore the voice used immediately before the current one."
+kind: skill
+lifecycle: stable
+actions:
+  - name: design_voice
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {description: {type: "string", description: "e.g. 'a warm female narrator, calm pace'"}, preview_text: {type: "string"}}
+      required: ["description"]
+    output_schema: {}
+auth:
+  required_env: ["ELEVENLABS_API_KEY"]
+dependencies: []

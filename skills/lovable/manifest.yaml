@@ -1,0 +1,11 @@
+schema_version: "1"
+name: lovable
+version: "1.1.0"
+title: "Lovable"
+description: "Lovable AI app builder. No public API exists, so this skill is catalog-only: the honest workaround is Lovable's GitHub sync, then operate on the code with the github skill."
+kind: skill
+lifecycle: stable
+actions:
+auth:
+  required_env: []
+dependencies: []

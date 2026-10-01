@@ -1,0 +1,31 @@
+schema_version: "1"
+name: google-forms
+version: "1.0.0"
+title: "Google Forms"
+description: "Read, create, and update the user's Google Forms, and read responses."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_form
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {title: {type: "string"}}
+      required: ["title"]
+    output_schema: {}
+  - name: get_responses
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {form_id: {type: "string"}}
+      required: ["form_id"]
+    output_schema: {}
+auth:
+  required_env: ["GOOGLE_OAUTH_TOKEN"]
+dependencies: []

@@ -1,0 +1,31 @@
+schema_version: "1"
+name: function-health
+version: "1.0.0"
+title: "Function Health"
+description: "Retrieve lab biomarker results and clinician notes from Function Health."
+kind: skill
+lifecycle: stable
+actions:
+  - name: query_audit_log
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 50, minimum: 1, maximum: 500}, skill: {type: "string", default: ""}, action: {type: "string", default: ""}, result: {type: "string", enum: ["", "success", "error", "blocked", "deduplicated"], default: ""}}
+      required: []
+    output_schema: {}
+  - name: runtime_health
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

@@ -1,0 +1,21 @@
+schema_version: "1"
+name: peloton
+version: "1.0.0"
+title: "Peloton"
+description: "Connect to Peloton to browse fitness classes, check schedules, and book workouts."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_workouts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 10, maximum: 50}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["PELOTON_USERNAME", "PELOTON_PASSWORD"]
+dependencies: []

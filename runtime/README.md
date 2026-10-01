@@ -15,14 +15,23 @@ skills/*/SKILL.md  ──catalog──▶  skillhub/registry.py  ──▶  MCP 
                         └─────────────────────────────────────┘
 ```
 
-- **Every one of the 97 skills is registered as an MCP tool** — full discovery.
+- **Every action is its own MCP tool** (`github_search_repositories`, …) with
+  full JSON input schemas — 210 typed tools, plus `skillhub_search_capabilities`
+  for dynamic discovery by natural-language query.
 - Skills with a driver in `skillhub/skills/` execute **real API calls**.
 - Skills without a driver return a structured `driver_not_implemented` response
   (never a fake success) with a pointer to the driver template.
-- **Read/write isolation is enforced in code**: write actions refuse to run
-  without `confirm=true`.
+- **Permissions are enforced in code** (`skillhub/policy.py`):
+  `read` actions run freely; plain `write` actions need `confirm=true`;
+  `sensitive`/`destructive`/`communication`/`financial`/`account`/`device`
+  actions need a real approval (`approval_id` bound to the exact
+  skill/action/params, single-use, 10-min TTL).
 - **Credentials are honest**: missing env vars return `credentials_missing`
   with exact setup instructions — no hallucinated data.
+- **Audit log**: every execution is recorded with request_id, risk, approval_id,
+  and duration; secrets are redacted. Query with `function-health query_audit_log`.
+- **Idempotency**: pass `idempotency_key` on write actions; repeats return the
+  first result instead of re-executing.
 
 ## Quick start
 
@@ -32,7 +41,7 @@ pip install -r requirements.txt
 
 # run the MCP server (stdio transport)
 python -m skillhub.server
-# → "muse-skill-hub: 97 skills registered, 94 with executable drivers."
+# → "muse-skill-hub v2.0.0: 97 skills registered, 94 with executable drivers, 210 MCP tools."
 ```
 
 ### Claude Desktop
@@ -168,12 +177,21 @@ Every tool takes `{ action, params, confirm }`:
 Write action (needs confirmation):
 
 ```json
-{ "action": "send_message",
+Send a message (communication risk → needs an approval, not just confirm):
+
+```json
+{ "tool": "permission_model_request_approval",
+  "params": { "skill": "slack", "action": "send_message",
+              "params": { "channel_id": "C012AB345CD", "text": "Hello!" } } }
+// → { "approval_id": "apr_..." }
+// human approves, then:
+{ "tool": "slack_send_message",
   "params": { "channel_id": "C012AB345CD", "text": "Hello!" },
-  "confirm": true }
+  "approval_id": "apr_..." }
+```
 ```
 
-Without `confirm=true`, write actions return `confirmation_required` with a preview.
+Without an approval, strict-risk actions raise `approval_required` — carrying the pending `approval_id` and a non-secret params preview.
 
 ## Tests (the proof)
 
@@ -183,11 +201,12 @@ pytest tests/ -v
 ```
 
 What the suite proves:
-1. All **97 skills** load from the catalog with valid MCP tool schemas.
-2. `github.search_repositories` performs a **live** `api.github.com` call.
+1. All **97 skills** load from the catalog with **210 valid, typed MCP tool schemas**.
+2. `github_search_repositories` performs a **live** `api.github.com` call.
 3. Missing credentials → structured `credentials_missing` (honest, never fake).
-4. Write without `confirm=true` → `confirmation_required` (isolation enforced).
-5. Full MCP server boots over **stdio**, serves 97 tools, executes a live call.
+4. Strict-risk write without approval → `approval_required` (approval engine enforced).
+5. Full MCP server boots over **stdio**, serves all tools, executes a live call.
+6. Audit log, idempotency keys, secret redaction, and SQL guardrails verified.
 
 ## Adding a driver
 

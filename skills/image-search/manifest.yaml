@@ -1,0 +1,21 @@
+schema_version: "1"
+name: image-search
+version: "1.0.0"
+title: "Image Search"
+description: "Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not identify a supplied image or person."
+kind: skill
+lifecycle: stable
+actions:
+  - name: search_images
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 8, maximum: 20}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["SERPER_API_KEY"]
+dependencies: []

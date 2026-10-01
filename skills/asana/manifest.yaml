@@ -1,0 +1,31 @@
+schema_version: "1"
+name: asana
+version: "1.0.0"
+title: "Asana"
+description: "Manage Asana work: create and list tasks, assign owners, set due dates, organize projects, and track team progress."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_task
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {project_id: {type: "string"}, name: {type: "string"}, notes: {type: "string", default: ""}, due_on: {type: "string", description: "YYYY-MM-DD"}}
+      required: ["project_id", "name"]
+    output_schema: {}
+  - name: list_tasks
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {project_id: {type: "string", description: "Asana project GID"}}
+      required: ["project_id"]
+    output_schema: {}
+auth:
+  required_env: ["ASANA_ACCESS_TOKEN"]
+dependencies: []

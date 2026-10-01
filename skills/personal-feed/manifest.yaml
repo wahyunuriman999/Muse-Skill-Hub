@@ -1,0 +1,31 @@
+schema_version: "1"
+name: personal-feed
+version: "1.0.0"
+title: "Personal Feed"
+description: "Manage the user's personal Feed: short editorial posts the agent writes on a schedule, the feed brief/prompt, and regenerating or removing posts."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_posts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20}}
+      required: []
+    output_schema: {}
+  - name: publish_post
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {title: {type: "string"}, body: {type: "string"}, category: {type: "string", default: "general"}}
+      required: ["title"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

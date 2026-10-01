@@ -1,0 +1,41 @@
+schema_version: "1"
+name: stripe
+version: "1.0.0"
+title: "Stripe"
+description: "Handle Stripe payments: create payment links and checkout sessions, manage customers, subscriptions, invoices, and refunds."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_payment_link
+    type: write
+    risk: financial
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {product_name: {type: "string"}, amount_cents: {type: "integer"}, currency: {type: "string", default: "usd"}}
+      required: ["product_name", "amount_cents"]
+    output_schema: {}
+  - name: list_customers
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: list_invoices
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["STRIPE_SECRET_KEY"]
+dependencies: []

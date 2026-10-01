@@ -1,0 +1,51 @@
+schema_version: "1"
+name: agent-library
+version: "1.0.0"
+title: "Agent Library"
+description: "Manage the user's file library: uploads, generated artifacts, expiring public share links, and the media collection. Know where files live and how the user gets them back."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_agent
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}}
+      required: ["name"]
+    output_schema: {}
+  - name: list_agents
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: register_agent
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}, description: {type: "string"}, capabilities: {type: "array", items: {type: "string"}}}
+      required: ["name"]
+    output_schema: {}
+  - name: remove_agent
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}}
+      required: ["name"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

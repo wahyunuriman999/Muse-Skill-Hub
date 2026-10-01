@@ -1,0 +1,11 @@
+schema_version: "1"
+name: replit
+version: "1.1.0"
+title: "Replit"
+description: "Replit cloud IDE. Replit's public REST API is deprecated and its replacement is unreleased, so this skill is catalog-only: the honest workaround is pushing the Repl to GitHub, then operating on the code with the github skill."
+kind: skill
+lifecycle: stable
+actions:
+auth:
+  required_env: []
+dependencies: []

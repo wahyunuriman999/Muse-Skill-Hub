@@ -1,0 +1,21 @@
+schema_version: "1"
+name: shopping
+version: "1.0.0"
+title: "Shopping"
+description: "Use for any product or shopping question: find, reverse image search, shopping Instagram/Marketplace links, buy, compare, or evaluate real products with prices, images, and product page URLs, including buying or browsing Facebook Marketplace listings. Use when presenting shopping search results from any source. For shopping intent, load this skill first before any other skills."
+kind: skill
+lifecycle: stable
+actions:
+  - name: search_products
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 10, maximum: 20}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["SERPER_API_KEY"]
+dependencies: []

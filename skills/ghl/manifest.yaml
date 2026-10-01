@@ -1,0 +1,41 @@
+schema_version: "1"
+name: ghl
+version: "1.0.0"
+title: "Ghl"
+description: "Use HighLevel contacts, pipelines, appointments, messages, and its broader operation catalog."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_contact
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {firstName: {type: "string"}, lastName: {type: "string"}, email: {type: "string"}, phone: {type: "string"}, location_id: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: get_contact
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {contact_id: {type: "string"}}
+      required: ["contact_id"]
+    output_schema: {}
+  - name: list_contacts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}, limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["GHL_API_KEY"]
+dependencies: []

@@ -1,0 +1,31 @@
+schema_version: "1"
+name: tessie
+version: "1.0.0"
+title: "Tessie"
+description: "Monitor a Tesla vehicle, inspect live state, and run explicit Tessie command endpoints."
+kind: skill
+lifecycle: stable
+actions:
+  - name: get_state
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {vin: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: list_vehicles
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["TESSIE_API_TOKEN"]
+dependencies: []

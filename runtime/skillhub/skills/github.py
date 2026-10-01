@@ -24,7 +24,6 @@ def _headers() -> dict:
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "muse-skill-hub-runtime/1.1.0",
     }
     token = os.environ.get("GITHUB_TOKEN")
     if token:

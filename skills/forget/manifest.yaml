@@ -1,0 +1,41 @@
+schema_version: "1"
+name: forget
+version: "1.0.0"
+title: "Forget"
+description: "Remove a personal fact, preference, relationship detail, topic, or prior event from Muse's active memory and stop existing copies or automations from bringing it back. Use for explicit requests such as 'forget that', 'don't remember this about me', or 'remove that from your memory'. Do not use when 'forget it' merely means cancel the current task."
+kind: skill
+lifecycle: stable
+actions:
+  - name: forget_fact
+    type: write
+    risk: destructive
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}}
+      required: ["query"]
+    output_schema: {}
+  - name: list_facts
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: remember_fact
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {fact: {type: "string"}, topic: {type: "string"}}
+      required: ["fact"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

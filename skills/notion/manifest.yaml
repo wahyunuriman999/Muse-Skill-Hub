@@ -1,0 +1,31 @@
+schema_version: "1"
+name: notion
+version: "1.0.0"
+title: "Notion"
+description: "Search, read, create, and update Notion pages via the Notion MCP."
+kind: skill
+lifecycle: stable
+actions:
+  - name: query_database
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {database_id: {type: "string", description: "32-char database ID"}}
+      required: ["database_id"]
+    output_schema: {}
+  - name: search
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["NOTION_TOKEN"]
+dependencies: []

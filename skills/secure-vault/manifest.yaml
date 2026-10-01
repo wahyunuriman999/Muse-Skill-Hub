@@ -1,0 +1,61 @@
+schema_version: "1"
+name: secure-vault
+version: "1.0.0"
+title: "Secure Vault"
+description: "Handle credentials securely: collect passwords, API keys, and tokens only through secure entry UI, never in chat; manage saved logins and one-time sign-in codes."
+kind: skill
+lifecycle: stable
+actions:
+  - name: delete_secret
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}}
+      required: ["name"]
+    output_schema: {}
+  - name: get_secret
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}}
+      required: ["name"]
+    output_schema: {}
+  - name: list_secrets
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {}
+  - name: reveal_secret
+    type: write
+    risk: sensitive
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}}
+      required: ["name"]
+    output_schema: {}
+  - name: store_secret
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}, value: {type: "string"}}
+      required: ["name", "value"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

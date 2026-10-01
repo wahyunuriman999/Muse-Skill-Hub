@@ -1,0 +1,31 @@
+schema_version: "1"
+name: social-content-performance
+version: "1.0.0"
+title: "Social Content Performance"
+description: "Analyze the user's own Instagram account and post performance using linked-account analytics."
+kind: skill
+lifecycle: stable
+actions:
+  - name: account_insights
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {ig_user_id: {type: "string", default: "me", description: "Instagram business account ID"}}
+      required: []
+    output_schema: {}
+  - name: media_insights
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {media_id: {type: "string"}}
+      required: ["media_id"]
+    output_schema: {}
+auth:
+  required_env: ["INSTAGRAM_ACCESS_TOKEN"]
+dependencies: []

@@ -1,0 +1,21 @@
+schema_version: "1"
+name: skill-creator
+version: "1.0.0"
+title: "Skill Creator"
+description: "Create or update a workspace skill: its description, structure, instructions, and supporting files."
+kind: skill
+lifecycle: stable
+actions:
+  - name: scaffold_skill
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {name: {type: "string", description: "kebab-case name"}, title: {type: "string"}, description: {type: "string"}}
+      required: ["name"]
+    output_schema: {}
+auth:
+  required_env: []
+dependencies: []

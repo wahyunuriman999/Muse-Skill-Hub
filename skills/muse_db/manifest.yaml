@@ -1,0 +1,41 @@
+schema_version: "1"
+name: muse_db
+version: "1.0.0"
+title: "Muse_Db"
+description: "Inspect database-backed Muse records for diagnosis and cross-table tracing when purpose-built product tools do not expose the needed state."
+kind: skill
+lifecycle: stable
+actions:
+  - name: execute_write
+    type: write
+    risk: destructive
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {sql: {type: "string", maxLength: 8000}}
+      required: ["sql"]
+    output_schema: {type: "object"}
+  - name: list_tables
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {}
+      required: []
+    output_schema: {type: "object"}
+  - name: query
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {sql: {type: "string", maxLength: 8000}}
+      required: ["sql"]
+    output_schema: {type: "object"}
+auth:
+  required_env: []
+dependencies: []

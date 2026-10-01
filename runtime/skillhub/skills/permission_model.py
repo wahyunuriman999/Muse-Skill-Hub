@@ -1,75 +1,66 @@
-"""Permission model — LOCAL approval-queue reference implementation.
+"""Permission model — human-in-the-loop UI over the runtime approval engine.
 
-Real approve/deny workflow with a local JSON queue. Reference implementation of
-the runtime permission interface — not connected to any production permission
-system. Swap the storage backend for production use.
+This skill is the user-facing surface of ``skillhub.approval``: the same
+approval objects that gate write actions in ``registry.dispatch`` are
+requested, listed, approved and denied here. One system, not two.
+
+Approvals are bound to exact skill/action/parameters, expire after
+``ttl_s`` (default 600s), and are single-use.
 """
 from __future__ import annotations
 
-import time
-import uuid
-
+from .. import approval as approval_engine
 from ..driver import ActionDef
-from ..errors import SkillError
-from ..localstore import LOCAL_NOTE, read_json, write_json
+from ..localstore import LOCAL_NOTE
 
 SKILL = "permission-model"
 REQUIRED_ENV: list[str] = []
 SETUP_HELP = LOCAL_NOTE
 
-_STORE = "permissions"
-
-
-def _load() -> list:
-    return read_json(_STORE, [])
-
-
-def _save(items: list) -> None:
-    write_json(_STORE, items)
-
 
 async def request_approval(params: dict) -> dict:
-    items = _load()
-    item = {"id": uuid.uuid4().hex[:8], "action": params["action"],
-            "params": params.get("params", {}), "status": "pending",
-            "created_at": int(time.time())}
-    items.append(item)
-    _save(items)
-    return {"status": "ok", "request": item}
+    item = approval_engine.request_approval(
+        skill=params.get("skill", ""),
+        action=params["action"],
+        params=params.get("params", {}) or {},
+        risk=params.get("risk", "write"),
+        ttl_s=int(params.get("ttl_s", 600)),
+    )
+    return {"status": "ok", "approval": item,
+            "usage": "Approve with permission-model approve, then call the "
+                     "target tool with approval_id."}
 
 
 async def list_pending(params: dict) -> dict:
-    items = [i for i in _load() if i["status"] == "pending"]
-    return {"status": "ok", "pending": items}
+    return {"status": "ok", "pending": approval_engine.list_pending()}
 
 
 async def approve(params: dict) -> dict:
-    items = _load()
-    for i in items:
-        if i["id"] == params["request_id"]:
-            i["status"] = "approved"
-            _save(items)
-            return {"status": "ok", "request": i}
-    raise SkillError(SKILL, "not_found", "No such request.")
+    item = approval_engine.approve(params["request_id"])
+    return {"status": "ok", "approval": item}
 
 
 async def deny(params: dict) -> dict:
-    items = _load()
-    for i in items:
-        if i["id"] == params["request_id"]:
-            i["status"] = "denied"
-            _save(items)
-            return {"status": "ok", "request": i}
-    raise SkillError(SKILL, "not_found", "No such request.")
+    item = approval_engine.deny(params["request_id"])
+    return {"status": "ok", "approval": item}
 
 
 ACTIONS = {
-    "request_approval": ActionDef("Queue a permission request (needs confirm=true).",
-        {"action": {"type": "string"}, "params": {"type": "object", "default": {}}},
-        ["action"], request_approval, write=True),
-    "list_pending": ActionDef("List pending permission requests.", {}, [], list_pending),
-    "approve": ActionDef("Approve a request (needs confirm=true).",
-        {"request_id": {"type": "string"}}, ["request_id"], approve, write=True),
-    "deny": ActionDef("Deny a request (needs confirm=true).",
-        {"request_id": {"type": "string"}}, ["request_id"], deny, write=True),
+    "request_approval": ActionDef(
+        "Request approval for a skill action (returns approval_id).",
+        {"skill": {"type": "string"},
+         "action": {"type": "string"},
+         "params": {"type": "object", "default": {}},
+         "risk": {"type": "string", "default": "write"},
+         "ttl_s": {"type": "integer", "default": 600}},
+        ["action"], request_approval, write=True, risk="write",
+        output_schema={"type": "object"}),
+    "list_pending": ActionDef("List pending approval requests.", {}, [],
+                              list_pending),
+    "approve": ActionDef("Approve a request by approval_id (needs confirm=true).",
+        {"request_id": {"type": "string"}}, ["request_id"], approve,
+        write=True, risk="write"),
+    "deny": ActionDef("Deny a request by approval_id (needs confirm=true).",
+        {"request_id": {"type": "string"}}, ["request_id"], deny,
+        write=True, risk="write"),
 }

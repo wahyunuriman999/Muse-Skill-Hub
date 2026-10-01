@@ -24,13 +24,17 @@ def test_registry_loads_all_skills():
           f"{sorted(implemented)}")
 
 
-def test_every_skill_has_valid_tool_schema():
+def test_every_action_has_valid_tool_schema():
     reg = registry.load_registry()
-    for name, entry in reg.items():
-        schema = registry.tool_schema(entry)
+    tools = registry.mcp_tools(reg)
+    assert len(tools) > 200, f"expected >200 per-action tools, got {len(tools)}"
+    names = {t["name"] for t in tools}
+    assert "github_search_repositories" in names
+    assert "skillhub_search_capabilities" in names
+    for t in tools:
+        schema = t["inputSchema"]
         assert schema["type"] == "object"
-        assert "action" in schema["properties"]
-        assert "action" in schema["required"]
+        assert isinstance(schema["properties"], dict)
 
 
 @pytest.mark.asyncio
@@ -66,14 +70,15 @@ async def test_missing_credentials_return_structured_error():
 
 
 @pytest.mark.asyncio
-async def test_write_action_requires_confirmation():
+async def test_write_action_requires_approval():
     """Read/write isolation is enforced in code, not just docs."""
     reg = registry.load_registry()
     with pytest.raises(ConfirmationRequired) as exc:
         await registry.dispatch(
             reg["github"], "create_issue",
             {"owner": "x", "repo": "y", "title": "t"}, confirm=False)
-    assert exc.value.to_dict()["code"] == "confirmation_required"
+    assert exc.value.to_dict()["code"] == "approval_required"
+    assert exc.value.to_dict()["approval_id"].startswith("apr_")
 
 
 @pytest.mark.asyncio
@@ -87,7 +92,7 @@ async def test_unimplemented_skill_is_honest():
 
 @pytest.mark.asyncio
 async def test_mcp_server_end_to_end_over_stdio():
-    """Full proof: boot the real MCP server, list 87 tools, call one live."""
+    """Full proof: boot the real MCP server, list per-action tools, call live."""
     from mcp import ClientSession, StdioServerParameters
     from mcp.client.stdio import stdio_client
 
@@ -104,18 +109,26 @@ async def test_mcp_server_end_to_end_over_stdio():
         async with ClientSession(read, write) as session:
             await session.initialize()
             tools = await session.list_tools()
-            assert len(tools.tools) == 97, f"got {len(tools.tools)} tools"
+            assert len(tools.tools) > 200, f"got {len(tools.tools)} tools"
             names = {t.name for t in tools.tools}
-            assert "github" in names and "slack" in names
+            assert "github_search_repositories" in names
+            assert "skillhub_search_capabilities" in names
 
+            # per-action tool: params are direct, fully typed
             res = await session.call_tool(
-                "github", {"action": "search_repositories",
-                           "params": {"query": "mcp", "per_page": 2}})
+                "github_search_repositories", {"query": "mcp", "per_page": 2})
             payload = json.loads(res.content[0].text)
             assert payload["status"] == "ok"
             assert payload["total_count"] > 0
 
-            res2 = await session.call_tool("replit", {"action": "info", "params": {}})
-            payload2 = json.loads(res2.content[0].text)
-            assert payload2["code"] == "driver_not_implemented"
-    print("\n  MCP server served 97 tools over stdio; live call succeeded")
+            # capability discovery
+            res2 = await session.call_tool(
+                "skillhub_search_capabilities", {"query": "send email"})
+            disc = json.loads(res2.content[0].text)
+            assert disc["matches"][0]["skill"] == "gmail"
+
+            # unknown tool -> structured not_found
+            res3 = await session.call_tool("replit", {})
+            payload3 = json.loads(res3.content[0].text)
+            assert payload3["error"]["code"] == "not_found"
+    print("\n  MCP server served per-action tools over stdio; live call succeeded")

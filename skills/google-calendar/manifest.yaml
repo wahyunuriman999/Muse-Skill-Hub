@@ -1,0 +1,31 @@
+schema_version: "1"
+name: google-calendar
+version: "1.0.0"
+title: "Google Calendar"
+description: "Work with the user's Google Calendar: agenda views, event details, and scheduling changes."
+kind: skill
+lifecycle: stable
+actions:
+  - name: create_event
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {summary: {type: "string"}, start: {type: "string", description: "e.g. 2026-10-02T09:00:00+07:00"}, end: {type: "string"}, description: {type: "string"}, location: {type: "string"}}
+      required: ["summary", "start", "end"]
+    output_schema: {}
+  - name: list_events
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {time_min: {type: "string", description: "RFC3339 lower bound, e.g. 2026-10-01T00:00:00+07:00"}, time_max: {type: "string", description: "RFC3339 upper bound"}, query: {type: "string", description: "Free-text search"}, limit: {type: "integer", default: 10, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["GOOGLE_OAUTH_TOKEN"]
+dependencies: []

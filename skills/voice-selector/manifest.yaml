@@ -1,0 +1,21 @@
+schema_version: "1"
+name: voice-selector
+version: "1.0.0"
+title: "Voice Selector"
+description: "Provides the static system voice catalog used by Jarvis. It does not define a user-facing workflow."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_voices
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string", description: "e.g. 'warm female narrator'"}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["ELEVENLABS_API_KEY"]
+dependencies: []

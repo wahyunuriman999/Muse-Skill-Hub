@@ -4,29 +4,35 @@
 
 # Muse Skill Hub
 
-> A catalog of Muse's capabilities — built so other AIs & LLMs can understand Muse's capability patterns. Created by Wahyu.
+> An open, LLM-agnostic capability runtime for AI agents. Define capabilities once. Discover them dynamically. Execute them through typed tools. Enforce permissions at runtime. Keep failures honest. Created by Wahyu.
 
-## ⚡ Executable Runtime (v1.5.0)
+## ⚡ Executable Runtime (v2.0.0)
 
-This repo is no longer just a blueprint — it ships a **real MCP server** that
-exposes all **97 skills as MCP tools**: **94 backed by real, executable drivers**,
-3 as honest catalog-only stubs (they return a structured
-`driver_not_implemented` response — never fake data):
+This repo is no longer just a catalog — it ships a **real MCP server** exposing
+**210 typed tools** (every action is its own tool, e.g. `github_search_repositories`,
+with full JSON schemas — no opaque `params` blob): **94 skills backed by real,
+executable drivers**, 3 as honest catalog-only stubs (structured
+`driver_not_implemented` — never fake data):
 
 ```bash
 cd runtime && pip install -r requirements.txt && python -m skillhub.server
 ```
 
 - **94 real drivers** across three kinds:
-  - *Third-party APIs* (60): `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`, `gmail`, `google-calendar`, `google-sheets`, `google-drive`, `spotify`, `instagram`, `meta-threads`, `threads`, `facebook`, `dropbox`, `ticketmaster`, `image-search`, `flightaware`, `box`, `calendly`, `canva`, `duffel`, `figma`, `ghl`, `klaviyo`, `meta-ads`, `plaid` (sandbox), `printify`, `quickbooks`, `tts`, `voice-design`, `voice-selector`, `voice-calls`, `zapier`, `outlook-calendar`, `outlook-mail`, `outlook-contacts`, `google-contacts`, `google-docs`, `google-forms`, `google-slides`, `google-tasks`, `messenger`, `instagram-messages`, `threads-messages`, `withings`, `tailscale`, `tessie`, `peloton`, `philips-hue`, `podcast`, `shopping`, `wide-research`, `social-content-performance`, `evernote`, `healthex` (MCP passthrough)
-  - *Local reference implementations* (30): `secure-vault` (encrypted), `permission-model`, `personal-feed`, `idea-management`, `goals`, `share-ideas`, `agent-library`, `connector-management`, `paired-devices`, `data-control`, `messaging-channels`, `wallet`, `apple-healthkit` + `google-health-connect` (local export readers), `device-data`, `media-library`, `forget`, `self-awareness`, `skill-creator`, `function-health`, `travel-planning`, `muse_db` (SQLite), `muse-feedback`, `subscription-status`, `wearable-device-skills`, `wearables-comms`, `generate_podcast`, `booking` (router), `opentable` (deep links), `facebook-cli` (passthrough)
+  - *Third-party APIs* (62): `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`, `gmail`, `google-calendar`, `google-sheets`, `google-drive`, `spotify`, `instagram`, `meta-threads`, `threads`, `facebook`, `dropbox`, `ticketmaster`, `image-search`, `flightaware`, `box`, `calendly`, `canva`, `duffel`, `figma`, `ghl`, `klaviyo`, `meta-ads`, `plaid` (sandbox), `printify`, `quickbooks`, `tts`, `voice-design`, `voice-selector`, `voice-calls`, `zapier`, `outlook-calendar`, `outlook-mail`, `outlook-contacts`, `google-contacts`, `google-docs`, `google-forms`, `google-slides`, `google-tasks`, `messenger`, `instagram-messages`, `threads-messages`, `withings`, `tailscale`, `tessie`, `peloton`, `philips-hue`, `podcast`, `shopping`, `wide-research`, `social-content-performance`, `evernote`, `healthex` (MCP passthrough), `granola`, `generate_podcast` (needs ElevenLabs key for TTS)
+  - *Local reference implementations* (32): `secure-vault` (encrypted), `permission-model`, `personal-feed`, `idea-management`, `goals`, `share-ideas`, `agent-library`, `connector-management`, `paired-devices`, `data-control`, `messaging-channels`, `wallet`, `apple-healthkit` + `google-health-connect` (local export readers), `device-data`, `media-library`, `forget`, `self-awareness`, `skill-creator`, `function-health`, `travel-planning`, `muse_db` (SQLite), `muse-feedback`, `subscription-status`, `wearable-device-skills`, `wearables-comms`, `booking` (router), `opentable` (deep links), `facebook-cli` (passthrough), `magic-moment` (local ffmpeg)
   - *Catalog-only stubs* (3): `lovable`, `muse-early-access`, `replit` — no public API exists (or it is an internal-only program); documented honestly instead of faked, with workarounds where one exists
-- **97 MCP tools** registered (Claude Desktop compatible, stdio transport)
-- **Read/write isolation enforced in code** — write actions need `confirm=true`
-- **Honest errors** — missing credentials return setup instructions, never fake data
-- **41 passing tests**, including a live `api.github.com` call, a live iTunes podcast search, an end-to-end MCP stdio session, credential-error coverage for every API driver, and local round-trip tests for every reference driver
+- **210 MCP tools** (per-action, fully typed) + `skillhub_search_capabilities` for dynamic capability discovery
+- **Approval engine** — write actions need approval; `sensitive`/`destructive`/`communication`/`financial`/`account`/`device` risks require a real `approval_id` (bound to exact skill/action/params, single-use, 10-min TTL). Bare `confirm=true` only suffices for plain `write` risk
+- **Policy engine** — risk-based allow/approval_required/deny with per-action classification and custom policy files
+- **Audit log** — every execution recorded (request_id, actor, risk, params hash, approval_id, duration); secrets never logged raw; query via `function-health query_audit_log`
+- **Idempotency** — `idempotency_key` on write actions: repeats return the first result instead of re-executing
+- **Credential manager** — env → local file → encrypted vault; `ref:vault:<name>` references resolve server-side so secret values never reach the LLM
+- **Hardened HTTP layer** — persistent connection pooling, retry with exponential backoff + `Retry-After`, `X-Request-ID` correlation, structured 429/5xx mapping
+- **Skill manifests** — `skills/<name>/manifest.yaml` is the machine-readable contract; `skillhub validate` runs the conformance test (schemas, risk, auth, manifest/driver/SKILL.md drift, secret scan)
+- **67 passing tests**, including live `api.github.com` calls, an end-to-end MCP stdio session with per-action tools, approval-lifecycle/idempotency/audit/security tests, and credential-error coverage for every API driver
 
-See [`runtime/README.md`](runtime/README.md) for setup, driver docs, and how to add your own driver.
+See [`runtime/README.md`](runtime/README.md) for setup, driver docs, and how to add your own driver. Specs live in [`specs/`](specs/) (manifest, error contract, approval protocol).
 
 ---
 ## About this repo

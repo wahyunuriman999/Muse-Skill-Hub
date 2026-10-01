@@ -1,0 +1,31 @@
+schema_version: "1"
+name: calendly
+version: "1.0.0"
+title: "Calendly"
+description: "View Calendly events and event types, and manage scheduling data using the Calendly CLI."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_event_types
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+  - name: list_events
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {min_start_time: {type: "string", description: "ISO8601 lower bound"}, limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+auth:
+  required_env: ["CALENDLY_API_TOKEN"]
+dependencies: []

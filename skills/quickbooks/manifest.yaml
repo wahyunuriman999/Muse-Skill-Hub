@@ -1,0 +1,31 @@
+schema_version: "1"
+name: quickbooks
+version: "1.0.0"
+title: "Quickbooks"
+description: "Read and manage the user's QuickBooks business through Intuit's official MCP server, including reports, invoices, customers, products, payment links, sales settings, and industry benchmarks."
+kind: skill
+lifecycle: stable
+actions:
+  - name: list_customers
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {limit: {type: "integer", default: 20, maximum: 100}}
+      required: []
+    output_schema: {}
+  - name: run_query
+    type: read
+    risk: read
+    approval: not_required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {query: {type: "string"}}
+      required: ["query"]
+    output_schema: {}
+auth:
+  required_env: ["QUICKBOOKS_ACCESS_TOKEN", "QUICKBOOKS_REALM_ID"]
+dependencies: []

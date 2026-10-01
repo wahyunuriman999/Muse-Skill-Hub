@@ -1,0 +1,21 @@
+schema_version: "1"
+name: generate_podcast
+version: "1.0.0"
+title: "Generate_Podcast"
+description: "Compose and deliver audio content: a podcast episode, briefing, or narrated summary, with one or more voices, as an MP3. For reading supplied text aloud verbatim, use tts."
+kind: skill
+lifecycle: stable
+actions:
+  - name: compose_episode
+    type: write
+    risk: write
+    approval: required
+    idempotent: true
+    input_schema:
+      type: object
+      properties: {title: {type: "string"}, segments: {type: "array", maxItems: 20, items: {type: "object", required: ["voice_id", "text"], properties: {speaker: {type: "string"}, voice_id: {type: "string"}, text: {type: "string"}}}}}
+      required: ["segments"]
+    output_schema: {}
+auth:
+  required_env: ["ELEVENLABS_API_KEY"]
+dependencies: []

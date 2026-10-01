@@ -42,7 +42,25 @@ async def runtime_health(params: dict) -> dict:
     return {"status": "ok", "healthy": healthy, "checks": checks}
 
 
+async def query_audit_log(params: dict) -> dict:
+    from .. import audit
+    rows = audit.query(limit=int(params.get("limit", 50)),
+                       skill=params.get("skill", ""),
+                       action=params.get("action", ""),
+                       result=params.get("result", ""))
+    return {"status": "ok", "events": rows, "count": len(rows)}
+
+
 ACTIONS = {
     "runtime_health": ActionDef("Run the runtime self health check.",
         {}, [], runtime_health),
+    "query_audit_log": ActionDef(
+        "Query the runtime audit log (newest first). Secrets are never stored raw.",
+        {"limit": {"type": "integer", "default": 50, "minimum": 1, "maximum": 500},
+         "skill": {"type": "string", "default": ""},
+         "action": {"type": "string", "default": ""},
+         "result": {"type": "string",
+                    "enum": ["", "success", "error", "blocked", "deduplicated"],
+                    "default": ""}},
+        [], query_audit_log),
 }
