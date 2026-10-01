@@ -1,4 +1,4 @@
-"""Generate skills/<name>/manifest.yaml from the registry (canonical contract).
+"""Generate skillhub/catalog/<name>/manifest.yaml from the registry (canonical contract).
 
 Thin wrapper around skillhub.manifests — the generator logic lives in the
 package so `skillhub validate` can regenerate manifests in memory and fail

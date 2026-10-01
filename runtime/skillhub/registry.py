@@ -7,7 +7,7 @@ Execution pipeline::
            → idempotency reserve → handler → output validation
            → idempotency commit → audit
 
-The manifest (``skills/<name>/manifest.yaml``) is the canonical source of
+The manifest (``skillhub/catalog/<name>/manifest.yaml``) is the canonical source of
 truth for per-action risk: the registry applies manifest risk over driver
 defaults at load time. Approval consumption and idempotency reservation
 are atomic (single file-locked critical section each). Every dispatch is
@@ -30,7 +30,7 @@ from .errors import (ApprovalRequired, DriverNotImplemented, IdempotencyConflict
 from .policy import DEFAULT_POLICY, STRICT_RISKS, PolicyEngine, risk_for
 from .validate import validate_output, validate_params
 
-SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "skills"
+SKILLS_DIR = Path(__file__).resolve().parent / "catalog"
 RUNTIME_SKILLS = Path(__file__).resolve().parent / "skills"
 
 # skill name -> python module name when they differ

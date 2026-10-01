@@ -11,7 +11,7 @@
 <!-- METRICS:START -->
 _Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
 
-**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **221 passing tests**
+**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **224 passing tests**
 <!-- METRICS:END -->
 
 This repo is no longer just a catalog — it ships a **real MCP server**
@@ -35,7 +35,7 @@ cd runtime && pip install -r requirements.txt && python -m skillhub.server
 - **Idempotency** — `idempotency_key` on write actions: repeats return the first result instead of re-executing
 - **Credential manager** — env → local file → encrypted vault; `ref:vault:<name>` references resolve server-side so secret values never reach the LLM
 - **Hardened HTTP layer** — persistent connection pooling, retry with exponential backoff + `Retry-After`, `X-Request-ID` correlation, structured 429/5xx mapping
-- **Skill manifests** — `skills/<name>/manifest.yaml` is the machine-readable contract; `skillhub validate` runs the conformance test (schemas, risk, auth, manifest/driver/SKILL.md drift, secret scan)
+- **Skill manifests** — `runtime/skillhub/catalog/<name>/manifest.yaml` is the machine-readable contract; `skillhub validate` runs the conformance test (schemas, risk, auth, manifest/driver/SKILL.md drift, secret scan)
 - **Passing tests** (count in the metrics block above), including live `api.github.com` calls, an end-to-end MCP stdio session with per-action tools, approval-lifecycle/idempotency/audit/security tests, and credential-error coverage for every API driver
 
 ### What's new in v2.2.0 (concurrency + crash hardening)
@@ -84,15 +84,15 @@ Total documented skills: **97**
 ## Universal Skills (Usable by Any LLM) 🌐
 
 Each skill now has **two files**:
-- `skills/<name>/README.md` — Human-readable documentation (what it does, when to use)
-- `skills/<name>/SKILL.md` — **Universal skill definition** in open format (frontmatter + instructions) that any LLM can load
+- `runtime/skillhub/catalog/<name>/README.md` — Human-readable documentation (what it does, when to use)
+- `runtime/skillhub/catalog/<name>/SKILL.md` — **Universal skill definition** in open format (frontmatter + instructions) that any LLM can load
 
 See **[USAGE.md](USAGE.md)** for how to use these with GPT, Claude, Gemini, Llama, LangChain, etc.
 
 **Quick start for any LLM:**
 ```python
 # Option 1: Paste into system prompt
-with open('skills/github/SKILL.md') as f:
+with open('runtime/skillhub/catalog/github/SKILL.md') as f:
     skill = f.read()
 # Add to your LLM's context
 

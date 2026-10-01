@@ -12,7 +12,7 @@ Default policy:
                        → APPROVAL_REQUIRED (real approval_id required;
                          bare ``confirm=true`` is NOT enough)
 
-Per-action risk lives in ``skills/<name>/manifest.yaml`` (canonical source
+Per-action risk lives in ``skillhub/catalog/<name>/manifest.yaml`` (canonical source
 of truth), applied by ``registry.load_registry()``. A driver may still
 declare ``risk=`` directly on ActionDef as the default the manifest
 overrides.
@@ -31,7 +31,7 @@ import json
 import os
 
 # NOTE (v2.1): per-action risk is no longer hardcoded here. It lives in
-# skills/<name>/manifest.yaml (canonical source of truth), applied by
+# skillhub/catalog/<name>/manifest.yaml (canonical source of truth), applied by
 # registry.load_registry(). This function stays as a compatibility shim:
 # the "driver_risk" it receives is already manifest-resolved.
 

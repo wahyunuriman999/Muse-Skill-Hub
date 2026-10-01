@@ -3,17 +3,17 @@
 <!-- METRICS:START -->
 _Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
 
-**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **221 passing tests**
+**Version 2.2.0** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **224 passing tests**
 <!-- METRICS:END -->
 
 This is the **executable layer** of Muse Skill Hub. It turns the skill catalog
-(`skills/*/SKILL.md`) into **real, callable MCP tools** that any MCP-compatible
+( `runtime/skillhub/catalog/*/SKILL.md` ) into **real, callable MCP tools** that any MCP-compatible
 LLM client (Claude Desktop, etc.) can use plug-and-play.
 
 ## How it works
 
 ```
-skills/*/SKILL.md  ──catalog──▶  skillhub/registry.py  ──▶  MCP server (stdio)
+runtime/skillhub/catalog/*/SKILL.md  ──catalog──▶  skillhub/registry.py  ──▶  MCP server (stdio)
                                            │
                         ┌──────────────────┴──────────────────┐
                         │  real drivers (executable)             │
@@ -233,7 +233,7 @@ What the suite proves:
 - `skillhub/errors.py` — every failure is a machine-readable dict.
 - `skillhub/http.py` — shared async HTTP with upstream-error mapping and
   explicit proxy handling (works around an httpx IPv6 `no_proxy` parsing bug).
-- `skillhub/registry.py` — discovers skills from `../skills/*/SKILL.md`
+- `skillhub/registry.py` — discovers skills from `skillhub/catalog/*/SKILL.md`
   frontmatter, so the tool surface always matches the catalog.
 - `skillhub/server.py` — MCP server over stdio (works with Claude Desktop
   and any MCP client).

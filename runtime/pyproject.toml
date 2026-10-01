@@ -20,5 +20,9 @@ test = ["pytest>=8", "pytest-asyncio>=0.23"]
 skillhub-server = "skillhub.server:main"
 skillhub = "skillhub.cli:main"
 
+[tool.setuptools.package-data]
+skillhub = ["catalog/*/SKILL.md", "catalog/*/manifest.yaml",
+            "catalog/*/README.md"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

@@ -1,7 +1,7 @@
 """Driver contract shared by every skill driver module (v2).
 
 A driver module must define:
-    SKILL: str            - skill name, matches skills/<name>/
+    SKILL: str            - skill name, matches skillhub/catalog/<name>/
     REQUIRED_ENV: list    - env vars needed (empty = works without credentials)
     SETUP_HELP: str       - shown when credentials are missing
     ACTIONS: dict         - action name -> ActionDef
