@@ -611,5 +611,8 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
     except SkillError as exc:
         _audit("error", risk=locals().get("risk", ""),
                error_code=exc.code,
-               error_internal=exc.internal if exc.internal else "")
+               # internal is debug detail (it may echo provider bodies) —
+               # scrub secret-shaped substrings before it reaches the log
+               error_internal=audit.scrub_text(exc.internal)
+               if exc.internal else "")
         raise
