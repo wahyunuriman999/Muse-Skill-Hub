@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Asana
 
-Provides asana functionality.
+Manage Asana work: create and list tasks, assign owners, set due dates, organize projects, and track team progress.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides asana functionality.
+- Manage Asana work: create and list tasks, assign owners, set due dates, organize projects, and track team progress.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

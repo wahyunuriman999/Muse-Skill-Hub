@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Canva
 
-Provides canva functionality.
+Design with Canva: create and edit designs and presentations, manage brand assets and folders, and generate share links.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides canva functionality.
+- Design with Canva: create and edit designs and presentations, manage brand assets and folders, and generate share links.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

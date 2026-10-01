@@ -1,7 +1,7 @@
 ---
 name: "wearables-comms"
 title: "Wearables Calls and Messages"
-description: "Provides wearables comms functionality."
+description: Handle calls and messages through connected wearables: read notifications, place and answer calls, and send quick replies.
 version: "1.0.0"
 license: "MIT"
 compatibility: "Any LLM with tool/function calling"
@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Wearables Calls and Messages
 
-Provides wearables comms functionality.
+Handle calls and messages through connected wearables: read notifications, place and answer calls, and send quick replies.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides wearables comms functionality.
+- Handle calls and messages through connected wearables: read notifications, place and answer calls, and send quick replies.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

@@ -9,14 +9,14 @@
 ## ⚡ Executable Runtime (new in v1.1.0)
 
 This repo is no longer just a blueprint — it ships a **real MCP server** that
-exposes all **87 skills as executable tools**:
+exposes all **97 skills as executable tools**:
 
 ```bash
 cd runtime && pip install -r requirements.txt && python -m skillhub.server
 ```
 
 - **11 real API drivers**: `github`, `slack`, `stripe`, `shopify`, `linear`, `vercel`, `asana`, `notion`, `todoist`, `places-search`, `zoom`
-- **87 MCP tools** registered (Claude Desktop compatible, stdio transport)
+- **97 MCP tools** registered (Claude Desktop compatible, stdio transport)
 - **Read/write isolation enforced in code** — write actions need `confirm=true`
 - **Honest errors** — missing credentials return setup instructions, never fake data
 - **7 passing tests**, including a live `api.github.com` call and an end-to-end MCP stdio session
@@ -31,7 +31,7 @@ The goal is an open reference: what Muse can do, what the patterns are, and insp
 
 **Important note:** This file only contains high-level lists and descriptions, not raw internal files. Muse's real skills run on a specialized runtime (MCP servers, OAuth, custom CLIs, etc.), so just reading this list won't automatically make another AI 99.9% like Muse — but it can be a very useful blueprint.
 
-Total documented skills: **87**
+Total documented skills: **97**
 
 ## Universal Skills (Usable by Any LLM) 🌐
 
@@ -57,19 +57,22 @@ tool = Tool(name="github", description="...", func=your_impl)
 
 | Skill | Title | Description |
 |-------|-------|-------------|
+| `agent-library` | Agent Library | Manage the user's file library: uploads, generated artifacts, expiring public share links, and the media collection. |
 | `apple-healthkit` | Apple Health | The user's synced Apple Health (HealthKit) data: daily metrics (steps, distance, calories, heart rate, HRV, VO2max), sleep sessions (stages, quality, efficiency), and workouts. |
-| `asana` | asana |  |
+| `asana` | asana | Manage Asana work: create and list tasks, assign owners, set due dates, organize projects, and track team progress. |
 | `booking` | booking | Primary entry point for direct flight, hotel, restaurant, or event-ticket transactions and for bounded live availability checks delegated by Travel Planning. Always use before provider-specific skills |
 | `box` | box | Search, read, upload, download, move, rename, delete, restore, and share Box content; manage comments and metadata. |
 | `calendly` | calendly | View Calendly events and event types, and manage scheduling data using the Calendly CLI. |
-| `canva` | canva |  |
+| `canva` | canva | Design with Canva: create and edit designs and presentations, manage brand assets and folders, and generate share links. |
+| `connector-management` | Connector Management | Manage third-party service connectors: check connection status and scopes, guide OAuth connect flows, and disconnect services. |
+| `data-control` | Data Control | Handle user data rights: explain data collection and use, export chats and files, delete data on request, manage training opt-outs. |
 | `device-data` | Device Data | Read cached contacts and calendar events from Muse storage. Delete Muse's local copy of either source without modifying paired devices. |
-| `dropbox` | dropbox |  |
+| `dropbox` | dropbox | Manage Dropbox storage: upload and download files, create share links, organize folders, and check space usage. |
 | `duffel` | duffel | Use Duffel to search, book, pay for, or manage flights. Use Duffel to monitor an already booked flight's fare when the user directly asks for ongoing price monitoring. |
 | `evernote` | evernote | Read and create notes through Evernote's official MCP server. |
 | `facebook` | Facebook | Use when the user provides a Facebook URL or asks to read personal posts, comments, reactions, friends, timelines, profiles, stories, feeds, groups, events, or saved items, or to discover public event |
 | `facebook-cli` | Facebook | Use when the user provides a Facebook URL or asks to read personal posts, comments, reactions, friends, timelines, profiles, stories, feeds, groups, events, or saved items, or to discover public event |
-| `figma` | figma |  |
+| `figma` | figma | Work with Figma: read files, pages, frames and components, export assets, and manage design projects. |
 | `flightaware` | FlightAware AeroAPI | Use for questions about a specific flight’s departure or arrival time, including “when’s my flight?” and confirmation of remembered times, plus flight status, delays, and cancellations. Verify the exa |
 | `forget` | forget | Remove a personal fact, preference, relationship detail, topic, or prior event from Muse's active memory and stop existing copies or automations from bringing it back. Use for explicit requests such a |
 | `function-health` | function-health | Retrieve lab biomarker results and clinician notes from Function Health. |
@@ -89,14 +92,16 @@ tool = Tool(name="github", description="...", func=your_impl)
 | `google-tasks` | google-tasks | Manage the user's Google Tasks: lists, task details, creation, updates, and completion. |
 | `granola` | granola | Search and read Granola meeting notes and transcripts through Granola's OAuth-backed MCP server. |
 | `healthex` | HealthEx | Use to connect HealthEx and ask questions about your medications, lab results, and other health records. |
+| `idea-management` | Idea Management | Manage the Ideas tab: idea cards the agent can run, dismissing ideas, and explaining why an idea appeared or disappeared. |
 | `image-search` | image-search | Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not identify a supplied image or person. |
 | `instagram` | instagram | Read Instagram profiles, followers, posts, comments, likes, stories, feed, saved content, and account insights. Answer questions about posts, reels, and Instagram links. Manage interests and profile d |
 | `instagram-messages` | instagram-messages | Use this to interact with the user's Instagram messages. Read inboxes, threads, top recipients, filtered inbox views, DM search results, and send messages through `instagram-messages-cli`. |
-| `klaviyo` | klaviyo |  |
-| `linear` | linear |  |
-| `lovable` | lovable |  |
-| `magic-moment` | magic-moment |  |
+| `klaviyo` | klaviyo | Run Klaviyo email/SMS marketing: manage lists and segments, build campaigns and flows, and edit templates. |
+| `linear` | linear | Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status. |
+| `lovable` | lovable | Build web apps with Lovable: scaffold AI-generated projects, iterate on designs, and manage deployments. |
+| `magic-moment` | magic-moment | Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports. |
 | `media-library` | media-library | Search and inspect the user's photo library, including connected device galleries. Use for photo requests and whenever a photo could ground or personalize a response; lookups of uploaded photos are ch |
+| `messaging-channels` | Messaging Channels | Work across connected messaging providers (e.g. WhatsApp): check connection status, read side chats, send messages with approval. |
 | `messenger` | Messenger | Work with the user's Messenger account: read call history; read and search contacts; read, search, and summarize conversations; send, react to, unsend, or edit messages; and message Marketplace listin |
 | `meta-ads` | Meta Ads | Create, write, or manage Meta ads and assets: ad copy, campaigns, spend, reports, audiences, catalogs, product feeds, feed refresh schedules, experiments, and policy. Always load for any request to cr |
 | `meta-threads` | meta-threads | Read and manage the user's Threads account: profile, posts, feed, saved posts, activity, insights, social graph, search, trends, and a specific post by URL or ID. Can tune feed ranking and publish pos |
@@ -108,7 +113,10 @@ tool = Tool(name="github", description="...", func=your_impl)
 | `outlook-calendar` | outlook-calendar | View, create, update, and delete events in the user's Outlook Calendar. |
 | `outlook-contacts` | outlook-contacts | List, search, create, update, and delete contacts in the user's Outlook account. |
 | `outlook-mail` | outlook-mail | Read, search, send, reply to, and delete messages in the user's Outlook Mail. |
+| `paired-devices` | Paired Devices | Manage the user's paired devices: list devices, run commands, pull data such as location, and unpair devices. |
 | `peloton` | peloton | Connect to Peloton to browse fitness classes, check schedules, and book workouts. |
+| `permission-model` | Permission Model | Work with the runtime permission system: list pending requests, explain the access each grants, respect approve/deny decisions. |
+| `personal-feed` | Personal Feed | Manage the user's personal Feed: editorial posts written on a schedule, the feed brief, regenerating or removing posts. |
 | `philips-hue` | philips-hue | Control Philips Hue smart lights, rooms, scenes, and devices via the Hue Remote API v2. |
 | `places-search` | Places Search | Find, compare, and share details on physical places near the user or in a specified area, including restaurants, cafes, bars, hotels, parks, attractions, shops, and businesses with local services. Not |
 | `plaid` | Finances (Plaid) | Use to connect Plaid and read linked financial accounts: metadata, balances, transactions, recurring transactions, liabilities, and investments. |
@@ -116,15 +124,16 @@ tool = Tool(name="github", description="...", func=your_impl)
 | `printify` | printify | Use Printify to browse catalog data, manage shops and products, and review or create orders. |
 | `quickbooks` | quickbooks | Read and manage the user's QuickBooks business through Intuit's official MCP server, including reports, invoices, customers, products, payment links, sales settings, and industry benchmarks. |
 | `replit` | replit | Read, create, update, and publish apps through Replit's official MCP server. |
+| `secure-vault` | Secure Vault | Handle credentials securely: collect passwords, API keys, and tokens only through secure entry UI, never in chat. |
 | `self-awareness` | self-awareness | Ground self-referential answers in the agent's actual filesystem. Use when the user asks who the agent is, what it can do, what it knows, what it remembers, what it has built, what services are connec |
-| `share-ideas` | Share ideas |  |
-| `shopify` | shopify |  |
+| `share-ideas` | Share ideas | Publish a portable Idea card from the Ideas tab — only after the user explicitly asks to publish it. |
+| `shopify` | shopify | Manage a Shopify store: list and update products, orders, customers, inventory levels, and discount codes. |
 | `shopping` | shopping | Use for any product or shopping question: find, reverse image search, shopping Instagram/Marketplace links, buy, compare, or evaluate real products with prices, images, and product page URLs, includin |
 | `skill-creator` | skill-creator | Create or update a workspace skill: its description, structure, instructions, and supporting files. |
-| `slack` | slack |  |
+| `slack` | slack | Work with Slack: list channels, read and send messages, manage threads and reactions, and search history. |
 | `social-content-performance` | Social Content Performance | Analyze the user's own Instagram account and post performance using linked-account analytics. |
 | `spotify` | spotify | Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created with Save to Spotify. |
-| `stripe` | stripe |  |
+| `stripe` | stripe | Handle Stripe payments: create payment links and checkout sessions, manage customers, subscriptions, invoices, and refunds. |
 | `subscription-status` | subscription-status | Answer questions about the user's Muse subscription, plan, usage, tokens, reset timing, or available plans and prices, or verify information that references the Muse subscription. |
 | `tailscale` | Tailscale | Set up Muse's built-in Tailscale connector, join a tailnet or Headscale network, check status, and reach private machines through the TCP tunnel proxy. Read for Tailscale, VPN, MagicDNS, network egres |
 | `tessie` | tessie | Monitor a Tesla vehicle, inspect live state, and run explicit Tessie command endpoints. |
@@ -134,16 +143,17 @@ tool = Tool(name="github", description="...", func=your_impl)
 | `todoist` | todoist | Read and manage Todoist tasks, projects, comments, labels, filters, and reminders through Todoist's official MCP server. |
 | `travel-planning` | travel-planning | Use this skill when an active or proposed trip needs planning, logistics, feasibility, entry or transit checks, itinerary work, or investigation of an airport process, immigration, ground transport, a |
 | `tts` | tts | Turn supplied text into spoken audio, single or multi-speaker. For composed audio content (a podcast, briefing, or narrated summary), use podcast. |
-| `vercel` | vercel |  |
+| `vercel` | vercel | Deploy with Vercel: list projects and deployments, promote to production, manage domains and environment variables. |
 | `voice-calls` | voice-calls | Provides the static system voice catalog used by Jarvis. It does not define a user-facing workflow. |
 | `voice-design` | voice-design | Choose or design a speaking voice when the user asks for a new, different, custom, invented, or generated voice, or restore the voice used immediately before the current one. |
 | `voice-selector` | voice-selector | Provides the static system voice catalog used by Jarvis. It does not define a user-facing workflow. |
+| `wallet` | Wallet | Coordinate payments: check wallet connection state, use saved payment methods through secure provider pages, run purchase review and approval. |
 | `wearable-device-skills` | Wearable Device Skills | Use when the user asks to discover, inspect, or invoke an agentic capability dynamically published by a paired phone or wearable, including device controls, app actions, camera or media actions, and s |
-| `wearables-comms` | Wearables Calls and Messages |  |
+| `wearables-comms` | Wearables Calls and Messages | Handle calls and messages through connected wearables: read notifications, place and answer calls, and send quick replies. |
 | `wide-research` | wide-research | Use when the user needs broad parallel research across many independent inputs with a shared output schema. |
 | `withings` | withings | Use when linking Withings or reading Withings body measurements, activity, sleep, workout, heart, and intraday data. |
 | `zapier` | zapier | Connect Muse to actions across apps through Zapier's official MCP server. |
-| `zoom` | zoom |  |
+| `zoom` | zoom | Manage Zoom: schedule and list meetings, fetch recordings, and manage meeting settings. |
 
 ## How to use
 

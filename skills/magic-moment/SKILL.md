@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Magic Moment
 
-Provides magic moment functionality.
+Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides magic moment functionality.
+- Turn talking-head video footage into shareable short clips: auto-cut highlights, captions, and exports.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

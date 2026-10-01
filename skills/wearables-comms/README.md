@@ -1,16 +1,16 @@
 # Wearables Calls and Messages (`wearables-comms`)
 
-> Capability for wearables-comms
+> Handle calls and messages through connected wearables: read notifications, place and answer calls, and send quick replies.
 
 ## What is this?
 
 The `wearables-comms` skill is one of Muse's capabilities.
 
-Official description: Capability for wearables-comms
+Official description: Handle calls and messages through connected wearables: read notifications, place and answer calls, and send quick replies.
 
 ## When to use?
 
-When the user's request matches: Capability for wearables-comms
+When the user wants to handle calls/messages via a connected wearable
 
 ## General pattern
 

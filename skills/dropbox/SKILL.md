@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Dropbox
 
-Provides dropbox functionality.
+Manage Dropbox storage: upload and download files, create share links, organize folders, and check space usage.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides dropbox functionality.
+- Manage Dropbox storage: upload and download files, create share links, organize folders, and check space usage.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

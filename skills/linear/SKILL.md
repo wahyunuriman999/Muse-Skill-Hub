@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Linear
 
-Provides linear functionality.
+Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides linear functionality.
+- Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Figma
 
-Provides figma functionality.
+Work with Figma: read files, pages, frames and components, export assets, and manage design projects.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides figma functionality.
+- Work with Figma: read files, pages, frames and components, export assets, and manage design projects.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Share ideas
 
-Provides share ideas functionality.
+Publish a portable Idea card from the Ideas tab — only after the user explicitly asks to publish it.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides share ideas functionality.
+- Publish a portable Idea card from the Ideas tab — only after the user explicitly asks to publish it.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

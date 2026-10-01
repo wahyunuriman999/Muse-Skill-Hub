@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Vercel
 
-Provides vercel functionality.
+Deploy with Vercel: list projects and deployments, promote to production, manage domains and environment variables.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides vercel functionality.
+- Deploy with Vercel: list projects and deployments, promote to production, manage domains and environment variables.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

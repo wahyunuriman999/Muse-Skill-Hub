@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Stripe
 
-Provides stripe functionality.
+Handle Stripe payments: create payment links and checkout sessions, manage customers, subscriptions, invoices, and refunds.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides stripe functionality.
+- Handle Stripe payments: create payment links and checkout sessions, manage customers, subscriptions, invoices, and refunds.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

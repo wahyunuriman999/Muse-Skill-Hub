@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Klaviyo
 
-Provides klaviyo functionality.
+Run Klaviyo email/SMS marketing: manage lists and segments, build campaigns and flows, and edit templates.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides klaviyo functionality.
+- Run Klaviyo email/SMS marketing: manage lists and segments, build campaigns and flows, and edit templates.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

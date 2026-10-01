@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Slack
 
-Provides slack functionality.
+Work with Slack: list channels, read and send messages, manage threads and reactions, and search history.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides slack functionality.
+- Work with Slack: list channels, read and send messages, manage threads and reactions, and search history.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

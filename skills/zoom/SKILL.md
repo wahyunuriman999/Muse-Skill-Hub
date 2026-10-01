@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Zoom
 
-Provides zoom functionality.
+Manage Zoom: schedule and list meetings, fetch recordings, and manage meeting settings.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides zoom functionality.
+- Manage Zoom: schedule and list meetings, fetch recordings, and manage meeting settings.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

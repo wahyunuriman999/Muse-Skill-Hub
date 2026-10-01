@@ -15,12 +15,12 @@ from skillhub import registry
 from skillhub.errors import ConfirmationRequired, CredentialsMissing, DriverNotImplemented
 
 
-def test_registry_loads_all_87_skills():
+def test_registry_loads_all_skills():
     reg = registry.load_registry()
-    assert len(reg) == 87, f"expected 87 skills, got {len(reg)}"
+    assert len(reg) == 97, f"expected 97 skills, got {len(reg)}"
     implemented = [n for n, e in reg.items() if e.implemented]
     assert len(implemented) >= 10, f"expected >=10 drivers, got {len(implemented)}"
-    print(f"\n  87 skills loaded, {len(implemented)} with executable drivers: "
+    print(f"\n  97 skills loaded, {len(implemented)} with executable drivers: "
           f"{sorted(implemented)}")
 
 
@@ -104,7 +104,7 @@ async def test_mcp_server_end_to_end_over_stdio():
         async with ClientSession(read, write) as session:
             await session.initialize()
             tools = await session.list_tools()
-            assert len(tools.tools) == 87, f"got {len(tools.tools)} tools"
+            assert len(tools.tools) == 97, f"got {len(tools.tools)} tools"
             names = {t.name for t in tools.tools}
             assert "github" in names and "slack" in names
 
@@ -118,4 +118,4 @@ async def test_mcp_server_end_to_end_over_stdio():
             res2 = await session.call_tool("spotify", {"action": "info", "params": {}})
             payload2 = json.loads(res2.content[0].text)
             assert payload2["code"] == "driver_not_implemented"
-    print("\n  MCP server served 87 tools over stdio; live call succeeded")
+    print("\n  MCP server served 97 tools over stdio; live call succeeded")

@@ -9,12 +9,12 @@ compatibility: "Any LLM with tool/function calling"
 
 # Shopify
 
-Provides shopify functionality.
+Manage a Shopify store: list and update products, orders, customers, inventory levels, and discount codes.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Provides shopify functionality.
+- Manage a Shopify store: list and update products, orders, customers, inventory levels, and discount codes.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 
