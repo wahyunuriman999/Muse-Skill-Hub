@@ -17,6 +17,9 @@ Two independent `python -m build --wheel` runs from the clean checkout,
 seconds apart, produced:
 
 - `muse_skill_hub_runtime-2.2.0-py3-none-any.whl` (both runs)
+  (GATE 21 ran before the version bump; the current release artifact is
+  `muse_skill_hub_runtime-2.2.1-py3-none-any.whl`, rebuilt and re-verified
+  in the post-freeze micro-fix — see `POST_FREEZE_MICROFIX.md`.)
 
 Comparison of the two wheels: identical namelist, and SHA-256 of every
 file inside identical — **zero differing files**. The release artifact is
