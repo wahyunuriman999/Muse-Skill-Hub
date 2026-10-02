@@ -2,6 +2,7 @@
 name = "muse-skill-hub-runtime"
 version = "2.2.1"
 description = "LLM-agnostic capability runtime for AI agents: universal skills as executable, permission-enforced MCP tools"
+authors = [{ name = "Wahyu Nur Iman" }]
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "AGPL-3.0-only" }

@@ -4,7 +4,7 @@
 
 # Muse Skill Hub
 
-> An open, LLM-agnostic capability runtime for AI agents. Define capabilities once. Discover them dynamically. Execute them through typed tools. Enforce permissions at runtime. Keep failures honest. Created by Wahyu.
+> An open, LLM-agnostic capability runtime for AI agents. Define capabilities once. Discover them dynamically. Execute them through typed tools. Enforce permissions at runtime. Keep failures honest. Created by **Wahyu Nur Iman**.
 
 ## ⚡ Executable Runtime
 
