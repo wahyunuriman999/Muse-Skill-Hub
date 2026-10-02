@@ -211,3 +211,105 @@ def test_no_fork_context_in_tests():
         if 'get_context("fork")' in src or "get_context('fork')" in src:
             offenders.append(path.name)
     assert offenders == [], f"fork-based races (break on Windows): {offenders}"
+
+
+# --- 6. EDEADLK backoff (GATE 20 CI finding) -----------------------------------
+#
+# windows-latest/py3.10, 20 racing processes: the CRT reported EDEADLK
+# ("Resource deadlock avoided") for the 1-byte region when our own process
+# had just released it on a previous handle (OS lock teardown races the
+# next acquisition). _acquire must ride it out with a bounded backoff
+# instead of dying; genuine errors must still surface.
+
+import errno  # noqa: E402  (kept with the other stdlib imports above)
+
+
+class FlakyMsvcrt(FakeMsvcrt):
+    """FakeMsvcrt that raises spurious EDEADLK on the first `flakes`
+    LK_LOCK calls, then behaves normally."""
+
+    def __init__(self, flakes: int):
+        super().__init__()
+        self._flakes = flakes
+        self.attempts = 0
+
+    def locking(self, fd, mode, nbytes):
+        if mode == self.LK_LOCK:
+            self.attempts += 1
+            if self._flakes > 0:
+                self._flakes -= 1
+                raise OSError(errno.EDEADLK, "Resource deadlock avoided")
+        return super().locking(fd, mode, nbytes)
+
+
+@pytest.fixture
+def flaky_windows_filelock(monkeypatch):
+    """Windows branch with a fake msvcrt that spuriously reports EDEADLK."""
+    fake_mod = types.ModuleType("msvcrt")
+    fake = FlakyMsvcrt(flakes=25)
+    fake_mod.LK_LOCK = fake.LK_LOCK
+    fake_mod.LK_UNLCK = fake.LK_UNLCK
+    fake_mod.locking = fake.locking
+    monkeypatch.setitem(sys.modules, "msvcrt", fake_mod)
+    monkeypatch.setattr(filelock, "_IS_WINDOWS", True)
+    return fake
+
+
+def test_windows_edeadlk_backoff_rides_out_spurious_deadlock(
+    tmp_path, flaky_windows_filelock
+):
+    """25 spurious EDEADLKs are absorbed; the lock is still acquired and
+    released exactly once."""
+    lock = tmp_path / "flaky.lock"
+    with filelock.locked(lock):
+        pass
+    assert flaky_windows_filelock.attempts == 26  # 25 flakes + 1 real acquire
+    assert flaky_windows_filelock._flakes == 0  # every flake was consumed
+    unlocks = [c for c in flaky_windows_filelock.calls if c[1] == 0]
+    assert len(unlocks) == 1
+
+
+def test_windows_edeadlk_eventually_raises(tmp_path, monkeypatch):
+    """A *persistent* EDEADLK (genuine nested-lock bug) still surfaces
+    instead of hanging forever — retries are bounded (~2s here)."""
+
+    class AlwaysDeadlocked(FakeMsvcrt):
+        def locking(self, fd, mode, nbytes):
+            if mode == self.LK_LOCK:
+                raise OSError(errno.EDEADLK, "Resource deadlock avoided")
+            return super().locking(fd, mode, nbytes)
+
+    fake_mod = types.ModuleType("msvcrt")
+    fake = AlwaysDeadlocked()
+    fake_mod.LK_LOCK = fake.LK_LOCK
+    fake_mod.LK_UNLCK = fake.LK_UNLCK
+    fake_mod.locking = fake.locking
+    monkeypatch.setitem(sys.modules, "msvcrt", fake_mod)
+    monkeypatch.setattr(filelock, "_IS_WINDOWS", True)
+    with pytest.raises(OSError, match="Resource deadlock avoided"):
+        with filelock.locked(tmp_path / "stuck.lock"):
+            pass  # pragma: no cover
+
+
+def test_windows_other_oserror_not_masked(tmp_path, monkeypatch):
+    """A non-EDEADLK OSError (e.g. permission denied) propagates
+    immediately — the backoff must not swallow real failures."""
+
+    class Denied(FakeMsvcrt):
+        def locking(self, fd, mode, nbytes):
+            if mode == self.LK_LOCK:
+                self.attempts = getattr(self, "attempts", 0) + 1
+                raise OSError(errno.EACCES, "Permission denied")
+            return super().locking(fd, mode, nbytes)
+
+    fake_mod = types.ModuleType("msvcrt")
+    fake = Denied()
+    fake_mod.LK_LOCK = fake.LK_LOCK
+    fake_mod.LK_UNLCK = fake.LK_UNLCK
+    fake_mod.locking = fake.locking
+    monkeypatch.setitem(sys.modules, "msvcrt", fake_mod)
+    monkeypatch.setattr(filelock, "_IS_WINDOWS", True)
+    with pytest.raises(OSError, match="Permission denied"):
+        with filelock.locked(tmp_path / "denied.lock"):
+            pass  # pragma: no cover
+    assert fake.attempts == 1  # no retries on non-EDEADLK

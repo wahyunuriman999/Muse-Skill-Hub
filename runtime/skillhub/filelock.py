@@ -26,9 +26,11 @@ true concurrent readers must not rely on ``shared_locked`` on Windows.
 """
 from __future__ import annotations
 
+import errno
 import os
 import sys
 import threading
+import time
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -112,9 +114,37 @@ def _acquire(fh, exclusive: bool) -> None:
             fh.flush()
         fh.seek(0)
         # No shared mode in msvcrt: shared degrades to exclusive (documented).
-        msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+        _locking_blocking(fh)
     else:
         fcntl.flock(fh.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+
+
+def _locking_blocking(fh) -> None:
+    """Blocking ``msvcrt.locking`` acquire with a bounded EDEADLK backoff.
+
+    Under heavy cross-process contention the CRT can report EDEADLK
+    ("Resource deadlock avoided") for the 1-byte region when our own
+    process just released it on a previous handle — observed on
+    windows-latest/py3.10 with 20 processes racing (the OS lock teardown
+    races the next acquisition, and the CRT attributes the stale lock to
+    us instead of blocking). The correct behavior for a blocking lock
+    primitive is to wait it out: the stale lock clears on its own within
+    milliseconds.
+
+    Retries are bounded (~2s total); afterwards the real error surfaces
+    instead of being masked — a genuine nested-lock programming error
+    still raises EDEADLK loudly instead of hanging forever.
+    """
+    msvcrt = _msvcrt()
+    for _ in range(2000):
+        try:
+            msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+            return
+        except OSError as exc:
+            if exc.errno != errno.EDEADLK:
+                raise
+            time.sleep(0.001)
+    msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)  # final attempt, unmasked
 
 
 def _release(fh, exclusive: bool) -> None:

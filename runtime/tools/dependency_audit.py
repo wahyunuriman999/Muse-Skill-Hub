@@ -37,7 +37,10 @@ def _run(*args: str) -> subprocess.CompletedProcess:
 
 
 def _direct_deps() -> tuple[list[str], list[str]]:
-    import tomllib
+    try:
+        import tomllib
+    except ModuleNotFoundError:  # Python 3.10: tomllib is 3.11+
+        import tomli as tomllib
     data = tomllib.loads((RUNTIME / "pyproject.toml").read_text())
     proj = data["project"]["dependencies"]
     test = data["project"]["optional-dependencies"]["test"]

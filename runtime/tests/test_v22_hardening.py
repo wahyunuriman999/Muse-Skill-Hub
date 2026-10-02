@@ -10,7 +10,6 @@ cryptography/jsonschema dependencies, generated README metrics, and the
 destructive-risk security conformance check.
 """
 
-import sys
 import ast
 import json
 import multiprocessing as mp
