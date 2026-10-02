@@ -3,7 +3,7 @@ name: "outlook-contacts"
 title: "Outlook Contacts"
 description: "List, search, create, update, and delete contacts in the user's Outlook account."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

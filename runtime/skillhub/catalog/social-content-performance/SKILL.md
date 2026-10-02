@@ -3,7 +3,7 @@ name: "social-content-performance"
 title: "Social Content Performance"
 description: "Analyze the user's own Instagram account and post performance using linked-account analytics."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

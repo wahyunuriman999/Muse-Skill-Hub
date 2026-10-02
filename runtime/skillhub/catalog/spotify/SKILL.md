@@ -3,7 +3,7 @@ name: "spotify"
 title: "Spotify"
 description: "Discover, search, and manage Spotify music, podcasts, and playlists, including deleting shows or episodes you created with Save to Spotify."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

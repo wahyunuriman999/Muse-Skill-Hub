@@ -3,7 +3,7 @@ name: "magic-moment"
 title: "Magic Moment"
 description: Turn talking-head video footage into shareable short clips. The hosted AI-highlight feature has no public API, so this skill ships an honest local ffmpeg implementation: cut clips, burn in SRT captions, reframe to vertical 9:16.
 version: "1.1.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

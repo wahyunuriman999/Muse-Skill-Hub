@@ -3,7 +3,7 @@ name: "tts"
 title: "Tts"
 description: "Turn supplied text into spoken audio, single or multi-speaker. For composed audio content (a podcast, briefing, or narrated summary), use podcast."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

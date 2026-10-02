@@ -3,7 +3,7 @@ name: "agent-library"
 title: "Agent Library"
 description: Manage the user's file library: uploads, generated artifacts, expiring public share links, and the media collection. Know where files live and how the user gets them back.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

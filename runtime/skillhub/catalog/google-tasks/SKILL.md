@@ -3,7 +3,7 @@ name: "google-tasks"
 title: "Google Tasks"
 description: "Manage the user's Google Tasks: lists, task details, creation, updates, and completion."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "google-slides"
 title: "Google Slides"
 description: "Read, create, and edit the user's Google Slides presentations."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

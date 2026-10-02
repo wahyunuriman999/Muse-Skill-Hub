@@ -3,7 +3,7 @@ name: "wallet"
 title: "Wallet"
 description: Coordinate payments: check wallet connection state, use saved payment methods and addresses through secure provider pages, and run the required purchase review and approval flow.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

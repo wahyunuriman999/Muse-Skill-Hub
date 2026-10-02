@@ -3,7 +3,7 @@ name: "dropbox"
 title: "Dropbox"
 description: Manage Dropbox storage: upload and download files, create share links, organize folders, and check space usage.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "connector-management"
 title: "Connector Management"
 description: Manage third-party service connectors: discover available connectors, check connection status and granted scopes, guide OAuth connect flows, and disconnect services.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

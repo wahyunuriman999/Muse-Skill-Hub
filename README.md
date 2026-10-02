@@ -215,5 +215,14 @@ tool = Tool(name="github", description="...", func=your_impl)
 
 PRs and issues are welcome. If you adapt these skills for other LLMs, share it here.
 
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0**
+(AGPL-3.0-only) — see [LICENSE](LICENSE) for the full text.
+
+In short: you may use, study, modify, and share this work, but any modified
+version you distribute (including over a network) must remain open-source
+under the same license, with copyright and attribution notices intact.
+
 ---
 *Copyright © 2026 Wahyu Nur Iman.*

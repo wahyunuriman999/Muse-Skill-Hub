@@ -3,7 +3,7 @@ name: "stripe"
 title: "Stripe"
 description: Handle Stripe payments: create payment links and checkout sessions, manage customers, subscriptions, invoices, and refunds.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "healthex"
 title: "HealthEx"
 description: "Use to connect HealthEx and ask questions about your medications, lab results, and other health records."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

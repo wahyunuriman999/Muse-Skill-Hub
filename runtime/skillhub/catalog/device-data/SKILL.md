@@ -3,7 +3,7 @@ name: "device-data"
 title: "Device Data"
 description: "Read cached contacts and calendar events from Muse storage. Delete Muse's local copy of either source without modifying paired devices."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

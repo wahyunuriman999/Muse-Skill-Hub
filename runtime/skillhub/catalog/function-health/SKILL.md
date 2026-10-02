@@ -3,7 +3,7 @@ name: "function-health"
 title: "Function Health"
 description: "Retrieve lab biomarker results and clinician notes from Function Health."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

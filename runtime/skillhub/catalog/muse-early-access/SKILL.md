@@ -3,7 +3,7 @@ name: "muse-early-access"
 title: "Muse early access"
 description: "Use for questions about Muse's general early access program, requests to join it, checking or withdrawing a join request, and admission updates."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

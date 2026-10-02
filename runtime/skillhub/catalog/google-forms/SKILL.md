@@ -3,7 +3,7 @@ name: "google-forms"
 title: "Google Forms"
 description: "Read, create, and update the user's Google Forms, and read responses."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "google-drive"
 title: "Google Drive"
 description: "Work with the user's Google Drive: files, folders, uploads, downloads, and sharing."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

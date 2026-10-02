@@ -3,7 +3,7 @@ name: "idea-management"
 title: "Idea Management"
 description: Manage the Ideas tab: idea cards the agent can run, dismissing ideas, and explaining why an idea appeared or disappeared.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "messaging-channels"
 title: "Messaging Channels"
 description: Work across connected messaging providers (e.g. WhatsApp): check connection status, read side chats, and send messages on the user's behalf with approval.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

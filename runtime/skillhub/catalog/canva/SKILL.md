@@ -3,7 +3,7 @@ name: "canva"
 title: "Canva"
 description: Design with Canva: create and edit designs and presentations, manage brand assets and folders, and generate share links.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

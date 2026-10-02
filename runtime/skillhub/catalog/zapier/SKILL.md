@@ -3,7 +3,7 @@ name: "zapier"
 title: "Zapier"
 description: "Connect Muse to actions across apps through Zapier's official MCP server."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

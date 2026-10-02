@@ -3,7 +3,7 @@ name: "todoist"
 title: "Todoist"
 description: "Read and manage Todoist tasks, projects, comments, labels, filters, and reminders through Todoist's official MCP server."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "personal-feed"
 title: "Personal Feed"
 description: Manage the user's personal Feed: short editorial posts the agent writes on a schedule, the feed brief/prompt, and regenerating or removing posts.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

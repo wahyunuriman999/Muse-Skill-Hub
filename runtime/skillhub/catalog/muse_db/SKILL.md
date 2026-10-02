@@ -3,7 +3,7 @@ name: "muse_db"
 title: "Muse_Db"
 description: "Inspect database-backed Muse records for diagnosis and cross-table tracing when purpose-built product tools do not expose the needed state."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

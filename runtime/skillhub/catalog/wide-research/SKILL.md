@@ -3,7 +3,7 @@ name: "wide-research"
 title: "Wide Research"
 description: "Use when the user needs broad parallel research across many independent inputs with a shared output schema."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "outlook-calendar"
 title: "Outlook Calendar"
 description: "View, create, update, and delete events in the user's Outlook Calendar."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

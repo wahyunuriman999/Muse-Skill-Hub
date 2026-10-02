@@ -3,7 +3,7 @@ name: "ghl"
 title: "Ghl"
 description: "Use HighLevel contacts, pipelines, appointments, messages, and its broader operation catalog."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

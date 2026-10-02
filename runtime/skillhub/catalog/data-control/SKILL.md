@@ -3,7 +3,7 @@ name: "data-control"
 title: "Data Control"
 description: Handle user data rights: explain what data is collected and how it is used, export chats and files, delete data on request, and manage training opt-outs.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

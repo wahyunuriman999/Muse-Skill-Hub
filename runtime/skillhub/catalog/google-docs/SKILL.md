@@ -3,7 +3,7 @@ name: "google-docs"
 title: "Google Docs"
 description: "Read, create, and edit the user's Google Docs."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

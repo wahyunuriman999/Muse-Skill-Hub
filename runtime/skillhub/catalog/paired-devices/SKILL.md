@@ -3,7 +3,7 @@ name: "paired-devices"
 title: "Paired Devices"
 description: Manage the user's paired devices: list and describe devices, run commands on them, pull data such as location, and unpair devices.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

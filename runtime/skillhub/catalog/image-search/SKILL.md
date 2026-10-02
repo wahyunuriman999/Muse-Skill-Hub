@@ -3,7 +3,7 @@ name: "image-search"
 title: "Image Search"
 description: "Search the web by text query for image URLs and source pages for feeds, artifacts, and visual references. Does not identify a supplied image or person."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

@@ -3,7 +3,7 @@ name: "figma"
 title: "Figma"
 description: Work with Figma: read files, pages, frames and components, export assets, and manage design projects.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

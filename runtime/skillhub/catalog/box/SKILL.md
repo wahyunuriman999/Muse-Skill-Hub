@@ -3,7 +3,7 @@ name: "box"
 title: "Box"
 description: "Search, read, upload, download, move, rename, delete, restore, and share Box content; manage comments and metadata."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

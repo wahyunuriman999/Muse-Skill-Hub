@@ -3,7 +3,7 @@ name: "evernote"
 title: "Evernote"
 description: "Read and create notes through Evernote's official MCP server."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

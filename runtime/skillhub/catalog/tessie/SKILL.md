@@ -3,7 +3,7 @@ name: "tessie"
 title: "Tessie"
 description: "Monitor a Tesla vehicle, inspect live state, and run explicit Tessie command endpoints."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

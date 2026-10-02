@@ -3,7 +3,7 @@ name: "github"
 title: "GitHub"
 description: "Search and work with the user's GitHub repositories through GitHub's official MCP server."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

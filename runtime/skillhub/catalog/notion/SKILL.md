@@ -3,7 +3,7 @@ name: "notion"
 title: "Notion"
 description: "Search, read, create, and update Notion pages via the Notion MCP."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

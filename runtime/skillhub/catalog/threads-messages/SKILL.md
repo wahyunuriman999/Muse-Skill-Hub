@@ -3,7 +3,7 @@ name: "threads-messages"
 title: "Threads Messages"
 description: "Use this to interact with the user's Threads messages: read inboxes and message threads, and send messages through `threads-messages-cli`."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

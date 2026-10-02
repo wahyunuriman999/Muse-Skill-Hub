@@ -3,7 +3,7 @@ name: "replit"
 title: "Replit"
 description: "Replit cloud IDE. Replit's public REST API is deprecated and its replacement is unreleased, so this skill is catalog-only: the honest workaround is pushing the Repl to GitHub, then operating on the code with the github skill."
 version: "1.1.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

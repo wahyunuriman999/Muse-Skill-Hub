@@ -3,7 +3,7 @@ name: "google-sheets"
 title: "Google Sheets"
 description: "Read, write, and manage the user's Google Sheets."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

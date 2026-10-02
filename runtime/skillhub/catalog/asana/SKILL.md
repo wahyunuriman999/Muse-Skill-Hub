@@ -3,7 +3,7 @@ name: "asana"
 title: "Asana"
 description: Manage Asana work: create and list tasks, assign owners, set due dates, organize projects, and track team progress.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

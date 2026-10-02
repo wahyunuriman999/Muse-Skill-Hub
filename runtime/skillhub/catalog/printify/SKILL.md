@@ -3,7 +3,7 @@ name: "printify"
 title: "Printify"
 description: "Use Printify to browse catalog data, manage shops and products, and review or create orders."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

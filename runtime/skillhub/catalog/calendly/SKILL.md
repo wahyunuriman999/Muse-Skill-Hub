@@ -3,7 +3,7 @@ name: "calendly"
 title: "Calendly"
 description: "View Calendly events and event types, and manage scheduling data using the Calendly CLI."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

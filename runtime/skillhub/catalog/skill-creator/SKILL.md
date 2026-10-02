@@ -3,7 +3,7 @@ name: "skill-creator"
 title: "Skill Creator"
 description: "Create or update a workspace skill: its description, structure, instructions, and supporting files."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

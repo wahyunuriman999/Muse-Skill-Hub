@@ -3,7 +3,7 @@ name: "permission-model"
 title: "Permission Model"
 description: Work with the runtime permission system: list pending permission requests, explain what access each one grants, and respect the user's approve/deny decision.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

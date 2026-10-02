@@ -3,7 +3,7 @@ name: "secure-vault"
 title: "Secure Vault"
 description: Handle credentials securely: collect passwords, API keys, and tokens only through secure entry UI, never in chat; manage saved logins and one-time sign-in codes.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

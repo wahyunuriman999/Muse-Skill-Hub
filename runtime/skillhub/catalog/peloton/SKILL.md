@@ -3,7 +3,7 @@ name: "peloton"
 title: "Peloton"
 description: "Connect to Peloton to browse fitness classes, check schedules, and book workouts."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

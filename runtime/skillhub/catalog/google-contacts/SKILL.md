@@ -3,7 +3,7 @@ name: "google-contacts"
 title: "Google Contacts"
 description: "Search, view, create, update, and delete the user's Google Contacts."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

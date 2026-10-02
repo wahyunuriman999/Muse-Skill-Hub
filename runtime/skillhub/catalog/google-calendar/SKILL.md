@@ -3,7 +3,7 @@ name: "google-calendar"
 title: "Google Calendar"
 description: "Work with the user's Google Calendar: agenda views, event details, and scheduling changes."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

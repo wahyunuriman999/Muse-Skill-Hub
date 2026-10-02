@@ -3,7 +3,7 @@ name: "wearable-device-skills"
 title: "Wearable Device Skills"
 description: "Use when the user asks to discover, inspect, or invoke an agentic capability dynamically published by a paired phone or wearable, including device controls, app actions, camera or media actions, and smart-home actions."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

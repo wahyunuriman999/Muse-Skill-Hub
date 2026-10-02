@@ -3,7 +3,7 @@ name: "outlook-mail"
 title: "Outlook Mail"
 description: "Read, search, send, reply to, and delete messages in the user's Outlook Mail."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

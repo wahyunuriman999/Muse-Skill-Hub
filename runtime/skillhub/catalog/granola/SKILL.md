@@ -3,7 +3,7 @@ name: "granola"
 title: "Granola"
 description: "Search and read Granola meeting notes and transcripts through Granola's official public API (public-api.granola.ai). Requires a Granola API key (GRANOLA_API_KEY)."
 version: "1.1.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

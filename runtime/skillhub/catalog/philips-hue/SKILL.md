@@ -3,7 +3,7 @@ name: "philips-hue"
 title: "Philips Hue"
 description: "Control Philips Hue smart lights, rooms, scenes, and devices via the Hue Remote API v2."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

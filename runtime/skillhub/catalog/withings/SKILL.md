@@ -3,7 +3,7 @@ name: "withings"
 title: "Withings"
 description: "Use when linking Withings or reading Withings body measurements, activity, sleep, workout, heart, and intraday data."
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

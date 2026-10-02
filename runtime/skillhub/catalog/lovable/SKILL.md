@@ -3,7 +3,7 @@ name: "lovable"
 title: "Lovable"
 description: Lovable AI app builder. No public API exists, so this skill is catalog-only: the honest workaround is Lovable's GitHub sync, then operate on the code with the github skill.
 version: "1.1.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 

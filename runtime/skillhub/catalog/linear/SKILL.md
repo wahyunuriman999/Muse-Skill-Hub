@@ -3,7 +3,7 @@ name: "linear"
 title: "Linear"
 description: Track engineering work in Linear: create and list issues, set priorities, manage cycles, and follow project status.
 version: "1.0.0"
-license: "MIT"
+license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 
