@@ -31,7 +31,7 @@ deploying it as anything else invalidates the model.
 
 | Asset | Where | Sensitivity |
 |---|---|---|
-| Provider credentials (API keys, tokens) | `credentials.enc` (AES-256-GCM via `cryptography`), env vars, OS keyring | **Critical** — long-lived, provider-wide |
+| Provider credentials (API keys, tokens) | `credentials.enc` (Fernet authenticated encryption via `cryptography`, same key machinery as the secure vault), env vars, OS keyring | **Critical** — long-lived, provider-wide |
 | Approval records (intent to act) | `approvals.json` | High — authorizes side effects |
 | Audit log (hash-chained JSONL) | `audit.jsonl` | High — tamper-evidence, operator forensics |
 | Idempotency store | `idempotency.json` | Medium — replays, result snapshots |

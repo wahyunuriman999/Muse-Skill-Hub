@@ -1,6 +1,6 @@
 [project]
 name = "muse-skill-hub-runtime"
-version = "2.2.0"
+version = "2.2.1"
 description = "LLM-agnostic capability runtime for AI agents: universal skills as executable, permission-enforced MCP tools"
 readme = "README.md"
 requires-python = ">=3.10"
