@@ -9,6 +9,8 @@ jsonschema library (full Draft 2020-12 vocabulary), declared
 cryptography/jsonschema dependencies, generated README metrics, and the
 destructive-risk security conformance check.
 """
+
+import sys
 import ast
 import json
 import multiprocessing as mp
@@ -69,7 +71,8 @@ def test_filelock_module_has_platform_branches():
     src = Path(filelock.__file__).read_text(encoding="utf-8")
     assert "msvcrt" in src and "fcntl" in src
     assert filelock.platform_name() in ("unix", "windows")
-    assert filelock.platform_name() == "unix"  # this CI runs Linux
+    expected = "windows" if sys.platform == "win32" else "unix"
+    assert filelock.platform_name() == expected  # must match the real platform
 
 
 def _lock_counter_worker(lock_path, counter_path, n, q):
