@@ -46,8 +46,11 @@ next gate began.
   msvcrt lock path and spawn-based process races.
 - Conformance validator: **PASS (0 warnings)** — locally and against a fresh
   wheel install in a clean virtualenv.
-- Release wheel: `muse_skill_hub_runtime-2.2.0-py3-none-any.whl` builds
+- Release wheel: `muse_skill_hub_runtime-2.2.1-py3-none-any.whl` builds
   reproducibly (two independent builds byte-identical) and installs clean.
+  (The GATE 22 run below used the 2.2.0-named wheel; the post-freeze
+  micro-fix re-ran the full regression — 271/271, validator, fresh
+  install — against the 2.2.1 wheel. See `POST_FREEZE_MICROFIX.md`.)
 - Generated docs in sync (`sync_readme.py --check` clean).
 
 ## Honest boundaries (unchanged, still true)
