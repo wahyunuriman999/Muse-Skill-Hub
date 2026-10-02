@@ -1,0 +1,37 @@
+# GATE 2 / GATE 20 — cross-platform certification CI.
+#
+# Matrix: Ubuntu + Windows + macOS  x  Python 3.10 - 3.13.
+# The Windows leg is the proof for GATE 2: the real msvcrt file-lock path
+# and the spawn-based process races execute on actual windows-latest —
+# not AST checks, not import checks.
+name: certification
+
+"on":
+  push:
+    branches: [main, final-certification]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install runtime (with test extras)
+        run: pip install -e "./runtime[test]"
+      - name: Validator (0 warnings required)
+        run: python -m skillhub.cli validate
+      - name: Full test suite
+        run: python -m pytest runtime/tests/ -q -p no:cacheprovider
+      - name: README metrics in sync
+        run: python runtime/tools/sync_readme.py --check
