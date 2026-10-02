@@ -210,8 +210,12 @@ def idempotency() -> int:
                                            # for keys stuck PENDING after a
                                            # crash — only after verifying no
                                            # execution is running for it)
+    skillhub idempotency recover [--dry-run]  # classify stale PENDING keys
+                                           # via the write-ahead log; safely
+                                           # reclaims provable pre-call
+                                           # crashes, reports the rest
     """
-    from .registry import _idem_list, _idem_release
+    from .registry import _idem_list, _idem_release, idempotency_recover
     args = sys.argv[2:]
     if not args or args[0] == "list":
         rows = _idem_list()
@@ -227,7 +231,20 @@ def idempotency() -> int:
             return 0
         print(f"no such idempotency key: '{args[1]}'")
         return 1
-    print("usage: skillhub idempotency [list | release <key>]")
+    if args[0] == "recover":
+        dry = "--dry-run" in args[1:]
+        report = idempotency_recover(apply=not dry)
+        print(json.dumps(report, indent=2))
+        if dry:
+            print("dry run — nothing was changed")
+        else:
+            print(f"reclaimed: {len(report['reclaimed'])}, "
+                  f"needs_reconciliation: "
+                  f"{len(report['needs_reconciliation'])}, "
+                  f"in_flight: {len(report['in_flight'])}, "
+                  f"settled: {report['settled']}")
+        return 0
+    print("usage: skillhub idempotency [list | release <key> | recover [--dry-run]]")
     return 2
 
 

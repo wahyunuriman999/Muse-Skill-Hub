@@ -70,11 +70,11 @@ def test_all_drivers_classified():
     rows = build_matrix()
     implemented = sorted(n for n, e in reg.items() if e.implemented)
     assert [n for n, _, _ in rows] == implemented
-    assert len(rows) == 94
+    assert len(rows) == 96
     tiers = [t for _, t, _ in rows]
     assert tiers.count("live") == 2
     assert tiers.count("mock-contract") == 1
-    assert tiers.count("structural") == 91
+    assert tiers.count("structural") == 93
 
 
 def test_no_inflated_live_claims_in_docs():

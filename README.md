@@ -11,7 +11,7 @@
 <!-- METRICS:START -->
 _Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
 
-**Version 2.2.1** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **271 passing tests**
+**Version 2.3.0.dev0** · **97 skills** · **96 executable drivers** (1 honest stubs) · **222 MCP tools** · **301 passing tests**
 <!-- METRICS:END -->
 
 **Evidence honesty**: of the 94 executable drivers, 2 are live-tested against real provider servers (`github`, `podcast`), 1 has a mock-harness contract test (`stripe`), and 91 are structural (real code, provider handshake is the operator's step). Full per-driver matrix: [`certification/PROVIDER_MATRIX.md`](certification/PROVIDER_MATRIX.md) (generated — do not hand-edit).

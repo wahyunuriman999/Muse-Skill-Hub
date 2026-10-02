@@ -1,0 +1,39 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.wahyunuriman999/muse-skill-hub",
+  "title": "Muse Skill Hub",
+  "description": "LLM-agnostic capability runtime: 97 skills as typed, permission-enforced MCP tools (open source)",
+  "version": "2.3.0",
+  "websiteUrl": "https://github.com/wahyunuriman999/Muse-Skill-Hub",
+  "repository": {
+    "url": "https://github.com/wahyunuriman999/Muse-Skill-Hub",
+    "source": "github",
+    "id": "1400209464",
+    "subfolder": "runtime"
+  },
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/wahyunuriman999/Muse-Skill-Hub/main/visibility/social-preview-small.jpg",
+      "mimeType": "image/jpeg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "muse-skill-hub-runtime",
+      "version": "2.3.0",
+      "runtimeHint": "uvx",
+      "transport": { "type": "stdio" }
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "io.github.wahyunuriman999": {
+        "muse-skill-hub-runtime": {
+          "tags": ["ai-agents", "mcp", "automation", "tools", "open-source"]
+        }
+      }
+    }
+  }
+}
