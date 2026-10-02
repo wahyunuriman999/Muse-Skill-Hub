@@ -1,5 +1,12 @@
 # GATE 0 — Certification Baseline & Recovery Record
 
+> **Date correction (2026-10-02):** this file states "verified 2026-10-02",
+> but the baseline verification it records was actually performed on
+> **2026-10-01** (system/work date); the file was written with the wrong
+> date. The verified values themselves (SHAs, tag, release) are unaffected
+> and remain correct. This note corrects the record without rewriting
+> history.
+
 This file is the immutable starting point of the v2.2.x final certification.
 Every later gate builds on this exact base. If the working tree is ever lost,
 re-clone and verify you land here before continuing.
