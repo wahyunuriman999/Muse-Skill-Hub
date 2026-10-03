@@ -25,7 +25,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 12 | Clean Installation | `—` | COMPLETE (3 tests (test_v221_clean_install.py). Guarantee: catalog ships inside the wheel; clean install works.) |
 | 13 | Static Security Audit | `—` | COMPLETE (5 tests (test_v221_static_audit.py). Guarantee: static audit passes; v2.3 new code (wal.py, drivers) covered.) |
 | 14 | HTTP Safety | `—` | COMPLETE (10 tests (test_v221_http_safety.py). Guarantee: mutations NEVER retried on 5xx; safe-method retry policy.) |
-| 15 | Provider Contract Matrix (+ lovable/replit real) | — | PENDING |
+| 15 | Provider Contract Matrix (+ lovable/replit real) | `—` | COMPLETE (14 tests; 2 live / 3 mock-contract / 91 structural) |
 | 16 | Exception & Secret Leak Assurance | — | PENDING |
 | 17 | Dependency/Supply Chain | — | PENDING |
 | 18 | Performance Sanity | — | PENDING |

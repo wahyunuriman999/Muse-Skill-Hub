@@ -34,6 +34,21 @@ LIVE_TESTS: dict[str, str] = {
     "podcast": "test_podcast_search_live",                   # iTunes Search API
 }
 
+# skill -> test functions that assert the driver's request shape and
+# response parsing against a mocked transport (no provider contact).
+# Human-verified: these tests exercise the real driver code unmodified.
+# v2.3: lovable/replit upgraded from stubs to real drivers; their
+# contract tests prove correct API requests and plan/Enterprise-gate
+# error translation.
+MOCK_CONTRACT_TESTS: dict[str, list[str]] = {
+    "lovable": ["test_lovable_headers_and_version",
+                "test_lovable_publish_project",
+                "test_lovable_plan_gate_translated"],
+    "replit": ["test_replit_bearer_auth_and_paths",
+               "test_replit_set_budget_write_action",
+               "test_replit_enterprise_gate_translated"],
+}
+
 
 def _test_functions() -> set[str]:
     found: set[str] = set()
@@ -64,7 +79,11 @@ def build_matrix() -> list[tuple[str, str, str]]:
     for skill, fn in LIVE_TESTS.items():
         assert fn in test_fns, \
             f"live test {fn} for skill '{skill}' is gone — tier is stale"
-    mock_skills = _mock_contract_skills()
+    for skill, fns in MOCK_CONTRACT_TESTS.items():
+        for fn in fns:
+            assert fn in test_fns, \
+                f"contract test {fn} for skill '{skill}' is gone — tier is stale"
+    mock_skills = _mock_contract_skills() | set(MOCK_CONTRACT_TESTS)
 
     rows = []
     for name in sorted(reg):
@@ -77,9 +96,13 @@ def build_matrix() -> list[tuple[str, str, str]]:
                 evidence += " + mock-harness contract test"
             rows.append((name, "live", evidence))
         elif name in mock_skills:
-            rows.append((name, "mock-contract",
-                         "mock-harness responder asserts request shape + "
-                         "response parsing"))
+            if name in MOCK_CONTRACT_TESTS:
+                evidence = ("mocked transport asserts request shape + "
+                            "response parsing (no provider contact)")
+            else:
+                evidence = ("mock-harness responder asserts request shape + "
+                            "response parsing")
+            rows.append((name, "mock-contract", evidence))
         else:
             rows.append((name, "structural",
                          "schema/dispatch/unit tests only — no provider "
@@ -101,12 +124,12 @@ def render(rows: list[tuple[str, str, str]]) -> str:
         "",
         "**Evidence tiers**: `live` = a test performs a real network call to "
         "the provider's servers; `mock-contract` = a mock-harness responder "
-        "asserts the driver's request shape and response parsing with the "
-        "real driver code unmodified; `structural` = schema/dispatch/unit "
-        "tests only — the driver has never contacted a provider server in "
-        "this repo's test suite. Structural drivers are honest about what "
-        "they are: the code is real, the provider handshake is the "
-        "operator's step (credentials + network).",
+        "or mocked transport asserts the driver's request shape and response "
+        "parsing with the real driver code unmodified; `structural` = "
+        "schema/dispatch/unit tests only — the driver has never contacted a "
+        "provider server in this repo's test suite. Structural drivers are "
+        "honest about what they are: the code is real, the provider handshake "
+        "is the operator's step (credentials + network).",
         "",
         "| skill | tier | evidence |",
         "|---|---|---|",

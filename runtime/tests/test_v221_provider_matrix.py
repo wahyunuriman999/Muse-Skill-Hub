@@ -73,8 +73,8 @@ def test_all_drivers_classified():
     assert len(rows) == 96
     tiers = [t for _, t, _ in rows]
     assert tiers.count("live") == 2
-    assert tiers.count("mock-contract") == 1
-    assert tiers.count("structural") == 93
+    assert tiers.count("mock-contract") == 3  # stripe + lovable + replit (v2.3)
+    assert tiers.count("structural") == 91
 
 
 def test_no_inflated_live_claims_in_docs():
