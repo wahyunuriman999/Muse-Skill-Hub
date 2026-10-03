@@ -28,7 +28,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 15 | Provider Contract Matrix (+ lovable/replit real) | `—` | COMPLETE (14 tests; 2 live / 3 mock-contract / 91 structural) |
 | 16 | Exception & Secret Leak Assurance | `—` | COMPLETE (9 tests (test_v221_secret_leak.py). Guarantee: no secret leaks via exceptions/logs; WAL and driver paths clean.) |
 | 17 | Dependency/Supply Chain | `—` | COMPLETE (4 tests test_v221_dependency_audit.py; 0 vulnerabilities) |
-| 18 | Performance Sanity | — | PENDING |
+| 18 | Performance Sanity | `—` | COMPLETE (3 tests test_v221_perf_sanity.py; measurements, not SLAs) |
 | 19 | Threat Model (+ WAL surface) | — | PENDING |
 | 20 | Cross-Platform CI (12/12) | — | PENDING |
 | 21 | Release Reproducibility | — | PENDING |
