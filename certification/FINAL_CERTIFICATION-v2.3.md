@@ -81,7 +81,9 @@ not affect validity. History was not rewritten.
   + 8 new (5 WAL kill-9, 3 packaging).
 - Conformance validator: **PASS (0 warnings)**.
 - Generated docs in sync (`sync_readme.py --check` clean).
-- Cross-platform CI: run 37140216629 — (pending; 12/12 required).
+- Cross-platform CI: run 37141116040 — 12/12 jobs SUCCESS
+  (ubuntu/windows/macos × py3.10–3.13); each job 309 tests, validator
+  0 warnings, README metrics in sync.
 
 ## Honest boundaries (unchanged, still true)
 
