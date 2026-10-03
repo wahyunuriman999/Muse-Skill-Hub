@@ -15,7 +15,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 2 | Windows Real Execution | `—` | COMPLETE (12 tests; real windows-latest via GATE 20 CI) |
 | 3 | Crash-Atomic Storage | `—` | COMPLETE (9 tests) |
 | 4 | Idempotency Semantics (+ WAL) | `—` | COMPLETE (25 tests: 8 idempotency + 17 WAL) |
-| 5 | Approval Protocol | — | PENDING |
+| 5 | Approval Protocol | `—` | COMPLETE (16 tests (test_v221_approval_protocol.py). Guarantee: approval binds skill+action+params_hash+risk+actor; 20-thread race proves atomic consumption.) |
 | 6 | Approval Data Privacy | — | PENDING |
 | 7 | Output Contract | — | PENDING |
 | 8 | Risk Semantics | — | PENDING |
