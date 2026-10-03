@@ -19,7 +19,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 6 | Approval Data Privacy | `—` | COMPLETE (4 tests (test_v221_approval_privacy.py). Guarantee: secret canary values never leak into approval records (params_hash + redacted preview only).) |
 | 7 | Output Contract | `—` | COMPLETE (6 tests (test_v221_output_contract.py). Guarantee: invalid output never becomes an idempotency success.) |
 | 8 | Risk Semantics | `—` | COMPLETE (25 tests (test_v221_risk_semantics.py). Guarantee: destructive-risk downgrade attempts FAIL validation.) |
-| 9 | Manifest/Driver/SKILL Contract | — | PENDING |
+| 9 | Manifest/Driver/SKILL Contract | `—` | COMPLETE (8 tests test_v221_manifest_contract.py; validate() fails on drift; lovable/replit consistent) |
 | 10 | MCP Documentation Consistency | `—` | COMPLETE (6 tests (test_v221_mcp_consistency.py). Guarantee: MCP tool docs match implementation (221 tools).) |
 | 11 | Generated Documentation | `—` | COMPLETE (4 tests (test_v221_generated_docs.py) + sync_readme.py --check clean. Guarantee: generated README metrics in sync.) |
 | 12 | Clean Installation | `—` | COMPLETE (3 tests (test_v221_clean_install.py). Guarantee: catalog ships inside the wheel; clean install works.) |
