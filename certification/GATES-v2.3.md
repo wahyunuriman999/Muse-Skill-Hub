@@ -31,7 +31,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 18 | Performance Sanity | `—` | COMPLETE (3 tests test_v221_perf_sanity.py; measurements, not SLAs) |
 | 19 | Threat Model (+ WAL surface) | `—` | COMPLETE (4 tests; T13 WAL added; L1/L5 updated) |
 | 20 | Cross-Platform CI (12/12) | — | PENDING |
-| 21 | Release Reproducibility | — | PENDING |
+| 21 | Release Reproducibility | `—` | COMPLETE (3 tests; byte-identical wheels) |
 | 22 | Final Certification Report | — | PENDING |
 | 23 | WAL Crash Recovery (kill -9 at each phase) | — | PENDING |
 | 24 | Lovable/Replit Real Drivers | — | PENDING |
