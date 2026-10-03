@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 import uuid
 
@@ -124,6 +125,8 @@ def pid_alive(pid) -> bool | None:
         return None
     if pid <= 0:
         return None
+    if sys.platform == "win32":
+        return _pid_alive_windows(pid)
     try:
         os.kill(pid, 0)
     except ProcessLookupError:
@@ -134,6 +137,34 @@ def pid_alive(pid) -> bool | None:
         return None  # platform cannot answer → inconclusive
     else:
         return True
+
+
+def _pid_alive_windows(pid: int) -> bool | None:
+    """Windows PID liveness via OpenProcess.
+
+    os.kill(pid, 0) is not reliable on Windows (signal 0 is not
+    supported; non-existent PIDs raise generic OSError). OpenProcess
+    gives a definitive answer: a handle means alive, ERROR_INVALID_PARAMETER
+    (87) means no such process, ERROR_ACCESS_DENIED (5) means alive but
+    owned by another user. Anything else is inconclusive (conservative).
+    """
+    try:
+        import ctypes
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.OpenProcess(
+            PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        if handle:
+            kernel32.CloseHandle(handle)
+            return True
+        err = kernel32.GetLastError()
+        if err == 87:   # ERROR_INVALID_PARAMETER → no such process
+            return False
+        if err == 5:    # ERROR_ACCESS_DENIED → exists, another user
+            return True
+        return None
+    except Exception:
+        return None
 
 
 def owner_token() -> str:
