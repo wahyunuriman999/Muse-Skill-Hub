@@ -34,6 +34,6 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 21 | Release Reproducibility | `—` | COMPLETE (3 tests; byte-identical wheels) |
 | 22 | Final Certification Report | — | PENDING |
 | 23 | WAL Crash Recovery (kill -9 at each phase) | `—` | COMPLETE (kill-9 tests; classify proven) |
-| 24 | Lovable/Replit Real Drivers | — | PENDING |
+| 24 | Lovable/Replit Real Drivers | `—` | COMPLETE (8 tests; PermissionDenied gates proven) |
 | 25 | Live Contract Harness | — | PENDING |
 | 26 | PyPI/MCP Packaging | — | PENDING |
