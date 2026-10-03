@@ -71,6 +71,7 @@ deploying it as anything else invalidates the model.
 | T10 | Stale OAuth token reused / concurrent refresh storms | Single-flight refresh under the store lock; double-checked expiry; 20-thread test → exactly 1 refresh | v2.2 |
 | T11 | Corrupt credential store silently yields "no credentials" | Fail-closed: `CredentialStoreCorruptError` + backup, never an empty store masquerading as "no credentials" | v2.2 |
 | T12 | Windows behaves differently (locks, spawn, paths) | Cross-platform `filelock` (fcntl/msvcrt), no top-level `fcntl` import; real `windows-latest` CI | 2, 20 |
+| T13 | Crash-recovery misclassifies a stale idempotency key (reclaim causes double-execution, or a real side effect is missed) | WAL phases fsync'd in order; `side_effect_started` is recorded BEFORE the handler runs, so its absence proves the handler never ran; reclaim requires owner PID provably dead; inconclusive liveness → `in_flight`; unreadable WAL → `needs_reconciliation`; `needs_reconciliation` is never auto-touched; PID reuse errs conservative (live-looking PID = in-flight) | 23, 4 |
 
 ## 5. Accepted limitations (explicitly NOT promised)
 
@@ -81,7 +82,11 @@ so no claim elsewhere can be read as contradicting them.
   If the provider executes the side effect and the process dies before the
   local SUCCEEDED commit, a retry may repeat the side effect. The local
   runtime cannot close this window; providers with their own idempotency
-  keys are the real fix. (Documented in `_idem_reserve` and GATE 4.)
+  keys are the real fix. v2.3 narrows the operational cost with the WAL:
+  stale PENDING keys are machine-classified (`safe_to_reclaim` /
+  `needs_reconciliation` / `in_flight`) instead of all being manual
+  mysteries — but an uncertain post-call crash is still never auto-retried.
+  (Documented in `_idem_reserve`, `skillhub/wal.py`, GATE 4, GATE 23.)
 - **L2 — Single user, single machine.** No tenant isolation, no multi-user
   access control, no protection against another local user or malware on the
   same box. Volume encryption is the operator's job.
@@ -92,9 +97,9 @@ so no claim elsewhere can be read as contradicting them.
 - **L4 — Local stores other than the credential vault are plaintext.**
   Approvals, audit, and idempotency files live in the operator's local dir
   unencrypted (inside the single-user trust boundary, §3.3).
-- **L5 — Provider coverage is honest, not complete.** 2 of 94 drivers are
-  live-tested against real provider servers (`github`, `podcast`), 1 has a
-  mock-harness contract test (`stripe`), 91 are structural. See
+- **L5 — Provider coverage is honest, not complete.** 2 of 96 drivers are
+  live-tested against real provider servers (`github`, `podcast`), 3 have
+  mock-contract tests (`stripe`, `lovable`, `replit`), 91 are structural. See
   `PROVIDER_MATRIX.md`. (GATE 15)
 - **L6 — No distributed guarantees.** Exactly-once execution, distributed
   OAuth locking, and cross-machine coordination are not claimed and not

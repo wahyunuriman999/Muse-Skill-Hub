@@ -1,30 +1,51 @@
 ---
 name: "replit"
 title: "Replit"
-description: "Replit cloud IDE. Replit's public REST API is deprecated and its replacement is unreleased, so this skill is catalog-only: the honest workaround is pushing the Repl to GitHub, then operating on the code with the github skill."
-version: "1.1.0"
+description: "Replit cloud IDE. Executable driver for the official Replit Admin API (api.replit.com): workspaces, projects, deployments, usage, budgets. Requires an Enterprise account admin API key."
+version: "1.2.0"
 license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 
 # Replit
 
-Replit cloud IDE. **Replit's public REST API is deprecated** (verified October 2026;
-Replit says a replacement is in the works but it is unreleased), so this skill
-is catalog-only in the runtime — it documents the pattern but has no executable driver.
+Replit cloud IDE. This skill has an **executable driver** for the official Replit
+Admin API (`https://api.replit.com`, docs: https://docs.replit.com/teams/admin-api,
+OpenAPI: https://api.replit.com/openapi.json).
 
-## Honest Workaround: Push to GitHub
+## Setup
+
+1. An **account admin on a Replit Enterprise account** creates a scoped Admin API key.
+2. Set the `REPLIT_API_KEY` environment variable (or store it in the runtime's
+   credential manager).
+
+Regular (non-Enterprise) users cannot create API keys — the driver says so
+plainly on auth failure. The no-Enterprise-gate alternative is the official
+Replit MCP server at `https://mcp.replit.com/server/mcp` (Streamable HTTP, OAuth),
+which covers create/find/inspect/update/publish of Replit Apps.
+
+Scope note: the Admin API covers reporting, governance, budgets, deployments and
+compliance. It does NOT offer arbitrary code execution or shell access, and there
+is no deployment-log API (logs are browser-only, 7-day retention).
+
+## Fallback: Push to GitHub
 
 Every Repl can push to GitHub (Repl → Version control → Connect to GitHub).
-Once pushed, do all programmatic work through the `github` skill instead:
+Once pushed, code-level work can go through the `github` skill instead. This is
+a fallback, not the primary path.
 
-1. User connects their Repl to a GitHub repository (one-time, in the Replit UI).
-2. Read/edit code, open PRs, and manage files via the `github` skill's actions.
-3. Alternatively, download the Repl as a zip and work on the files locally.
+## Actions (executable driver)
 
-Do NOT invent Replit API endpoints — any code claiming to call a Replit REST API
-targets a deprecated surface. The GitHub-push path above is the only supported
-programmatic route until Replit ships its new API.
+| Action | Type | Description |
+|---|---|---|
+| `list_workspaces` | read | List account workspaces (`search`, pagination). |
+| `list_projects` | read | List projects across Team Workspaces (`workspace_id`, `search`, `has_deployment`). |
+| `list_deployments` | read | List deployments in a workspace (`project_id`, `status`). |
+| `get_deployment` | read | Get one deployment's status. |
+| `get_usage` | read | Cost/usage grouped by member, project, workspace or timeseries. |
+| `set_budget` | write | Set, replace or clear a budget (idempotent desired-state; needs `write:budgets` scope). |
+
+Write actions require explicit approval per the runtime's permission model.
 
 ## When to Use This Skill
 

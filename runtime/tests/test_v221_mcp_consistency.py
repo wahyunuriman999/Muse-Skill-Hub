@@ -29,9 +29,9 @@ TOOLS = [t for t in ALL_TOOLS if t["name"] != "skillhub_search_capabilities"]
 
 
 def test_tool_count_matches_catalog():
-    # 209 action tools + skillhub_search_capabilities = 210 published
-    assert len(ALL_TOOLS) == 210
-    assert len(TOOLS) == 209
+    # 221 action tools + skillhub_search_capabilities = 222 published
+    assert len(ALL_TOOLS) == 222
+    assert len(TOOLS) == 221
     assert any(t["name"] == "skillhub_search_capabilities" for t in ALL_TOOLS)
 
 

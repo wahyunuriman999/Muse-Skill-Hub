@@ -32,8 +32,8 @@ def test_perf_artifact_disclaims_guarantees():
 
 def test_measurement_functions_run():
     results = measure()
-    expected = {"registry load (97 skills, 94 drivers)",
-                "mcp tool list build (210 tools)",
+    expected = {"registry load (97 skills, 96 drivers)",
+                "mcp tool list build (222 tools)",
                 "dispatch read action (mock, incl. audit)",
                 "approval request+approve+consume",
                 "audit log append",

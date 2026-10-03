@@ -215,7 +215,7 @@ def test_http_retry_policy_unit():
 
 def test_user_agent_centralized():
     from skillhub import __version__
-    assert __version__ == "2.2.1"
+    assert __version__ == "2.3.0"
 
 
 # 10. capability discovery -----------------------------------------------------------------------
@@ -292,5 +292,5 @@ def test_metadata_counts():
     with redirect_stdout(buf):
         assert metadata() == 0
     meta = json.loads(buf.getvalue())
-    assert meta["skills"] == 97 and meta["implemented"] == 94
+    assert meta["skills"] == 97 and meta["implemented"] == 96
     assert meta["mcp_tools"] > 200

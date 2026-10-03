@@ -1,33 +1,54 @@
 ---
 name: "lovable"
 title: "Lovable"
-description: Lovable AI app builder. No public API exists, so this skill is catalog-only: the honest workaround is Lovable's GitHub sync, then operate on the code with the github skill.
-version: "1.1.0"
+description: Lovable AI app builder. Executable driver for the official Lovable REST API (api.lovable.dev/v1): list workspaces/projects, publish, update, and message projects. Requires a Business/Enterprise plan API key.
+version: "1.2.0"
 license: "AGPL-3.0-only"
 compatibility: "Any LLM with tool/function calling"
 ---
 
 # Lovable
 
-Lovable AI app builder. **No public API exists** (verified October 2026), so this skill
-is catalog-only in the runtime — it documents the pattern but has no executable driver.
+Lovable AI app builder. This skill has an **executable driver** for the official
+Lovable REST API (`https://api.lovable.dev/v1`, docs:
+https://docs.lovable.dev/integrations/lovable-api).
 
-## Honest Workaround: GitHub Sync
+## Setup
 
-Lovable projects can sync to GitHub (Project settings → GitHub → Connect).
-Once synced, do all programmatic work through the `github` skill instead:
+1. In Lovable, open **Workspace settings → Access tokens** and create an API key
+   (format `lov_...`). This requires a **Business or Enterprise** plan and a
+   workspace owner/admin role.
+2. Set the `LOVABLE_API_KEY` environment variable (or store it in the runtime's
+   credential manager).
 
-1. User connects their Lovable project to a GitHub repository (one-time, in the Lovable UI).
-2. Read/edit code, open PRs, and manage files via the `github` skill's actions.
-3. Pushes back to the repo flow into Lovable automatically.
+If the workspace is on a Free/Pro plan, the API returns `402 payment_required`
+and the driver tells you so plainly. The plan-free alternative is the official
+Lovable MCP server at `https://mcp.lovable.dev` (OAuth, all plans), which covers
+project creation/editing — the REST API manages and deploys *existing* projects.
 
-Do NOT invent Lovable API endpoints — any code claiming to call a Lovable REST API
-is fabricated. The GitHub-sync path above is the only supported programmatic route.
+## Fallback: GitHub Sync
+
+Lovable projects can also sync to GitHub (Project settings → GitHub → Connect).
+Once synced, code-level work can go through the `github` skill instead. This is
+a fallback, not the primary path — the driver above is the primary path.
+
+## Actions (executable driver)
+
+| Action | Type | Description |
+|---|---|---|
+| `list_workspaces` | read | List workspaces visible to the API key (id, name, plan). |
+| `list_projects` | read | List/search projects in a workspace (`workspace_id`, pagination). |
+| `get_project` | read | Get one project (status, publish state, preview/screenshot URLs). |
+| `publish_project` | write | Publish (deploy) a project. Returns the accepted deployment; poll `get_project` for publish state (the API exposes no deployment-status endpoint). |
+| `update_project` | write | Update a project (`visibility`: private / workspace_view / public; `name`). |
+| `send_project_message` | write | Send a chat/build message to the project's AI agent. |
+
+Write actions require explicit approval per the runtime's permission model.
 
 ## When to Use This Skill
 
 Activate this skill when the user's request matches:
-- Build web apps with Lovable: scaffold AI-generated projects, iterate on designs, and manage deployments.
+- Manage Lovable projects: list workspaces/projects, publish (deploy), update visibility/name, send build messages to the project agent.
 
 Do NOT activate for unrelated requests. If unsure, ask the user for clarification.
 

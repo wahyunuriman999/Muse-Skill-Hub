@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from . import approval, audit, localstore
+from . import approval, audit, localstore, wal
 from .driver import RISK_LEVELS, ActionDef
 from .errors import (ApprovalRequired, DriverNotImplemented, IdempotencyConflict,
                      PolicyBlocked, SkillError, UpstreamError)
@@ -356,21 +356,26 @@ def _idem_reserve(key: str, skill: str, action: str,
     section, so two concurrent processes cannot both start. A key claimed
     for different skill/action/params raises IdempotencyConflict.
 
-    CRASH SEMANTICS (honest; proven in test_v221_idempotency_semantics.py):
+    CRASH SEMANTICS (honest; proven in test_v221_idempotency_semantics.py,
+    extended by the v2.3 write-ahead log in skillhub/wal.py):
     - success → SUCCEEDED; replays return the stored result, the handler
       never re-runs for the same key+call.
     - SkillError / unexpected exception / output-contract violation →
       FAILED; the documented retry path may claim it again.
     - hard crash (SIGKILL, power loss) between reserve and commit → the
-      key stays PENDING. Retries raise IdempotencyConflict: the runtime
-      CANNOT distinguish "crashed" from "still running", so it never
-      auto-reclaims (that could double-execute). An operator who verified
-      no execution is running may release the key via ``_idem_release``
-      / ``skillhub idempotency release``.
+      key stays PENDING. The WAL phase history + owner-PID liveness let
+      ``idempotency_recover`` classify it: crashed *before* any external
+      call (no ``side_effect_started`` record, owner dead) → provably safe
+      to reclaim as FAILED (one retry allowed); crashed *during/after*
+      the call → ``needs_reconciliation`` (human decides, never
+      auto-retried); owner still alive or liveness unknown → in-flight,
+      untouched. Without the WAL (or when it is unreadable) every stale
+      key stays a manual mystery, as in v2.2.
     - crash after a provider side effect but before _idem_commit is NOT
       solved by this local runtime: a retried execution may repeat the
-      side effect. Providers with their own idempotency keys are the real
-      fix (see the threat model).
+      side effect. The WAL converts the silent ambiguity into an explicit
+      ``needs_reconciliation`` report. Providers with their own
+      idempotency keys are the real fix (see the threat model).
     """
     with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as data:
         existing = data.get(key)
@@ -384,12 +389,16 @@ def _idem_reserve(key: str, skill: str, action: str,
                 existing["status"] = "pending"
                 existing["claimed_at"] = int(time.time())
                 existing["error_code"] = None
+                existing["owner_pid"] = os.getpid()
+                existing["owner_token"] = wal.owner_token()
                 return True, None
             return False, dict(existing)
         data[key] = {"skill": skill, "action": action,
                      "params_hash": params_hash, "status": "pending",
                      "result": None, "error_code": None,
-                     "claimed_at": int(time.time())}
+                     "claimed_at": int(time.time()),
+                     "owner_pid": os.getpid(),
+                     "owner_token": wal.owner_token()}
         _idem_prune(data)
         return True, None
 
@@ -448,6 +457,96 @@ def _idem_list() -> list[dict]:
         rows = [{"idempotency_key": k, **v} for k, v in data.items()]
     rows.sort(key=lambda r: r.get("claimed_at", 0), reverse=True)
     return rows
+
+
+def idempotency_recover(*, apply: bool = True,
+                        actor: str = "local-user") -> dict:
+    """Classify stale PENDING idempotency keys via the write-ahead log.
+
+    For every PENDING key, ``wal.classify`` decides:
+
+    - ``safe_to_reclaim`` — owner dead, handler provably never ran. With
+      ``apply=True`` the record moves to FAILED with error_code
+      ``recovered_crash_before_side_effect`` (audit-logged), which re-arms
+      the normal one-retry path. Provably safe: the
+      ``side_effect_started`` WAL record is fsync'd *before* the handler
+      is invoked, so its absence proves no external call happened.
+    - ``needs_reconciliation`` — owner dead during/after the call, or the
+      WAL is unreadable. Reported with skill/action/timestamps for a
+      human. NEVER auto-touched: a retry could repeat the side effect.
+    - ``in_flight`` — owner alive, or liveness inconclusive. Untouched.
+    - non-PENDING — counted as settled, untouched.
+
+    With ``apply=False`` this is a dry run: nothing is mutated and the
+    WAL is not pruned. Returns a report dict.
+    """
+    report: dict = {"reclaimed": [], "needs_reconciliation": [],
+                    "in_flight": [], "settled": 0, "dry_run": not apply}
+    data = localstore.read_json(_IDEMPOTENCY_STORE, {})
+    pending = [(k, dict(v)) for k, v in data.items()
+               if isinstance(v, dict) and v.get("status") == "pending"]
+    report["settled"] = len(data) - len(pending)
+    verdicts = [(k, rec, wal.classify(k, rec)) for k, rec in pending]
+    if not apply:
+        for k, rec, verdict in verdicts:
+            bucket = {"safe_to_reclaim": "reclaimed",
+                      "needs_reconciliation": "needs_reconciliation"}.get(
+                          verdict, "in_flight")
+            if bucket == "needs_reconciliation":
+                report[bucket].append(_reconcile_info(k, rec))
+            else:
+                report[bucket].append(k)
+        return report
+    with localstore.locked_json(_IDEMPOTENCY_STORE, {}) as store:
+        for key, rec, verdict in verdicts:
+            cur = store.get(key)
+            if not isinstance(cur, dict) or cur.get("status") != "pending":
+                continue  # settled or released while we classified; skip
+            if verdict == wal.SAFE_TO_RECLAIM:
+                # Re-verify liveness under the lock: never reclaim a key
+                # whose owner might have come back.
+                if wal.pid_alive(cur.get("owner_pid")) is not False:
+                    report["in_flight"].append(key)
+                    continue
+                cur["status"] = "failed"
+                cur["error_code"] = "recovered_crash_before_side_effect"
+                cur["recovered_at"] = int(time.time())
+                cur["recovered_by"] = actor
+                report["reclaimed"].append(key)
+                audit.log({
+                    "skill": "runtime", "action": "idempotency_recover",
+                    "result": "success", "actor": actor,
+                    "params_hash": "sha256:manual",
+                    "params_preview": {
+                        "idempotency_key": key,
+                        "verdict": wal.SAFE_TO_RECLAIM,
+                        "previous_owner_pid": cur.get("owner_pid"),
+                    },
+                    "risk": "write",
+                })
+            elif verdict == wal.NEEDS_RECONCILIATION:
+                report["needs_reconciliation"].append(_reconcile_info(key, cur))
+            else:
+                report["in_flight"].append(key)
+    wal.prune()
+    return report
+
+
+def _reconcile_info(key: str, rec: dict) -> dict:
+    """Human-readable summary of a key that needs manual reconciliation."""
+    phases = wal.phases_for(key)
+    return {
+        "idempotency_key": key,
+        "skill": rec.get("skill"),
+        "action": rec.get("action"),
+        "claimed_at": rec.get("claimed_at"),
+        "owner_pid": rec.get("owner_pid"),
+        "wal_phases": phases,
+        "hint": ("The owner died after the external call may have run. "
+                 "Check the provider's state for this action, then either "
+                 f"release the key (skillhub idempotency release {key}) "
+                 "if the call never happened, or reconcile manually."),
+    }
 
 
 def _missing_env(entry: SkillEntry) -> list[str]:
@@ -562,20 +661,37 @@ async def dispatch(entry: SkillEntry, action: str, params: dict,
                            credential_source=credential_source)
                     return result
                 # pending → another execution owns this key right now.
-                # (If that execution crashed, the key stays PENDING: the
-                # runtime cannot tell "crashed" from "slow", so it never
-                # auto-reclaims. An operator may release it after verifying
+                # (If that execution crashed, the key stays PENDING: run
+                # `skillhub idempotency recover` to classify it via the
+                # write-ahead log — provably-safe crashes are reclaimed
+                # automatically, the rest are reported for a human. An
+                # operator may also release the key manually after verifying
                 # nothing is running: `skillhub idempotency release <key>`.)
                 raise IdempotencyConflict(
                     f"Idempotency key '{idempotency_key}' is already claimed "
                     f"by an in-flight execution; retry after it completes. "
-                    f"If the holder crashed, an operator may release the key "
-                    f"with: skillhub idempotency release {idempotency_key}")
+                    f"If the holder crashed, classify it with: skillhub "
+                    f"idempotency recover (or release it manually with: "
+                    f"skillhub idempotency release {idempotency_key})")
             reserved = True
+            # WAL intent: durably record that we own this key BEFORE any
+            # external call. side_effect_started (below) is the proof
+            # boundary — its absence proves the handler never ran.
+            wal.record(idempotency_key, wal.INTENT, skill=entry.name,
+                       action=action, params_hash=_params_hash(params))
 
-        # 7. execute
+        # 7. execute — the WAL brackets the handler so crash recovery can
+        # tell "died before the provider call" from "died after it".
         try:
+            if reserved:
+                wal.record(idempotency_key, wal.SIDE_EFFECT_STARTED,
+                           skill=entry.name, action=action,
+                           params_hash=_params_hash(params))
             result = await action_def.handler(dict(params))
+            if reserved:
+                wal.record(idempotency_key, wal.SIDE_EFFECT_DONE,
+                           skill=entry.name, action=action,
+                           params_hash=_params_hash(params))
         except SkillError as exc:
             if reserved:
                 _idem_fail(idempotency_key, exc.code)

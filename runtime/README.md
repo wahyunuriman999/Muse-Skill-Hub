@@ -1,9 +1,11 @@
 # ⚡ Muse Skill Hub — Executable MCP Runtime
 
+<!-- mcp-name: io.github.wahyunuriman999/muse-skill-hub -->
+
 <!-- METRICS:START -->
 _Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
 
-**Version 2.2.1** · **97 skills** · **94 executable drivers** (3 honest stubs) · **210 MCP tools** · **271 passing tests**
+**Version 2.3.0** · **97 skills** · **96 executable drivers** (1 honest stubs) · **222 MCP tools** · **309 passing tests**
 <!-- METRICS:END -->
 
 This is the **executable layer** of Muse Skill Hub. It turns the skill catalog

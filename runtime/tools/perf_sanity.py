@@ -73,9 +73,9 @@ def measure() -> dict[str, tuple[float, float]]:
 
     results: dict[str, tuple[float, float]] = {}
 
-    results["registry load (97 skills, 94 drivers)"] = _timeit(
+    results["registry load (97 skills, 96 drivers)"] = _timeit(
         load_registry, rounds=5)
-    results["mcp tool list build (210 tools)"] = _timeit(
+    results["mcp tool list build (222 tools)"] = _timeit(
         lambda: mcp_tools(reg), rounds=10)
 
     async def do_dispatch():

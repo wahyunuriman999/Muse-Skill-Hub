@@ -1,11 +1,77 @@
 schema_version: "1"
 name: replit
-version: "1.1.0"
+version: "1.2.0"
 title: "Replit"
-description: "Replit cloud IDE. Replit's public REST API is deprecated and its replacement is unreleased, so this skill is catalog-only: the honest workaround is pushing the Repl to GitHub, then operating on the code with the github skill."
+description: "Replit cloud IDE. Executable driver for the official Replit Admin API (api.replit.com): workspaces, projects, deployments, usage, budgets. Requires an Enterprise account admin API key."
 kind: skill
 lifecycle: stable
 actions:
+  - name: get_deployment
+    type: read
+    risk: read
+    approval: not_required
+    supports_idempotency_key: true
+    required_scopes: []
+    input_schema:
+      type: object
+      properties: {deployment_id: {type: "string"}}
+      required: ["deployment_id"]
+    output_schema: {}
+  - name: get_usage
+    type: read
+    risk: read
+    approval: not_required
+    supports_idempotency_key: true
+    required_scopes: []
+    input_schema:
+      type: object
+      properties: {group_by: {type: "string", description: "member | project | workspace | timeseries"}, start_date: {type: "string", description: "YYYY-MM-DD"}, end_date: {type: "string", description: "YYYY-MM-DD"}, workspace_id: {type: "string"}, project_id: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: list_deployments
+    type: read
+    risk: read
+    approval: not_required
+    supports_idempotency_key: true
+    required_scopes: []
+    input_schema:
+      type: object
+      properties: {project_id: {type: "string"}, status: {type: "string"}, limit: {type: "integer", default: 50, minimum: 1, maximum: 100}, cursor: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: list_projects
+    type: read
+    risk: read
+    approval: not_required
+    supports_idempotency_key: true
+    required_scopes: []
+    input_schema:
+      type: object
+      properties: {workspace_id: {type: "string"}, search: {type: "string"}, has_deployment: {type: "boolean"}, limit: {type: "integer", default: 50, minimum: 1, maximum: 100}, cursor: {type: "string"}}
+      required: []
+    output_schema: {}
+  - name: list_workspaces
+    type: read
+    risk: read
+    approval: not_required
+    supports_idempotency_key: true
+    required_scopes: []
+    input_schema:
+      type: object
+      properties: {search: {type: "string"}, limit: {type: "integer", default: 50, minimum: 1, maximum: 100}, cursor: {type: "string", description: "Pagination cursor from a previous call"}}
+      required: []
+    output_schema: {}
+  - name: set_budget
+    type: write
+    risk: write
+    approval: required
+    supports_idempotency_key: true
+    required_scopes: []
+    input_schema:
+      type: object
+      properties: {name: {type: "string"}, amount: {type: "number"}, period: {type: "string", description: "monthly | quarterly | ..."}, workspace_id: {type: "string"}, scope: {type: "string"}, clear: {type: "boolean", default: false, description: "Clear the named budget instead of setting it"}}
+      required: []
+    output_schema: {}
 auth:
-  required_env: []
+  required_env: ["REPLIT_API_KEY"]
 dependencies: []
