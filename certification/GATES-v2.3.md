@@ -35,5 +35,5 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 22 | Final Certification Report | — | PENDING |
 | 23 | WAL Crash Recovery (kill -9 at each phase) | `—` | COMPLETE (kill-9 tests; classify proven) |
 | 24 | Lovable/Replit Real Drivers | `—` | COMPLETE (8 tests; PermissionDenied gates proven) |
-| 25 | Live Contract Harness | — | PENDING |
+| 25 | Live Contract Harness | `—` | COMPLETE (3 PASS / 60 SKIP / 0 FAIL) |
 | 26 | PyPI/MCP Packaging | — | PENDING |

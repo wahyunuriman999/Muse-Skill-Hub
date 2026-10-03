@@ -1,12 +1,12 @@
 # Live contract-test report
 
-_Generated 2026-10-02 18:26 WIB. Read-only smoke calls against live provider APIs._
+_Generated 2026-10-03 17:15 UTC. Read-only smoke calls against live provider APIs._
 
 | Skill | Action | Tier | Status | Detail |
 |---|---|---|---|---|
-| podcast | search_podcasts | public | **PASS** | 414 ms |
+| podcast | search_podcasts | public | **PASS** | 863 ms |
 | ticketmaster | — | — | **SKIP** | needs TICKETMASTER_API_KEY |
-| github | search_repositories | keyed | **PASS** | 873 ms |
+| github | search_repositories | keyed | **PASS** | 755 ms |
 | stripe | — | — | **SKIP** | needs STRIPE_SECRET_KEY |
 | lovable | — | — | **SKIP** | needs LOVABLE_API_KEY |
 | replit | — | — | **SKIP** | needs REPLIT_API_KEY |
@@ -35,7 +35,7 @@ _Generated 2026-10-02 18:26 WIB. Read-only smoke calls against live provider API
 | instagram-messages | — | — | **SKIP** | needs INSTAGRAM_PAGE_TOKEN |
 | klaviyo | — | — | **SKIP** | needs KLAVIYO_API_KEY |
 | linear | — | — | **SKIP** | needs LINEAR_API_KEY |
-| messaging-channels | list_channels | keyed | **PASS** | 0 ms |
+| messaging-channels | list_channels | keyed | **PASS** | 1 ms |
 | messenger | — | — | **SKIP** | needs MESSENGER_PAGE_TOKEN |
 | meta-ads | — | — | **SKIP** | needs META_ADS_ACCESS_TOKEN |
 | meta-threads | — | — | **SKIP** | needs THREADS_ACCESS_TOKEN |
