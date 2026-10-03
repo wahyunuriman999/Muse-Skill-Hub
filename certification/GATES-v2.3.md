@@ -23,7 +23,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 10 | MCP Documentation Consistency | `—` | COMPLETE (6 tests (test_v221_mcp_consistency.py). Guarantee: MCP tool docs match implementation (221 tools).) |
 | 11 | Generated Documentation | `—` | COMPLETE (4 tests (test_v221_generated_docs.py) + sync_readme.py --check clean. Guarantee: generated README metrics in sync.) |
 | 12 | Clean Installation | `—` | COMPLETE (3 tests (test_v221_clean_install.py). Guarantee: catalog ships inside the wheel; clean install works.) |
-| 13 | Static Security Audit | — | PENDING |
+| 13 | Static Security Audit | `—` | COMPLETE (5 tests (test_v221_static_audit.py). Guarantee: static audit passes; v2.3 new code (wal.py, drivers) covered.) |
 | 14 | HTTP Safety | — | PENDING |
 | 15 | Provider Contract Matrix (+ lovable/replit real) | — | PENDING |
 | 16 | Exception & Secret Leak Assurance | — | PENDING |
