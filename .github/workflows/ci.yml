@@ -4,14 +4,22 @@
 # The Windows leg is the proof for GATE 2: the real msvcrt file-lock path
 # and the spawn-based process races execute on actual windows-latest —
 # not AST checks, not import checks.
+#
+# v2.3.0-dev is a certification branch like final-certification was:
+# every gate push runs the matrix; the concurrency group cancels
+# superseded runs so only the latest gate commit is fully exercised.
 name: certification
 
 "on":
   push:
-    branches: [main, final-certification]
+    branches: [main, final-certification, v2.3.0-dev]
   pull_request:
     branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: certification-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
