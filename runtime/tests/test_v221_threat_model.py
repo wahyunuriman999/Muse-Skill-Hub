@@ -43,7 +43,7 @@ def test_accepted_limitations_all_stated():
     assert "cannot close this window" in text
     assert "No tenant isolation" in text
     assert "not tamper-proof" in text
-    assert "2 of 94 drivers are" in text and "live-tested" in text
+    assert "2 of 96 drivers are" in text and "live-tested" in text
 
 
 def test_threats_name_their_gates():
