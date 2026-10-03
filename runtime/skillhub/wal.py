@@ -144,19 +144,30 @@ def _pid_alive_windows(pid: int) -> bool | None:
 
     os.kill(pid, 0) is not reliable on Windows (signal 0 is not
     supported; non-existent PIDs raise generic OSError). OpenProcess
-    gives a definitive answer: a handle means alive, ERROR_INVALID_PARAMETER
-    (87) means no such process, ERROR_ACCESS_DENIED (5) means alive but
-    owned by another user. Anything else is inconclusive (conservative).
+    gives a definitive answer: a handle means the PID is valid, but the
+    process may have already exited (zombie) — GetExitCodeProcess
+    distinguishes. ERROR_INVALID_PARAMETER (87) means no such process,
+    ERROR_ACCESS_DENIED (5) means alive but owned by another user.
+    Anything else is inconclusive (conservative).
     """
     try:
         import ctypes
+        from ctypes import wintypes
         PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        STILL_ACTIVE = 259
         kernel32 = ctypes.windll.kernel32
         handle = kernel32.OpenProcess(
             PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
         if handle:
-            kernel32.CloseHandle(handle)
-            return True
+            try:
+                exit_code = wintypes.DWORD()
+                if kernel32.GetExitCodeProcess(handle,
+                                               ctypes.byref(exit_code)):
+                    if exit_code.value != STILL_ACTIVE:
+                        return False  # zombie: PID valid, process exited
+                return True
+            finally:
+                kernel32.CloseHandle(handle)
         err = kernel32.GetLastError()
         if err == 87:   # ERROR_INVALID_PARAMETER → no such process
             return False
