@@ -10,8 +10,8 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 
 | Gate | Name | Commit | Status |
 |---|---|---|---|
-| 0 | Baseline & Recovery (v2.3) | — | IN PROGRESS |
-| 1 | Credential Source/Scope Binding | — | PENDING |
+| 0 | Baseline & Recovery (v2.3) | `1febbc8` | COMPLETE |
+| 1 | Credential Source/Scope Binding | `—` | COMPLETE (17 tests) |
 | 2 | Windows Real Execution | — | PENDING |
 | 3 | Crash-Atomic Storage | — | PENDING |
 | 4 | Idempotency Semantics (+ WAL) | — | PENDING |
