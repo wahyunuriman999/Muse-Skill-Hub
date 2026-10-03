@@ -17,7 +17,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 4 | Idempotency Semantics (+ WAL) | `—` | COMPLETE (25 tests: 8 idempotency + 17 WAL) |
 | 5 | Approval Protocol | `—` | COMPLETE (16 tests (test_v221_approval_protocol.py). Guarantee: approval binds skill+action+params_hash+risk+actor; 20-thread race proves atomic consumption.) |
 | 6 | Approval Data Privacy | `—` | COMPLETE (4 tests (test_v221_approval_privacy.py). Guarantee: secret canary values never leak into approval records (params_hash + redacted preview only).) |
-| 7 | Output Contract | — | PENDING |
+| 7 | Output Contract | `—` | COMPLETE (6 tests (test_v221_output_contract.py). Guarantee: invalid output never becomes an idempotency success.) |
 | 8 | Risk Semantics | — | PENDING |
 | 9 | Manifest/Driver/SKILL Contract | — | PENDING |
 | 10 | MCP Documentation Consistency | — | PENDING |
