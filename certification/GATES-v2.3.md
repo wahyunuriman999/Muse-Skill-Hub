@@ -12,7 +12,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 |---|---|---|---|
 | 0 | Baseline & Recovery (v2.3) | `1febbc8` | COMPLETE |
 | 1 | Credential Source/Scope Binding | `—` | COMPLETE (17 tests) |
-| 2 | Windows Real Execution | — | PENDING |
+| 2 | Windows Real Execution | `—` | COMPLETE (12 tests; real windows-latest via GATE 20 CI) |
 | 3 | Crash-Atomic Storage | — | PENDING |
 | 4 | Idempotency Semantics (+ WAL) | — | PENDING |
 | 5 | Approval Protocol | — | PENDING |
