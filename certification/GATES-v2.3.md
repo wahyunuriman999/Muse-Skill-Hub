@@ -20,7 +20,7 @@ Baseline: `bd45788` (GATE 0). Branch: `v2.3.0-dev`.
 | 7 | Output Contract | `—` | COMPLETE (6 tests (test_v221_output_contract.py). Guarantee: invalid output never becomes an idempotency success.) |
 | 8 | Risk Semantics | `—` | COMPLETE (25 tests (test_v221_risk_semantics.py). Guarantee: destructive-risk downgrade attempts FAIL validation.) |
 | 9 | Manifest/Driver/SKILL Contract | — | PENDING |
-| 10 | MCP Documentation Consistency | — | PENDING |
+| 10 | MCP Documentation Consistency | `—` | COMPLETE (6 tests (test_v221_mcp_consistency.py). Guarantee: MCP tool docs match implementation (221 tools).) |
 | 11 | Generated Documentation | — | PENDING |
 | 12 | Clean Installation | — | PENDING |
 | 13 | Static Security Audit | — | PENDING |
