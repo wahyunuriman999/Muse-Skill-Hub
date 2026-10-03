@@ -215,7 +215,7 @@ def test_http_retry_policy_unit():
 
 def test_user_agent_centralized():
     from skillhub import __version__
-    assert __version__ == "2.3.0.dev0"
+    assert __version__ == "2.3.0"
 
 
 # 10. capability discovery -----------------------------------------------------------------------

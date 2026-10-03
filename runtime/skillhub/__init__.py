@@ -1,3 +1,3 @@
 """Muse Skill Hub runtime — LLM-agnostic capability runtime for AI agents."""
 
-__version__ = "2.3.0.dev0"
+__version__ = "2.3.0"

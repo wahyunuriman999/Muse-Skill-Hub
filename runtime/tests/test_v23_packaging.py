@@ -24,7 +24,7 @@ import pytest
 
 RUNTIME = Path(__file__).resolve().parent.parent
 REPO = RUNTIME.parent
-EXPECTED_VERSION = "2.3.0.dev0"
+EXPECTED_VERSION = "2.3.0"
 LICENSE_BASENAMES = {"LICENSE", "LICENSE.TXT", "LICENSE.MD"}
 
 

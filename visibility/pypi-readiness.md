@@ -54,7 +54,7 @@ The branch is `v2.3.0-dev`, but `version` is still `2.2.1` — and `runtime/` on
 
 **Fix (pick one before upload):**
 - Publish `2.2.1` built from the **`v2.2.1` tag** (byte-identical to the certified GitHub release wheel), or
-- Bump to `2.3.0.dev0` (or wait until v2.3.0 is cut and certified) if publishing from this branch.
+- Publish `2.3.0` from the certified v2.3.0 release (version bumped to `2.3.0`, certification PASS 2026-10-04).
 
 Do not publish version `2.2.1` built from `v2.3.0-dev`.
 

@@ -1,6 +1,6 @@
 [project]
 name = "muse-skill-hub-runtime"
-version = "2.3.0.dev0"
+version = "2.3.0"
 description = "LLM-agnostic capability runtime for AI agents: universal skills as executable, permission-enforced MCP tools"
 authors = [{ name = "Wahyu Nur Iman" }]
 readme = "README.md"
