@@ -5,7 +5,7 @@
 <!-- METRICS:START -->
 _Generated from registry + test suite — do not hand-edit. Run `python tools/sync_readme.py`._
 
-**Version 2.3.0.dev0** · **97 skills** · **96 executable drivers** (1 honest stubs) · **222 MCP tools** · **301 passing tests**
+**Version 2.3.0.dev0** · **97 skills** · **96 executable drivers** (1 honest stubs) · **222 MCP tools** · **309 passing tests**
 <!-- METRICS:END -->
 
 This is the **executable layer** of Muse Skill Hub. It turns the skill catalog
