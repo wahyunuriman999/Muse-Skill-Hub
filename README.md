@@ -232,5 +232,10 @@ In short: you may use, study, modify, and share this work, but any modified
 version you distribute (including over a network) must remain open-source
 under the same license, with copyright and attribution notices intact.
 
+**Commercial use:** if the AGPL's terms don't fit your product (proprietary
+software, company policy against AGPL), a commercial license is available —
+see [COMMERCIAL-LICENSING.md](COMMERCIAL-LICENSING.md). Attribution to the
+author is required under either license.
+
 ---
 *Copyright © 2026 Wahyu Nur Iman.*
