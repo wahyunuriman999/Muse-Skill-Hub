@@ -231,6 +231,7 @@ Skills from other authors, in the same open `SKILL.md` format, that Muse-style a
 ## Contributing
 
 PRs and issues are welcome. If you adapt these skills for other LLMs, share it here.
+See [ROADMAP.md](ROADMAP.md) for where this project is headed.
 
 ## License
 

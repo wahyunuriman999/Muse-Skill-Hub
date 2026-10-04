@@ -129,3 +129,25 @@ pip install /tmp/pypi-audit-dist/*.whl && skillhub --help                       
 ```
 
 Build artifacts were written to `/tmp/pypi-audit-dist/` (ephemeral); the repo tree was left untouched — `git status` shows only this new file as untracked.
+
+---
+
+## Addendum — 2026-10-04: all blockers resolved, package READY for upload
+
+Re-audit of the `v2.3.0` release tree (`main`, tag `v2.3.0` → `4666b13`):
+
+| Blocker | Status | Evidence |
+|---|---|---|
+| B1 — deprecated `project.license` table | **RESOLVED** | `runtime/pyproject.toml:8` is now `license = "AGPL-3.0-only"` (string form) |
+| B2 — license file not shipped | **RESOLVED** | `runtime/LICENSE` exists; verified present inside the built wheel |
+| B3 — version/tree mismatch | **RESOLVED** | `version = "2.3.0"`, built from the certified release tag |
+
+Release artifact verification (built from the certified tag):
+
+- `Metadata-Version: 2.4`, `Name: muse-skill-hub-runtime`, `Version: 2.3.0`
+- `Author: Wahyu Nur Iman`
+- `License-Expression: AGPL-3.0-only` — PyPI will validate and render this as a linked SPDX license
+- `twine check`: PASSED (wheel + sdist)
+- PyPI name `muse-skill-hub-runtime`: **available** (404 on the JSON API, checked 2026-10-04)
+
+**Verdict: READY.** The only remaining step is the upload itself, which needs the maintainer's PyPI account and API token (secure flow, never in chat). Nothing else in the repo blocks it.
