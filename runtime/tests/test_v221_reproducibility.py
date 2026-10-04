@@ -54,6 +54,7 @@ def test_wheel_contains_full_package():
 
 def test_wheel_build_reproducible(tmp_path):
     """Two independent wheel builds from this tree must be content-identical."""
+    pytest.importorskip("build")  # reviewer env without `build` -> SKIP, not FAIL
     wheels = []
     for i in range(2):
         outdir = tmp_path / f"dist{i}"
