@@ -211,6 +211,14 @@ tool = Tool(name="github", description="...", func=your_impl)
 - Each Muse skill follows a pattern: **clear purpose, structured input, and safe actions** (read vs write separated).
 - If you want to build a Muse-like AI, copy the pattern: define skills as instructions + input schema, not just freeform prompts.
 
+## Community skills
+
+Skills from other authors, in the same open `SKILL.md` format, that Muse-style agents can load.
+
+| Skill | Description |
+|-------|-------------|
+| [sparkbtcbot](https://github.com/echennells/sparkbtcbot) | Give an agent its own self-custodial Bitcoin wallet on the Spark L2: receive and pay over Lightning and Spark, pay L402 paywalls, move BTKN tokens, and buy gift cards with a confirm-before-buy step. Encrypted seed, amount and fee caps, a daily spend budget, an outbound allowlist, payment dedup, and a unilateral-exit backup. MIT. [Demo video](https://x.com/sparkbtcbot/status/2104971010475012423) |
+
 ## Contributing
 
 PRs and issues are welcome. If you adapt these skills for other LLMs, share it here.
