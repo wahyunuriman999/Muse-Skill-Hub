@@ -4,6 +4,8 @@
 
 # Muse Skill Hub
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/wahyunuriman999/muse-skill-hub)](https://m8ven.ai/mcp/wahyunuriman999/muse-skill-hub?s=readme)
+
 > An open, LLM-agnostic capability runtime for AI agents. Define capabilities once. Discover them dynamically. Execute them through typed tools. Enforce permissions at runtime. Keep failures honest. Created by **Wahyu Nur Iman**.
 
 ## ⚡ Executable Runtime
@@ -82,6 +84,32 @@ The goal is an open reference: what Muse can do, what the patterns are, and insp
 **Important note:** This file only contains high-level lists and descriptions, not raw internal files. Muse's real skills run on a specialized runtime (MCP servers, OAuth, custom CLIs, etc.), so just reading this list won't automatically make another AI 99.9% like Muse — but it can be a very useful blueprint.
 
 Total documented skills: **97**
+
+## 🌐 Flagship Capability: The Live Browser
+
+Of the 97 skills cataloged below, the single strongest one is not in the table —
+it is the **live browser**: a real Chromium that Muse drives directly. It opens
+pages, reads, clicks, types, searches, uploads files, and completes multi-step
+flows on the open web, with the user's approvals gating sensitive actions.
+
+API skills cover *known* integrations. The browser covers *everything else* —
+the entire web becomes the API. In practice:
+
+- **Read anything live** — prices, availability, account state, and content behind
+  JavaScript-heavy pages that no API exposes, with sources attached.
+- **Act on the web** — fill forms, sign in, upload files, walk multi-step flows.
+  Checkouts pause for explicit approval; nothing sensitive completes silently.
+- **Operate end-to-end** — run a YouTube creator pipeline (upload via YouTube
+  Studio, fill titles/descriptions/tags, set audience, publish, verify),
+  search and track job applications, register for services, monitor changes.
+
+**Honest limits** (this repo keeps failures honest): logins and sensitive actions
+need the user's approval; CAPTCHAs and bot checks pause for the user; some sites
+block automation outright; a failed page load is reported as a failure, never
+papered over with guessed content.
+
+The catalog below is the *integration* layer. The browser is the *universal*
+layer — the reason a Muse-style agent can do work no fixed skill list anticipates.
 
 ## Universal Skills (Usable by Any LLM) 🌐
 
